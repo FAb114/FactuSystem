@@ -1,0 +1,772 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>FactuSystem - Inicio de Sesión</title>
+    <link rel="stylesheet" href="../assets/css/main.css">
+    <link rel="stylesheet" href="../assets/css/components/modal.css">
+    <!-- Font Awesome para iconos -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <style>
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background: linear-gradient(135deg, #f5f7fa 0%, #c3cfe2 100%);
+            height: 100vh;
+            margin: 0;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            overflow: hidden;
+        }
+
+        .login-container {
+            background-color: #ffffff;
+            border-radius: 10px;
+            box-shadow: 0 10px 25px rgba(0, 0, 0, 0.1);
+            width: 900px;
+            display: flex;
+            overflow: hidden;
+            animation: fadeIn 0.5s ease;
+        }
+
+        .login-banner {
+            background: linear-gradient(45deg, #3f51b5, #2196f3);
+            flex: 1;
+            padding: 40px;
+            color: white;
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+        }
+
+        .login-form {
+            flex: 1;
+            padding: 40px;
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+        }
+
+        .logo {
+            text-align: center;
+            margin-bottom: 30px;
+        }
+
+        .logo img {
+            max-width: 180px;
+            height: auto;
+        }
+
+        h1 {
+            font-weight: 600;
+            font-size: 24px;
+            color: #333;
+            margin-bottom: 30px;
+            text-align: center;
+        }
+
+        .input-group {
+            margin-bottom: 20px;
+            position: relative;
+        }
+
+        .input-group label {
+            display: block;
+            margin-bottom: 8px;
+            font-size: 14px;
+            color: #555;
+        }
+
+        .input-group input {
+            width: 100%;
+            padding: 12px 15px;
+            padding-left: 45px;
+            border: 1px solid #ddd;
+            border-radius: 5px;
+            font-size: 14px;
+            transition: border-color 0.3s ease;
+        }
+
+        .input-group input:focus {
+            border-color: #2196f3;
+            outline: none;
+            box-shadow: 0 0 0 2px rgba(33, 150, 243, 0.1);
+        }
+
+        .input-group i {
+            position: absolute;
+            left: 15px;
+            top: 42px;
+            color: #aaa;
+        }
+
+        .remember-forgot {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 25px;
+            font-size: 14px;
+        }
+
+        .checkbox-container {
+            display: flex;
+            align-items: center;
+        }
+
+        .checkbox-container input {
+            margin-right: 8px;
+        }
+
+        .forgot-password {
+            color: #2196f3;
+            text-decoration: none;
+            transition: color 0.3s ease;
+        }
+
+        .forgot-password:hover {
+            color: #1565c0;
+            text-decoration: underline;
+        }
+
+        .login-btn {
+            background: linear-gradient(45deg, #3f51b5, #2196f3);
+            color: white;
+            border: none;
+            border-radius: 5px;
+            padding: 12px;
+            font-size: 16px;
+            font-weight: 500;
+            cursor: pointer;
+            transition: transform 0.3s ease, box-shadow 0.3s ease;
+        }
+
+        .login-btn:hover {
+            box-shadow: 0 5px 15px rgba(33, 150, 243, 0.3);
+            transform: translateY(-2px);
+        }
+
+        .login-btn:active {
+            transform: translateY(0);
+        }
+
+        .banner-title {
+            font-size: 28px;
+            font-weight: 600;
+            margin-bottom: 15px;
+        }
+
+        .banner-text {
+            font-size: 16px;
+            line-height: 1.6;
+            margin-bottom: 30px;
+            opacity: 0.9;
+        }
+
+        .banner-features {
+            list-style-type: none;
+            padding: 0;
+            margin: 0;
+        }
+
+        .banner-features li {
+            margin-bottom: 12px;
+            display: flex;
+            align-items: center;
+        }
+
+        .banner-features i {
+            margin-right: 10px;
+            font-size: 18px;
+        }
+
+        .version {
+            position: absolute;
+            bottom: 20px;
+            right: 20px;
+            font-size: 12px;
+            color: #aaa;
+        }
+
+        /* Modal Sucursales */
+        .modal {
+            display: none;
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background-color: rgba(0, 0, 0, 0.5);
+            justify-content: center;
+            align-items: center;
+            z-index: 1000;
+        }
+
+        .modal-content {
+            background-color: #fff;
+            border-radius: 8px;
+            box-shadow: 0 10px 25px rgba(0, 0, 0, 0.2);
+            width: 400px;
+            padding: 30px;
+            position: relative;
+            animation: slideIn 0.3s ease;
+        }
+
+        .modal-title {
+            font-size: 20px;
+            font-weight: 600;
+            margin-bottom: 20px;
+            color: #333;
+            text-align: center;
+        }
+
+        .sucursal-list {
+            max-height: 250px;
+            overflow-y: auto;
+        }
+
+        .sucursal-item {
+            padding: 15px;
+            border: 1px solid #eee;
+            border-radius: 5px;
+            margin-bottom: 10px;
+            cursor: pointer;
+            transition: background-color 0.3s ease, transform 0.3s ease;
+        }
+
+        .sucursal-item:hover {
+            background-color: #f5f9ff;
+            transform: translateY(-2px);
+        }
+
+        .sucursal-item.active {
+            border-color: #2196f3;
+            background-color: #e3f2fd;
+        }
+
+        .sucursal-name {
+            font-weight: 500;
+            font-size: 16px;
+            color: #333;
+        }
+
+        .sucursal-address {
+            font-size: 13px;
+            color: #777;
+            margin-top: 5px;
+        }
+
+        .modal-actions {
+            margin-top: 25px;
+            display: flex;
+            justify-content: flex-end;
+        }
+
+        .modal-btn {
+            padding: 10px 20px;
+            border-radius: 5px;
+            font-weight: 500;
+            cursor: pointer;
+            transition: background-color 0.3s ease;
+        }
+
+        .modal-btn-primary {
+            background-color: #2196f3;
+            color: white;
+            border: none;
+        }
+
+        .modal-btn-primary:hover {
+            background-color: #1e88e5;
+        }
+
+        /* Modal Apertura de Caja */
+        .apertura-form {
+            margin-top: 15px;
+        }
+
+        .input-monto {
+            position: relative;
+            margin-bottom: 20px;
+        }
+
+        .input-monto input {
+            width: 100%;
+            padding: 12px 15px;
+            padding-left: 30px;
+            border: 1px solid #ddd;
+            border-radius: 5px;
+            font-size: 16px;
+        }
+
+        .input-monto span {
+            position: absolute;
+            left: 10px;
+            top: 12px;
+            font-weight: bold;
+            color: #555;
+        }
+
+        .apertura-info {
+            background-color: #f8f9fa;
+            border-radius: 5px;
+            padding: 15px;
+            margin-bottom: 20px;
+            font-size: 14px;
+            color: #555;
+        }
+
+        .apertura-info p {
+            margin: 5px 0;
+        }
+
+        .apertura-info strong {
+            color: #333;
+        }
+
+        /* Animaciones */
+        @keyframes fadeIn {
+            from { opacity: 0; }
+            to { opacity: 1; }
+        }
+
+        @keyframes slideIn {
+            from { transform: translateY(-20px); opacity: 0; }
+            to { transform: translateY(0); opacity: 1; }
+        }
+
+        /* Mensaje de error */
+        .error-message {
+            background-color: #ffebee;
+            color: #d32f2f;
+            padding: 10px;
+            border-radius: 5px;
+            margin-bottom: 20px;
+            font-size: 14px;
+            display: none;
+        }
+
+        /* Offline indicator */
+        .offline-indicator {
+            position: absolute;
+            top: 20px;
+            right: 20px;
+            background-color: #ffcc80;
+            color: #e65100;
+            padding: 5px 10px;
+            border-radius: 4px;
+            font-size: 12px;
+            font-weight: 500;
+            display: none;
+            align-items: center;
+        }
+
+        .offline-indicator i {
+            margin-right: 5px;
+        }
+
+        /* Responsiveness */
+        @media (max-width: 900px) {
+            .login-container {
+                width: 95%;
+                flex-direction: column;
+            }
+
+            .login-banner {
+                display: none;
+            }
+        }
+    </style>
+</head>
+<body>
+    <!-- Indicador de Modo Offline -->
+    <div class="offline-indicator" id="offlineIndicator">
+        <i class="fas fa-wifi"></i> Modo Offline
+    </div>
+
+    <div class="login-container">
+        <!-- Área de banner/información -->
+        <div class="login-banner">
+            <div class="banner-title">FactuSystem</div>
+            <div class="banner-text">
+                Sistema de Facturación y Gestión Comercial Multisucursal con funcionalidad offline/online.
+            </div>
+            <ul class="banner-features">
+                <li><i class="fas fa-receipt"></i> Facturación electrónica AFIP</li>
+                <li><i class="fas fa-qrcode"></i> Integración con Mercado Pago</li>
+                <li><i class="fas fa-store-alt"></i> Gestión de múltiples sucursales</li>
+                <li><i class="fas fa-box"></i> Control de inventario</li>
+                <li><i class="fas fa-chart-line"></i> Reportes y estadísticas</li>
+                <li><i class="fas fa-sync-alt"></i> Sincronización automática</li>
+            </ul>
+        </div>
+
+        <!-- Formulario de login -->
+        <div class="login-form">
+            <div class="logo">
+                <img src="../assets/img/logo.png" alt="FactuSystem Logo">
+            </div>
+            <h1>Iniciar Sesión</h1>
+
+            <!-- Mensaje de error -->
+            <div class="error-message" id="errorMessage">
+                Usuario o contraseña incorrectos. Por favor intente nuevamente.
+            </div>
+
+            <form id="loginForm">
+                <div class="input-group">
+                    <label for="username">Usuario</label>
+                    <input type="text" id="username" name="username" placeholder="Ingrese su usuario" required>
+                    <i class="fas fa-user"></i>
+                </div>
+
+                <div class="input-group">
+                    <label for="password">Contraseña</label>
+                    <input type="password" id="password" name="password" placeholder="Ingrese su contraseña" required>
+                    <i class="fas fa-lock"></i>
+                </div>
+
+                <div class="remember-forgot">
+                    <div class="checkbox-container">
+                        <input type="checkbox" id="remember" name="remember">
+                        <label for="remember">Recordarme</label>
+                    </div>
+                    <a href="#" class="forgot-password" id="forgotPassword">¿Olvidó su contraseña?</a>
+                </div>
+
+                <button type="submit" class="login-btn">
+                    <i class="fas fa-sign-in-alt"></i> Iniciar Sesión
+                </button>
+            </form>
+        </div>
+    </div>
+
+    <!-- Modal Selector de Sucursal -->
+    <div class="modal" id="sucursalModal">
+        <div class="modal-content">
+            <div class="modal-title">Seleccione una Sucursal</div>
+            <div class="sucursal-list" id="sucursalList">
+                <!-- Las sucursales se cargarán dinámicamente -->
+            </div>
+            <div class="modal-actions">
+                <button class="modal-btn modal-btn-primary" id="confirmarSucursal">Confirmar</button>
+            </div>
+        </div>
+    </div>
+
+    <!-- Modal Apertura de Caja -->
+    <div class="modal" id="aperturaModal">
+        <div class="modal-content">
+            <div class="modal-title">Apertura de Caja</div>
+            
+            <div class="apertura-info">
+                <p><strong>Fecha:</strong> <span id="fechaActual"></span></p>
+                <p><strong>Usuario:</strong> <span id="usuarioActual"></span></p>
+                <p><strong>Sucursal:</strong> <span id="sucursalActual"></span></p>
+            </div>
+            
+            <form id="aperturaForm" class="apertura-form">
+                <div class="input-monto">
+                    <span>$</span>
+                    <input type="number" id="montoInicial" name="montoInicial" placeholder="Ingrese monto inicial en efectivo" step="0.01" min="0" required>
+                </div>
+                
+                <div class="modal-actions">
+                    <button type="submit" class="modal-btn modal-btn-primary">Abrir Caja</button>
+                </div>
+            </form>
+        </div>
+    </div>
+
+    <!-- Script para 2FA (autenticación de dos factores) si está habilitado -->
+    <div class="modal" id="twoFactorModal">
+        <div class="modal-content">
+            <div class="modal-title">Verificación en Dos Pasos</div>
+            <p style="text-align: center; margin-bottom: 20px;">
+                Ingrese el código enviado a su dispositivo móvil
+            </p>
+            
+            <div class="input-group">
+                <input type="text" id="twoFactorCode" name="twoFactorCode" 
+                    placeholder="Código de verificación" maxlength="6" 
+                    style="text-align: center; letter-spacing: 5px; font-size: 24px; padding: 8px 15px;">
+            </div>
+            
+            <div class="modal-actions">
+                <button class="modal-btn modal-btn-primary" id="verificarCodigo">Verificar</button>
+            </div>
+        </div>
+    </div>
+
+    <div class="version">v1.0.0</div>
+
+    <!-- Scripts -->
+    <script>
+        // Función para formatear la fecha actual
+        function formatearFecha() {
+            const fecha = new Date();
+            const opciones = { 
+                weekday: 'long', 
+                year: 'numeric', 
+                month: 'long', 
+                day: 'numeric',
+                hour: '2-digit',
+                minute: '2-digit'
+            };
+            return fecha.toLocaleDateString('es-AR', opciones);
+        }
+
+        // Detectar estado de conexión
+        function actualizarEstadoConexion() {
+            const estaOnline = navigator.onLine;
+            const indicador = document.getElementById('offlineIndicator');
+            
+            if (!estaOnline) {
+                indicador.style.display = 'flex';
+            } else {
+                indicador.style.display = 'none';
+            }
+        }
+
+        // Verificar conexión al cargar y cuando cambie
+        window.addEventListener('load', actualizarEstadoConexion);
+        window.addEventListener('online', actualizarEstadoConexion);
+        window.addEventListener('offline', actualizarEstadoConexion);
+
+        // Al cargar el documento
+        document.addEventListener('DOMContentLoaded', () => {
+            // Establecer la fecha actual en el modal de apertura
+            document.getElementById('fechaActual').textContent = formatearFecha();
+            
+            // Referencia al formulario de login
+            const loginForm = document.getElementById('loginForm');
+            const errorMessage = document.getElementById('errorMessage');
+            
+            // Manejador del formulario de login
+            loginForm.addEventListener('submit', async (e) => {
+                e.preventDefault();
+                
+                const username = document.getElementById('username').value;
+                const password = document.getElementById('password').value;
+                
+                try {
+                    // Llamar a la API de autenticación a través del proceso de Electron
+                    const result = await window.electronAPI.login(username, password);
+                    
+                    if (result.success) {
+                        // Usuario autenticado correctamente
+                        
+                        // Guardar información del usuario en sessionStorage
+                        sessionStorage.setItem('currentUser', JSON.stringify(result.user));
+                        
+                        // Verificar si tiene 2FA habilitado
+                        if (result.user.twoFactorEnabled) {
+                            // Mostrar modal de 2FA
+                            document.getElementById('twoFactorModal').style.display = 'flex';
+                        } else if (result.multipleSucursales) {
+                            // Si el usuario tiene acceso a múltiples sucursales, mostrar selector
+                            mostrarSelectorSucursales(result.sucursales);
+                        } else {
+                            // Si solo tiene una sucursal, establecerla y mostrar apertura de caja
+                            sessionStorage.setItem('currentSucursal', JSON.stringify(result.sucursales[0]));
+                            mostrarAperturaCaja(result.user.nombre, result.sucursales[0].nombre);
+                        }
+                    } else {
+                        // Mostrar mensaje de error
+                        errorMessage.textContent = result.message || 'Usuario o contraseña incorrectos';
+                        errorMessage.style.display = 'block';
+                    }
+                } catch (error) {
+                    console.error('Error de autenticación:', error);
+                    
+                    // Verificar si estamos en modo offline
+                    if (!navigator.onLine) {
+                        // Intentar autenticar con datos locales
+                        autenticarOffline(username, password);
+                    } else {
+                        errorMessage.textContent = 'Error de conexión. Intente nuevamente.';
+                        errorMessage.style.display = 'block';
+                    }
+                }
+            });
+            
+            // Manejador para el botón de olvidó contraseña
+            document.getElementById('forgotPassword').addEventListener('click', (e) => {
+                e.preventDefault();
+                // Abrir modal o redireccionar a recuperación de contraseña
+                window.electronAPI.openPasswordRecovery();
+            });
+            
+            // Manejador para el código de verificación 2FA
+            document.getElementById('verificarCodigo').addEventListener('click', async () => {
+                const codigo = document.getElementById('twoFactorCode').value;
+                const user = JSON.parse(sessionStorage.getItem('currentUser'));
+                
+                try {
+                    const result = await window.electronAPI.verificar2FA(user.id, codigo);
+                    
+                    if (result.success) {
+                        document.getElementById('twoFactorModal').style.display = 'none';
+                        
+                        if (result.multipleSucursales) {
+                            mostrarSelectorSucursales(result.sucursales);
+                        } else {
+                            sessionStorage.setItem('currentSucursal', JSON.stringify(result.sucursales[0]));
+                            mostrarAperturaCaja(user.nombre, result.sucursales[0].nombre);
+                        }
+                    } else {
+                        alert('Código inválido. Intente nuevamente.');
+                    }
+                } catch (error) {
+                    console.error('Error en verificación 2FA:', error);
+                    alert('Error al verificar el código. Intente nuevamente.');
+                }
+            });
+            
+            // Manejador para la selección de sucursal
+            document.getElementById('confirmarSucursal').addEventListener('click', () => {
+                const sucursalSeleccionada = document.querySelector('.sucursal-item.active');
+                
+                if (sucursalSeleccionada) {
+                    const sucursalId = sucursalSeleccionada.getAttribute('data-id');
+                    const sucursalNombre = sucursalSeleccionada.querySelector('.sucursal-name').textContent;
+                    
+                    // Guardar sucursal seleccionada
+                    sessionStorage.setItem('currentSucursal', JSON.stringify({
+                        id: sucursalId,
+                        nombre: sucursalNombre
+                    }));
+                    
+                    // Cerrar modal de sucursales
+                    document.getElementById('sucursalModal').style.display = 'none';
+                    
+                    // Mostrar modal de apertura de caja
+                    const user = JSON.parse(sessionStorage.getItem('currentUser'));
+                    mostrarAperturaCaja(user.nombre, sucursalNombre);
+                } else {
+                    alert('Por favor seleccione una sucursal');
+                }
+            });
+            
+            // Manejador para la apertura de caja
+            document.getElementById('aperturaForm').addEventListener('submit', async (e) => {
+                e.preventDefault();
+                
+                const montoInicial = document.getElementById('montoInicial').value;
+                const user = JSON.parse(sessionStorage.getItem('currentUser'));
+                const sucursal = JSON.parse(sessionStorage.getItem('currentSucursal'));
+                
+                try {
+                    // Registrar apertura de caja
+                    const resultado = await window.electronAPI.abrirCaja({
+                        usuarioId: user.id,
+                        sucursalId: sucursal.id,
+                        montoInicial: parseFloat(montoInicial),
+                        fecha: new Date().toISOString()
+                    });
+                    
+                    if (resultado.success) {
+                        // Guardar ID de la caja abierta
+                        sessionStorage.setItem('cajaActual', resultado.cajaId);
+                        
+                        // Redirigir al dashboard
+                        window.location.href = '../index.html';
+                    } else {
+                        alert('Error al abrir caja: ' + resultado.message);
+                    }
+                } catch (error) {
+                    console.error('Error al abrir caja:', error);
+                    
+                    if (!navigator.onLine) {
+                        // Modo offline: guardar localmente para sincronizar después
+                        const aperturaCaja = {
+                            usuarioId: user.id,
+                            sucursalId: sucursal.id,
+                            montoInicial: parseFloat(montoInicial),
+                            fecha: new Date().toISOString(),
+                            pendienteSincronizacion: true
+                        };
+                        
+                        // Guardar en IndexedDB a través de la API de Electron
+                        await window.electronAPI.guardarAperturaCajaOffline(aperturaCaja);
+                        sessionStorage.setItem('cajaActual', 'offline_' + Date.now());
+                        window.location.href = '../index.html';
+                    } else {
+                        alert('Error al comunicarse con el servidor. Intente nuevamente.');
+                    }
+                }
+            });
+        });
+
+        // Función para mostrar el selector de sucursales
+        function mostrarSelectorSucursales(sucursales) {
+            const listaSucursales = document.getElementById('sucursalList');
+            listaSucursales.innerHTML = '';
+            
+            sucursales.forEach(sucursal => {
+                const item = document.createElement('div');
+                item.classList.add('sucursal-item');
+                item.setAttribute('data-id', sucursal.id);
+                
+                item.innerHTML = `
+                    <div class="sucursal-name">${sucursal.nombre}</div>
+                    <div class="sucursal-address">${sucursal.direccion || ''}</div>
+                `;
+                
+                item.addEventListener('click', () => {
+                    // Desactivar selección anterior
+                    const itemActivo = document.querySelector('.sucursal-item.active');
+                    if (itemActivo) {
+                        itemActivo.classList.remove('active');
+                    }
+                    
+                    // Activar el seleccionado
+                    item.classList.add('active');
+                });
+                
+                listaSucursales.appendChild(item);
+            });
+            
+            // Mostrar el modal
+            document.getElementById('sucursalModal').style.display = 'flex';
+        }
+
+        // Función para mostrar el modal de apertura de caja
+        function mostrarAperturaCaja(usuario, sucursal) {
+            document.getElementById('usuarioActual').textContent = usuario;
+            document.getElementById('sucursalActual').textContent = sucursal;
+            document.getElementById('aperturaModal').style.display = 'flex';
+        }
+
+        // Función para autenticación offline
+        async function autenticarOffline(username, password) {
+            try {
+                const resultado = await window.electronAPI.loginOffline(username, password);
+                
+                if (resultado.success) {
+                    // Usuario autenticado correctamente en modo offline
+                    sessionStorage.setItem('currentUser', JSON.stringify(resultado.user));
+                    sessionStorage.setItem('modoOffline', 'true');
+                    
+                    if (resultado.multipleSucursales) {
+                        mostrarSelectorSucursales(resultado.sucursales);
+                    } else {
+                        sessionStorage.setItem('currentSucursal', JSON.stringify(resultado.sucursales[0]));
+                        mostrarAperturaCaja(resultado.user.nombre, resultado.sucursales[0].nombre);
+                    }
+                } else {
+                    document.getElementById('errorMessage').textContent = 'Error de autenticación en modo offline.';
+                    document.getElementById('errorMessage').style.display = 'block';
+                }
+            } catch (error) {
+                console.error('Error de autenticación offline:', error);
+                document.getElementById('errorMessage').textContent = 'No se puede acceder en modo offline.';
+                document.getElementById('errorMessage').style.display = 'block';
+            }
+        }
+    </script>
+
+    <!-- Cargar el preload de Electron -->
+    <script src="../../preload.js"></script>
+</body>
+</html>

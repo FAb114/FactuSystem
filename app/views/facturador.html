@@ -1,0 +1,1456 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>FactuSystem - Facturador</title>
+    <link rel="stylesheet" href="../assets/css/main.css">
+    <link rel="stylesheet" href="../assets/css/components/facturador.css">
+    <link rel="stylesheet" href="../assets/css/components/modal.css">
+    <!-- Font Awesome para íconos -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+</head>
+<body class="facturador-page">
+    <div class="facturador-container">
+        <!-- Encabezado del Facturador -->
+        <div class="facturador-header">
+            <div class="header-title">
+                <h1>Facturador</h1>
+                <span class="subtitle" id="sucursal-actual">Sucursal: </span>
+                <span class="subtitle" id="usuario-actual">Usuario: </span>
+            </div>
+            <div class="header-actions">
+                <button class="btn-action" id="btn-minimize" title="Minimizar">
+                    <i class="fas fa-window-minimize"></i>
+                </button>
+                <button class="btn-action" id="btn-close" title="Cerrar">
+                    <i class="fas fa-times"></i>
+                </button>
+            </div>
+        </div>
+
+        <!-- Sección de Cliente -->
+        <div class="cliente-section">
+            <div class="section-title">
+                <h2><i class="fas fa-user-tag"></i> Datos del Cliente</h2>
+            </div>
+            <div class="cliente-form">
+                <div class="form-group">
+                    <label for="cliente-nombre">Cliente:</label>
+                    <div class="input-with-action">
+                        <input type="text" id="cliente-nombre" placeholder="Consumidor Final o F1 para buscar" autofocus>
+                        <button class="btn-secondary" id="btn-buscar-cliente" title="Buscar Cliente (F1)">
+                            <i class="fas fa-search"></i>
+                        </button>
+                    </div>
+                </div>
+                <div class="cliente-info" id="cliente-info-container">
+                    <!-- Esta sección se completará dinámicamente -->
+                    <div class="info-item" id="cliente-documento">
+                        <span class="label">CUIT/DNI:</span>
+                        <span class="value">-</span>
+                    </div>
+                    <div class="info-item" id="cliente-direccion">
+                        <span class="label">Dirección:</span>
+                        <span class="value">-</span>
+                    </div>
+                    <div class="info-item" id="cliente-iva">
+                        <span class="label">Cond. IVA:</span>
+                        <span class="value">-</span>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Sección de Comprobante -->
+        <div class="comprobante-section">
+            <div class="section-title">
+                <h2><i class="fas fa-file-invoice"></i> Tipo de Comprobante</h2>
+            </div>
+            <div class="comprobante-form">
+                <div class="form-group">
+                    <label for="tipo-comprobante">Tipo:</label>
+                    <select id="tipo-comprobante">
+                        <option value="FACTURA_B">Factura B</option>
+                        <option value="FACTURA_A">Factura A</option>
+                        <option value="FACTURA_C">Factura C</option>
+                        <option value="FACTURA_X">Factura X</option>
+                        <option value="PRESUPUESTO">Presupuesto</option>
+                    </select>
+                </div>
+                <div class="form-group">
+                    <label for="numero-comprobante">Número:</label>
+                    <input type="text" id="numero-comprobante" readonly>
+                </div>
+                <div class="form-group">
+                    <label for="fecha-comprobante">Fecha:</label>
+                    <input type="date" id="fecha-comprobante">
+                </div>
+            </div>
+        </div>
+
+        <!-- Sección de Ingreso de Productos -->
+        <div class="productos-section">
+            <div class="section-title">
+                <h2><i class="fas fa-barcode"></i> Productos</h2>
+            </div>
+            <div class="productos-form">
+                <div class="form-group">
+                    <label for="producto-codigo">Código o Nombre:</label>
+                    <div class="input-with-action">
+                        <input type="text" id="producto-codigo" placeholder="Escanee o ingrese código/nombre o F1 para buscar">
+                        <button class="btn-secondary" id="btn-buscar-producto" title="Buscar Producto (F1)">
+                            <i class="fas fa-search"></i>
+                        </button>
+                    </div>
+                </div>
+                <div class="form-row">
+                    <div class="form-group col-4">
+                        <label for="producto-cantidad">Cantidad:</label>
+                        <input type="number" id="producto-cantidad" value="1" min="0.01" step="0.01">
+                    </div>
+                    <div class="form-group col-4">
+                        <label for="producto-precio">Precio Unit:</label>
+                        <input type="number" id="producto-precio" readonly>
+                    </div>
+                    <div class="form-group col-4">
+                        <label for="producto-descuento">Desc %:</label>
+                        <input type="text" id="producto-descuento" value="0">
+                    </div>
+                </div>
+                <div class="form-actions">
+                    <button class="btn-primary" id="btn-agregar-producto">
+                        <i class="fas fa-plus-circle"></i> Agregar
+                    </button>
+                    <button class="btn-secondary" id="btn-limpiar-producto">
+                        <i class="fas fa-eraser"></i> Limpiar
+                    </button>
+                </div>
+            </div>
+
+            <!-- Tabla de productos agregados -->
+            <div class="productos-tabla-container">
+                <table class="productos-tabla" id="tabla-productos">
+                    <thead>
+                        <tr>
+                            <th>Código</th>
+                            <th>Producto</th>
+                            <th>Cantidad</th>
+                            <th>Precio Unit.</th>
+                            <th>Descuento</th>
+                            <th>Subtotal</th>
+                            <th>Acciones</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        <!-- Aquí se agregarán dinámicamente los productos -->
+                    </tbody>
+                </table>
+            </div>
+
+            <!-- Imagen de producto (aparece brevemente al agregar) -->
+            <div class="producto-imagen-popup" id="producto-imagen-popup">
+                <img src="" alt="Producto" id="producto-imagen">
+            </div>
+        </div>
+
+        <!-- Sección de Descuentos/Recargos -->
+        <div class="descuentos-section">
+            <div class="form-row">
+                <div class="form-group col-6">
+                    <label for="descuento-global">Descuento/Recargo Global (%):</label>
+                    <div class="input-with-info">
+                        <input type="text" id="descuento-global" placeholder="-10 para descuento, +5 para recargo">
+                        <span class="input-info">Ej: -10 para 10% descuento</span>
+                    </div>
+                </div>
+                <div class="form-group col-6">
+                    <label for="aplicar-iva">IVA:</label>
+                    <div class="toggle-switch">
+                        <input type="checkbox" id="aplicar-iva" checked>
+                        <label for="aplicar-iva">Aplicar IVA</label>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Sección de Totales -->
+        <div class="totales-section">
+            <div class="totales-container">
+                <div class="totales-item">
+                    <span class="label">Subtotal:</span>
+                    <span class="value" id="subtotal">$0.00</span>
+                </div>
+                <div class="totales-item">
+                    <span class="label">Descuento/Recargo:</span>
+                    <span class="value" id="total-descuento">$0.00</span>
+                </div>
+                <div class="totales-item">
+                    <span class="label">IVA:</span>
+                    <span class="value" id="total-iva">$0.00</span>
+                </div>
+                <div class="totales-item total-principal">
+                    <span class="label">TOTAL:</span>
+                    <span class="value" id="total-factura">$0.00</span>
+                </div>
+            </div>
+        </div>
+
+        <!-- Sección de Métodos de Pago -->
+        <div class="pagos-section">
+            <div class="section-title">
+                <h2><i class="fas fa-money-bill-wave"></i> Método de Pago</h2>
+            </div>
+            <div class="metodos-pago">
+                <button class="metodo-pago-btn" id="btn-pago-efectivo">
+                    <i class="fas fa-money-bill-alt"></i>
+                    <span>Efectivo</span>
+                </button>
+                <button class="metodo-pago-btn" id="btn-pago-tarjeta">
+                    <i class="fas fa-credit-card"></i>
+                    <span>Tarjeta</span>
+                </button>
+                <button class="metodo-pago-btn" id="btn-pago-transferencia">
+                    <i class="fas fa-university"></i>
+                    <span>Transferencia</span>
+                </button>
+                <button class="metodo-pago-btn" id="btn-pago-qr">
+                    <i class="fas fa-qrcode"></i>
+                    <span>QR</span>
+                </button>
+                <button class="metodo-pago-btn" id="btn-pago-mixto">
+                    <i class="fas fa-random"></i>
+                    <span>Pago Mixto</span>
+                </button>
+            </div>
+            <!-- Contenedor para mostrar los medios de pago seleccionados -->
+            <div class="pagos-seleccionados" id="pagos-seleccionados">
+                <!-- Los pagos seleccionados se mostrarán aquí dinámicamente -->
+            </div>
+        </div>
+
+        <!-- Sección de Facturación Electrónica -->
+        <div class="facturacion-electronica-section">
+            <button class="btn-primary btn-arca" id="btn-facturar-arca">
+                <i class="fas fa-receipt"></i> Facturar con ARCA (AFIP)
+            </button>
+            <div class="estado-facturacion" id="estado-facturacion">
+                <!-- El estado de la facturación se mostrará aquí -->
+            </div>
+        </div>
+
+        <!-- Sección de Acciones Finales -->
+        <div class="acciones-section">
+            <button class="btn-secondary btn-large" id="btn-cancelar">
+                <i class="fas fa-times-circle"></i> Cancelar
+            </button>
+            <button class="btn-success btn-large" id="btn-generar-factura">
+                <i class="fas fa-check-circle"></i> <span id="btn-facturar-texto">Generar Factura</span>
+            </button>
+        </div>
+    </div>
+
+    <!-- Modales -->
+    <!-- Modal para buscar cliente -->
+    <div class="modal" id="modal-cliente">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h2>Buscar Cliente</h2>
+                <button class="modal-close" id="modal-cliente-close">
+                    <i class="fas fa-times"></i>
+                </button>
+            </div>
+            <div class="modal-body">
+                <div class="form-group">
+                    <label for="buscar-cliente-texto">Buscar:</label>
+                    <input type="text" id="buscar-cliente-texto" placeholder="Nombre, DNI o CUIT" autocomplete="off">
+                </div>
+                <div class="tabla-container">
+                    <table class="tabla-busqueda" id="tabla-clientes">
+                        <thead>
+                            <tr>
+                                <th>DNI/CUIT</th>
+                                <th>Nombre</th>
+                                <th>Cond. IVA</th>
+                                <th>Acciones</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            <!-- Se cargará dinámicamente -->
+                        </tbody>
+                    </table>
+                </div>
+                <div class="modal-actions">
+                    <button class="btn-primary" id="btn-nuevo-cliente">
+                        <i class="fas fa-user-plus"></i> Nuevo Cliente
+                    </button>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Modal para nuevo cliente -->
+    <div class="modal" id="modal-nuevo-cliente">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h2>Nuevo Cliente</h2>
+                <button class="modal-close" id="modal-nuevo-cliente-close">
+                    <i class="fas fa-times"></i>
+                </button>
+            </div>
+            <div class="modal-body">
+                <div class="form-row">
+                    <div class="form-group col-6">
+                        <label for="nuevo-cliente-tipo-doc">Tipo:</label>
+                        <select id="nuevo-cliente-tipo-doc">
+                            <option value="DNI">DNI</option>
+                            <option value="CUIT">CUIT</option>
+                            <option value="CUIL">CUIL</option>
+                            <option value="PASAPORTE">Pasaporte</option>
+                        </select>
+                    </div>
+                    <div class="form-group col-6">
+                        <label for="nuevo-cliente-documento">Número:</label>
+                        <input type="text" id="nuevo-cliente-documento" placeholder="Sin guiones">
+                    </div>
+                </div>
+                <div class="form-group">
+                    <label for="nuevo-cliente-nombre">Nombre y Apellido / Razón Social:</label>
+                    <input type="text" id="nuevo-cliente-nombre">
+                </div>
+                <div class="form-group">
+                    <label for="nuevo-cliente-direccion">Dirección:</label>
+                    <input type="text" id="nuevo-cliente-direccion">
+                </div>
+                <div class="form-group">
+                    <label for="nuevo-cliente-iva">Condición frente al IVA:</label>
+                    <select id="nuevo-cliente-iva">
+                        <option value="CONSUMIDOR_FINAL">Consumidor Final</option>
+                        <option value="RESPONSABLE_INSCRIPTO">Responsable Inscripto</option>
+                        <option value="MONOTRIBUTO">Monotributista</option>
+                        <option value="EXENTO">Exento</option>
+                    </select>
+                </div>
+                <div class="form-row">
+                    <div class="form-group col-6">
+                        <label for="nuevo-cliente-telefono">Teléfono:</label>
+                        <input type="text" id="nuevo-cliente-telefono">
+                    </div>
+                    <div class="form-group col-6">
+                        <label for="nuevo-cliente-email">Email:</label>
+                        <input type="email" id="nuevo-cliente-email">
+                    </div>
+                </div>
+                <div class="form-group">
+                    <label for="nuevo-cliente-sucursal">Sucursal Asignada:</label>
+                    <select id="nuevo-cliente-sucursal">
+                        <!-- Se cargará dinámicamente -->
+                    </select>
+                </div>
+                <div class="modal-actions">
+                    <button class="btn-secondary" id="btn-cancelar-nuevo-cliente">Cancelar</button>
+                    <button class="btn-primary" id="btn-guardar-nuevo-cliente">Guardar Cliente</button>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Modal para buscar producto -->
+    <div class="modal" id="modal-producto">
+        <div class="modal-content modal-lg">
+            <div class="modal-header">
+                <h2>Buscar Producto</h2>
+                <button class="modal-close" id="modal-producto-close">
+                    <i class="fas fa-times"></i>
+                </button>
+            </div>
+            <div class="modal-body">
+                <div class="form-row">
+                    <div class="form-group col-6">
+                        <label for="buscar-producto-texto">Buscar:</label>
+                        <input type="text" id="buscar-producto-texto" placeholder="Código, nombre o descripción">
+                    </div>
+                    <div class="form-group col-6">
+                        <label for="filtro-categoria">Categoría:</label>
+                        <select id="filtro-categoria">
+                            <option value="">Todas las categorías</option>
+                            <!-- Se cargará dinámicamente -->
+                        </select>
+                    </div>
+                </div>
+                <div class="productos-grid" id="productos-grid">
+                    <!-- Se cargará dinámicamente -->
+                </div>
+                <div class="tabla-container">
+                    <table class="tabla-busqueda" id="tabla-productos-busqueda">
+                        <thead>
+                            <tr>
+                                <th>Código</th>
+                                <th>Producto</th>
+                                <th>Precio</th>
+                                <th>Stock</th>
+                                <th>Acciones</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            <!-- Se cargará dinámicamente -->
+                        </tbody>
+                    </table>
+                </div>
+                <div class="modal-actions">
+                    <button class="btn-secondary" id="btn-cancelar-buscar-producto">Cancelar</button>
+                    <button class="btn-primary" id="btn-nuevo-producto">
+                        <i class="fas fa-plus-circle"></i> Nuevo Producto
+                    </button>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Modal para editar cantidad/precio -->
+    <div class="modal" id="modal-editar-producto">
+        <div class="modal-content modal-sm">
+            <div class="modal-header">
+                <h2>Editar Producto</h2>
+                <button class="modal-close" id="modal-editar-producto-close">
+                    <i class="fas fa-times"></i>
+                </button>
+            </div>
+            <div class="modal-body">
+                <h3 id="editar-producto-nombre">Nombre del Producto</h3>
+                <input type="hidden" id="editar-producto-index">
+                <div class="form-group">
+                    <label for="editar-producto-cantidad">Cantidad:</label>
+                    <input type="number" id="editar-producto-cantidad" min="0.01" step="0.01">
+                </div>
+                <div class="form-group">
+                    <label for="editar-producto-precio">Precio Unitario:</label>
+                    <input type="number" id="editar-producto-precio" step="0.01">
+                </div>
+                <div class="form-group">
+                    <label for="editar-producto-descuento">Descuento (%):</label>
+                    <input type="number" id="editar-producto-descuento" min="0" max="100">
+                </div>
+                <div class="modal-actions">
+                    <button class="btn-secondary" id="btn-cancelar-editar-producto">Cancelar</button>
+                    <button class="btn-primary" id="btn-guardar-editar-producto">Guardar Cambios</button>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Modal para pago en efectivo -->
+    <div class="modal" id="modal-pago-efectivo">
+        <div class="modal-content modal-sm">
+            <div class="modal-header">
+                <h2>Pago en Efectivo</h2>
+                <button class="modal-close" id="modal-pago-efectivo-close">
+                    <i class="fas fa-times"></i>
+                </button>
+            </div>
+            <div class="modal-body">
+                <div class="form-group">
+                    <label for="pago-efectivo-total">Total a Pagar:</label>
+                    <input type="text" id="pago-efectivo-total" readonly>
+                </div>
+                <div class="form-group">
+                    <label for="pago-efectivo-recibido">Monto Recibido:</label>
+                    <input type="number" id="pago-efectivo-recibido" step="0.01">
+                </div>
+                <div class="form-group">
+                    <label for="pago-efectivo-cambio">Cambio a Devolver:</label>
+                    <input type="text" id="pago-efectivo-cambio" readonly>
+                </div>
+                <div class="modal-actions">
+                    <button class="btn-secondary" id="btn-cancelar-pago-efectivo">Cancelar</button>
+                    <button class="btn-primary" id="btn-confirmar-pago-efectivo">Confirmar Pago</button>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Modal para pago con tarjeta -->
+    <div class="modal" id="modal-pago-tarjeta">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h2>Pago con Tarjeta</h2>
+                <button class="modal-close" id="modal-pago-tarjeta-close">
+                    <i class="fas fa-times"></i>
+                </button>
+            </div>
+            <div class="modal-body">
+                <div class="form-group">
+                    <label for="pago-tarjeta-tipo">Tipo de Tarjeta:</label>
+                    <select id="pago-tarjeta-tipo">
+                        <option value="DEBITO">Débito</option>
+                        <option value="CREDITO">Crédito</option>
+                    </select>
+                </div>
+                <div class="form-group" id="tarjeta-cuotas-container">
+                    <label for="pago-tarjeta-cuotas">Cantidad de Cuotas:</label>
+                    <select id="pago-tarjeta-cuotas">
+                        <option value="1">1 cuota</option>
+                        <option value="3">3 cuotas</option>
+                        <option value="6">6 cuotas</option>
+                        <option value="12">12 cuotas</option>
+                        <option value="18">18 cuotas</option>
+                    </select>
+                </div>
+                <div class="form-group">
+                    <label for="pago-tarjeta-banco">Banco:</label>
+                    <select id="pago-tarjeta-banco">
+                        <option value="VISA">Visa</option>
+                        <option value="MASTERCARD">Mastercard</option>
+                        <option value="AMEX">American Express</option>
+                        <option value="NARANJA">Naranja</option>
+                        <option value="GALICIA">Galicia</option>
+                        <option value="BBVA">BBVA</option>
+                    </select>
+                </div>
+                <div class="form-group">
+                    <label for="pago-tarjeta-titular">Titular:</label>
+                    <input type="text" id="pago-tarjeta-titular">
+                </div>
+                <div class="form-row">
+                    <div class="form-group col-6">
+                        <label for="pago-tarjeta-ultimos">Últimos 4 dígitos:</label>
+                        <input type="text" id="pago-tarjeta-ultimos" maxlength="4" pattern="\d{4}">
+                    </div>
+                    <div class="form-group col-6">
+                        <label for="pago-tarjeta-autorizacion">Código Autorización:</label>
+                        <input type="text" id="pago-tarjeta-autorizacion">
+                    </div>
+                </div>
+                <div class="form-group">
+                    <label for="pago-tarjeta-monto">Monto:</label>
+                    <input type="number" id="pago-tarjeta-monto" step="0.01">
+                </div>
+                <div class="modal-actions">
+                    <button class="btn-secondary" id="btn-cancelar-pago-tarjeta">Cancelar</button>
+                    <button class="btn-primary" id="btn-confirmar-pago-tarjeta">Confirmar Pago</button>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Modal para pago por transferencia -->
+    <div class="modal" id="modal-pago-transferencia">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h2>Pago por Transferencia</h2>
+                <button class="modal-close" id="modal-pago-transferencia-close">
+                    <i class="fas fa-times"></i>
+                </button>
+            </div>
+            <div class="modal-body">
+                <div class="form-group">
+                    <label for="pago-transferencia-banco">Banco:</label>
+                    <select id="pago-transferencia-banco">
+                        <option value="GALICIA">Galicia</option>
+                        <option value="GETNET">Getnet</option>
+                        <option value="BBVA">BBVA</option>
+                        <option value="PAYWAY">Payway</option>
+                        <option value="MERCADOPAGO">Mercado Pago</option>
+                        <option value="OTRO">Otro</option>
+                    </select>
+                </div>
+                <div class="form-group">
+                    <label for="pago-transferencia-comprobante">N° de Comprobante:</label>
+                    <input type="text" id="pago-transferencia-comprobante">
+                </div>
+                <div class="form-group">
+                    <label for="pago-transferencia-fecha">Fecha:</label>
+                    <input type="date" id="pago-transferencia-fecha">
+                </div>
+                <div class="form-group">
+                    <label for="pago-transferencia-monto">Monto:</label>
+                    <input type="number" id="pago-transferencia-monto" step="0.01">
+                </div>
+                <div class="modal-actions">
+                    <button class="btn-secondary" id="btn-cancelar-pago-transferencia">Cancelar</button>
+                    <button class="btn-primary" id="btn-confirmar-pago-transferencia">Confirmar Pago</button>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Modal para pago con QR -->
+    <div class="modal" id="modal-pago-qr">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h2>Pago con QR (Mercado Pago)</h2>
+                <button class="modal-close" id="modal-pago-qr-close">
+                    <i class="fas fa-times"></i>
+                </button>
+            </div>
+            <div class="modal-body">
+                <div class="qr-container">
+                    <img src="" alt="QR de Mercado Pago" id="mercadopago-qr">
+                    <div class="qr-spinner" id="qr-loading">
+                        <i class="fas fa-spinner fa-spin"></i>
+                        <p>Generando código QR...</p>
+                    </div>
+                </div>
+                <div class="pago-qr-status" id="pago-qr-status">
+                    <p>Esperando pago... <i class="fas fa-spinner fa-spin"></i></p>
+                </div>
+                <div class="form-group">
+                    <label for="pago-qr-monto">Monto a Pagar:</label>
+                    <input type="number" id="pago-qr-monto" step="0.01" readonly>
+                </div>
+                <div class="modal-actions">
+                    <button class="btn-secondary" id="btn-cancelar-pago-qr">Cancelar</button>
+                    <button class="btn-primary" id="btn-confirmar-pago-qr" disabled>
+                        Confirmar Pago
+                    </button>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Modal para pago mixto -->
+    <div class="modal" id="modal-pago-mixto">
+        <div class="modal-content modal-lg">
+            <div class="modal-header">
+                <h2>Pago Mixto</h2>
+                <button class="modal-close" id="modal-pago-mixto-close">
+                    <i class="fas fa-times"></i>
+                </button>
+            </div>
+            <div class="modal-body">
+                <div class="form-group">
+                    <label for="pago-mixto-total">Total a Pagar:</label>
+                    <input type="text" id="pago-mixto-total" readonly>
+                </div>
+                <div class="form-group">
+                    <label for="pago-mixto-pendiente">Pendiente:</label>
+                    <input type="text" id="pago-mixto-pendiente" readonly>
+                </div>
+                
+                <div class="pagos-agregados">
+                    <h3>Medios de Pago Agregados</h3>
+                    <div class="tabla-container">
+                        <table class="tabla-pagos-mixtos" id="tabla-pagos-mixtos">
+                            <thead>
+                                <tr>
+                                    <th>Método</th>
+                                    <th>Detalles</th>
+                                    <th>Monto</th>
+                                    <th>Acciones</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                <!-- Se cargará dinámicamente -->
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
+                
+                <div class="agregar-metodo">
+                    <h3>Agregar Método de Pago</h3>
+                    <div class="metodos-pago-mixto">
+                        <button class="metodo-pago-btn btn-sm" id="btn-mixto-efectivo">
+                            <i class="fas fa-money-bill-alt"></i>
+                            <span>Efectivo</span>
+                        </button>
+                        <button class="metodo-pago-btn btn-sm" id="btn-mixto-tarjeta">
+                            <i class="fas fa-credit-card"></i>
+                            <span>Tarjeta</span>
+                        </button>
+                        <button class="metodo-pago-btn btn-sm" id="btn-mixto-transferencia">
+                            <i class="fas fa-university"></i>
+                            <span>Transferencia</span>
+                        </button>
+                        <button class="metodo-pago-btn btn-sm" id="btn-mixto-qr">
+                            <i class="fas fa-qrcode"></i>
+                            <span>QR</span>
+                        </button>
+                    </div>
+                </div>
+                
+                <div class="modal-actions">
+                    <button class="btn-secondary" id="btn-cancelar-pago-mixto">Cancelar</button>
+                    <button class="btn-primary" id="btn-confirmar-pago-mixto">Confirmar Todos los Pagos</button>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Modal para agregar efectivo en pago mixto -->
+    <div class="modal" id="modal-mixto-efectivo">
+        <div class="modal-content modal-sm">
+            <div class="modal-header">
+                <h2>Agregar Pago en Efectivo</h2>
+                <button class="modal-close" id="modal-mixto-efectivo-close">
+                    <i class="fas fa-times"></i>
+                </button>
+            </div>
+            <div class="modal-body">
+                <div class="form-group">
+                    <label for="mixto-efectivo-monto">Monto:</label>
+                    <input type="number" id="mixto-efectivo-monto" step="0.01">
+                </div>
+                <div class="modal-actions">
+                    <button class="btn-secondary" id="btn-cancelar-mixto-efectivo">Cancelar</button>
+                    <button class="btn-primary" id="btn-agregar-mixto-efectivo">Agregar</button>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Modal para agregar tarjeta en pago mixto -->
+    <div class="modal" id="modal-mixto-tarjeta">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h2>Agregar Pago con Tarjeta</h2>
+                <button class="modal-close" id="modal-mixto-tarjeta-close">
+                    <i class="fas fa-times"></i>
+                </button>
+            </div>
+            <div class="modal-body">
+                <div class="form-group">
+                    <label for="mixto-tarjeta-tipo">Tipo de Tarjeta:</label>
+                    <select id="mixto-tarjeta-tipo">
+                        <option value="DEBITO">Débito</option>
+                        <option value="CREDITO">Crédito</option>
+                    </select>
+                </div>
+                <div class="form-group" id="mixto-tarjeta-cuotas-container">
+                    <label for="mixto-tarjeta-cuotas">Cantidad de Cuotas:</label>
+                    <select id="mixto-tarjeta-cuotas">
+                        <option value="1">1 cuota</option>
+                        <option value="3">3 cuotas</option>
+                        <option value="6">6 cuotas</option>
+                        <option value="12">12 cuotas</option>
+                        <option value="18">18 cuotas</option>
+                    </select>
+                </div>
+                <div class="form-group">
+                    <label for="mixto-tarjeta-banco">Banco:</label>
+                    <select id="mixto-tarjeta-banco">
+                        <option value="VISA">Visa</option>
+                        <option value="MASTERCARD">Mastercard</option>
+                        <option value="AMEX">American Express</option>
+                        <option value="NARANJA">Naranja</option>
+                        <option value="GALICIA">Galicia</option>
+                        <option value="BBVA">BBVA</option>
+                    </select>
+                </div>
+                <div class="form-group">
+                    <label for="mixto-tarjeta-titular">Titular:</label>
+                    <input type="text" id="mixto-tarjeta-titular">
+                </div>
+                <div class="form-row">
+                    <div class="form-group col-6">
+                        <label for="mixto-tarjeta-ultimos">Últimos 4 dígitos:</label>
+                        <input type="text" id="mixto-tarjeta-ultimos" maxlength="4" pattern="\d{4}">
+                    </div>
+                    <div class="form-group col-6">
+                        <label for="mixto-tarjeta-autorizacion">Código Autorización:</label>
+                        <input type="text" id="mixto-tarjeta-autorizacion">
+                    </div>
+                </div>
+                <div class="form-group">
+                    <label for="mixto-tarjeta-monto">Monto:</label>
+                    <input type="number" id="mixto-tarjeta-monto" step="0.01">
+                </div>
+                <div class="modal-actions">
+                    <button class="btn-secondary" id="btn-cancelar-mixto-tarjeta">Cancelar</button>
+                    <button class="btn-primary" id="btn-agregar-mixto-tarjeta">Agregar</button>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Modal para agregar transferencia en pago mixto -->
+    <div class="modal" id="modal-mixto-transferencia">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h2>Agregar Pago por Transferencia</h2>
+                <button class="modal-close" id="modal-mixto-transferencia-close">
+                    <i class="fas fa-times"></i>
+                </button>
+            </div>
+            <div class="modal-body">
+                <div class="form-group">
+                    <label for="mixto-transferencia-banco">Banco:</label>
+                    <select id="mixto-transferencia-banco">
+                        <option value="GALICIA">Galicia</option>
+                        <option value="GETNET">Getnet</option>
+                        <option value="BBVA">BBVA</option>
+                        <option value="PAYWAY">Payway</option>
+                        <option value="MERCADOPAGO">Mercado Pago</option>
+                        <option value="OTRO">Otro</option>
+                    </select>
+                </div>
+                <div class="form-group">
+                    <label for="mixto-transferencia-comprobante">N° de Comprobante:</label>
+                    <input type="text" id="mixto-transferencia-comprobante">
+                </div>
+                <div class="form-group">
+                    <label for="mixto-transferencia-fecha">Fecha:</label>
+                    <input type="date" id="mixto-transferencia-fecha">
+                </div>
+                <div class="form-group">
+                    <label for="mixto-transferencia-monto">Monto:</label>
+                    <input type="number" id="mixto-transferencia-monto" step="0.01">
+                </div>
+                <div class="modal-actions">
+                    <button class="btn-secondary" id="btn-cancelar-mixto-transferencia">Cancelar</button>
+                    <button class="btn-primary" id="btn-agregar-mixto-transferencia">Agregar</button>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Modal para agregar QR en pago mixto -->
+    <div class="modal" id="modal-mixto-qr">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h2>Agregar Pago con QR</h2>
+                <button class="modal-close" id="modal-mixto-qr-close">
+                    <i class="fas fa-times"></i>
+                </button>
+            </div>
+            <div class="modal-body">
+                <div class="qr-container">
+                    <img src="" alt="QR de Mercado Pago" id="mixto-mercadopago-qr">
+                    <div class="qr-spinner" id="mixto-qr-loading">
+                        <i class="fas fa-spinner fa-spin"></i>
+                        <p>Generando código QR...</p>
+                    </div>
+                </div>
+                <div class="pago-qr-status" id="mixto-pago-qr-status">
+                    <p>Esperando pago... <i class="fas fa-spinner fa-spin"></i></p>
+                </div>
+                <div class="form-group">
+                    <label for="mixto-qr-monto">Monto a Pagar:</label>
+                    <input type="number" id="mixto-qr-monto" step="0.01">
+                </div>
+                <div class="modal-actions">
+                    <button class="btn-secondary" id="btn-cancelar-mixto-qr">Cancelar</button>
+                    <button class="btn-primary" id="btn-agregar-mixto-qr" disabled>Agregar</button>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Modal para facturación exitosa -->
+    <div class="modal" id="modal-factura-exito">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h2>Factura Generada Exitosamente</h2>
+                <button class="modal-close" id="modal-factura-exito-close">
+                    <i class="fas fa-times"></i>
+                </button>
+            </div>
+            <div class="modal-body">
+                <div class="success-message">
+                    <i class="fas fa-check-circle"></i>
+                    <p>La factura se ha generado correctamente.</p>
+                    <div class="factura-detalles" id="factura-exito-detalles">
+                        <!-- Se completará dinámicamente -->
+                    </div>
+                </div>
+                <h3>¿Qué desea hacer con esta factura?</h3>
+                <div class="acciones-factura">
+                    <button class="btn-factura-accion" id="btn-imprimir-ticket">
+                        <i class="fas fa-receipt"></i>
+                        <span>Imprimir Ticket</span>
+                    </button>
+                    <button class="btn-factura-accion" id="btn-imprimir-a4">
+                        <i class="fas fa-print"></i>
+                        <span>Imprimir A4</span>
+                    </button>
+                    <button class="btn-factura-accion" id="btn-enviar-email">
+                        <i class="fas fa-envelope"></i>
+                        <span>Enviar por Email</span>
+                    </button>
+                    <button class="btn-factura-accion" id="btn-enviar-whatsapp">
+                        <i class="fab fa-whatsapp"></i>
+                        <span>Enviar por WhatsApp</span>
+                    </button>
+                </div>
+                <div class="modal-actions">
+                    <button class="btn-primary" id="btn-nueva-factura">
+                        <i class="fas fa-plus-circle"></i> Nueva Factura
+                    </button>
+                    <button class="btn-secondary" id="btn-ver-factura">
+                        <i class="fas fa-eye"></i> Ver en Ventas
+                    </button>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Modal para enviar por email -->
+    <div class="modal" id="modal-enviar-email">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h2>Enviar Factura por Email</h2>
+                <button class="modal-close" id="modal-enviar-email-close">
+                    <i class="fas fa-times"></i>
+                </button>
+            </div>
+            <div class="modal-body">
+                <div class="form-group">
+                    <label for="email-destinatario">Email del Cliente:</label>
+                    <input type="email" id="email-destinatario">
+                </div>
+                <div class="form-group">
+                    <label for="email-asunto">Asunto:</label>
+                    <input type="text" id="email-asunto" value="Su factura de compra">
+                </div>
+                <div class="form-group">
+                    <label for="email-mensaje">Mensaje:</label>
+                    <textarea id="email-mensaje" rows="4">Estimado cliente, adjuntamos su factura. ¡Gracias por su compra!</textarea>
+                </div>
+                <div class="form-group">
+                    <label>Adjuntos:</label>
+                    <div class="email-adjuntos">
+                        <div class="email-adjunto">
+                            <i class="fas fa-file-pdf"></i>
+                            <span id="email-adjunto-nombre">Factura.pdf</span>
+                        </div>
+                    </div>
+                </div>
+                <div class="modal-actions">
+                    <button class="btn-secondary" id="btn-cancelar-email">Cancelar</button>
+                    <button class="btn-primary" id="btn-enviar-email-confirmar">
+                        <i class="fas fa-paper-plane"></i> Enviar Email
+                    </button>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Modal para enviar por WhatsApp -->
+    <div class="modal" id="modal-enviar-whatsapp">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h2>Enviar Factura por WhatsApp</h2>
+                <button class="modal-close" id="modal-enviar-whatsapp-close">
+                    <i class="fas fa-times"></i>
+                </button>
+            </div>
+            <div class="modal-body">
+                <div class="form-group">
+                    <label for="whatsapp-numero">Número de WhatsApp:</label>
+                    <div class="input-prefix">
+                        <span class="prefix">+</span>
+                        <input type="tel" id="whatsapp-numero" placeholder="549XXXXXXXXXX">
+                    </div>
+                </div>
+                <div class="form-group">
+                    <label for="whatsapp-mensaje">Mensaje:</label>
+                    <textarea id="whatsapp-mensaje" rows="4">Hola! Adjunto su factura de compra. Gracias por elegirnos.</textarea>
+                </div>
+                <div class="form-group">
+                    <label>Adjuntos:</label>
+                    <div class="whatsapp-adjuntos">
+                        <div class="whatsapp-adjunto">
+                            <i class="fas fa-file-pdf"></i>
+                            <span id="whatsapp-adjunto-nombre">Factura.pdf</span>
+                        </div>
+                    </div>
+                </div>
+                <div class="modal-actions">
+                    <button class="btn-secondary" id="btn-cancelar-whatsapp">Cancelar</button>
+                    <button class="btn-primary" id="btn-enviar-whatsapp-confirmar">
+                        <i class="fab fa-whatsapp"></i> Enviar WhatsApp
+                    </button>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Modal para AFIP/ARCA en proceso -->
+    <div class="modal" id="modal-arca-proceso">
+        <div class="modal-content modal-sm">
+            <div class="modal-header">
+                <h2>Facturación Electrónica</h2>
+            </div>
+            <div class="modal-body text-center">
+                <div class="arca-loading">
+                    <i class="fas fa-sync fa-spin fa-3x"></i>
+                    <p id="arca-mensaje-proceso">Conectando con ARCA...</p>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Modal para error AFIP/ARCA -->
+    <div class="modal" id="modal-arca-error">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h2>Error en Facturación Electrónica</h2>
+                <button class="modal-close" id="modal-arca-error-close">
+                    <i class="fas fa-times"></i>
+                </button>
+            </div>
+            <div class="modal-body">
+                <div class="error-message">
+                    <i class="fas fa-exclamation-triangle"></i>
+                    <p id="arca-mensaje-error">Ocurrió un error al comunicarse con AFIP.</p>
+                </div>
+                <div class="arca-error-detalles" id="arca-error-detalles">
+                    <!-- Se completará dinámicamente -->
+                </div>
+                <div class="modal-actions">
+                    <button class="btn-secondary" id="btn-cerrar-arca-error">Cerrar</button>
+                    <button class="btn-primary" id="btn-reintentar-arca">
+                        <i class="fas fa-sync"></i> Reintentar
+                    </button>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Modal para nota de crédito relacionada -->
+    <div class="modal" id="modal-nota-credito">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h2>Generar Nota de Crédito</h2>
+                <button class="modal-close" id="modal-nota-credito-close">
+                    <i class="fas fa-times"></i>
+                </button>
+            </div>
+            <div class="modal-body">
+                <div class="form-group">
+                    <label for="nota-credito-motivo">Motivo:</label>
+                    <select id="nota-credito-motivo">
+                        <option value="DEVOLUCION">Devolución de productos</option>
+                        <option value="DESCUENTO">Descuento posterior</option>
+                        <option value="ERROR">Error en facturación</option>
+                        <option value="ANULACION">Anulación de factura</option>
+                        <option value="OTRO">Otro motivo</option>
+                    </select>
+                </div>
+                <div class="form-group" id="nota-credito-otro-container" style="display:none;">
+                    <label for="nota-credito-otro-motivo">Especifique motivo:</label>
+                    <input type="text" id="nota-credito-otro-motivo">
+                </div>
+                <div class="form-group">
+                    <label for="nota-credito-detalle">Detalle adicional:</label>
+                    <textarea id="nota-credito-detalle" rows="3"></textarea>
+                </div>
+                <div class="form-group">
+                    <label>Productos a devolver:</label>
+                    <div class="tabla-container">
+                        <table class="tabla-productos-nota" id="tabla-productos-nota">
+                            <thead>
+                                <tr>
+                                    <th>Seleccionar</th>
+                                    <th>Producto</th>
+                                    <th>Cantidad</th>
+                                    <th>Precio Unit.</th>
+                                    <th>Subtotal</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                <!-- Se completará dinámicamente -->
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
+                <div class="modal-actions">
+                    <button class="btn-secondary" id="btn-cancelar-nota-credito">Cancelar</button>
+                    <button class="btn-primary" id="btn-generar-nota-credito">
+                        <i class="fas fa-file-alt"></i> Generar Nota de Crédito
+                    </button>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Scripts -->
+    <script src="../assets/js/renderer.js"></script>
+    <script src="../assets/js/utils/database.js"></script>
+    <script src="../assets/js/utils/validation.js"></script>
+    <script src="../assets/js/utils/printer.js"></script>
+    <script src="../assets/js/modules/facturador/facturador.js"></script>
+    <script src="../assets/js/modules/facturador/cliente.js"></script>
+    <script src="../assets/js/modules/facturador/productos.js"></script>
+    <script src="../assets/js/modules/facturador/pagos.js"></script>
+    
+    <script>
+        // Script para manejar atajos de teclado y otras interacciones básicas
+        document.addEventListener('DOMContentLoaded', () => {
+            // Inicializar el facturador
+            initFacturador();
+            
+            // Atajos de teclado
+            document.addEventListener('keydown', (e) => {
+                // F1 en campo cliente para abrir búsqueda de clientes
+                if (e.key === 'F1' && document.activeElement === document.getElementById('cliente-nombre')) {
+                    e.preventDefault();
+                    document.getElementById('btn-buscar-cliente').click();
+                }
+                
+                // F1 en campo producto para abrir búsqueda de productos
+                if (e.key === 'F1' && document.activeElement === document.getElementById('producto-codigo')) {
+                    e.preventDefault();
+                    document.getElementById('btn-buscar-producto').click();
+                }
+                
+                // F2 en tabla de productos para editar el producto seleccionado
+                if (e.key === 'F2') {
+                    const selectedRow = document.querySelector('.productos-tabla tr.selected');
+                    if (selectedRow) {
+                        e.preventDefault();
+                        const editBtn = selectedRow.querySelector('.btn-editar-producto');
+                        if (editBtn) editBtn.click();
+                    }
+                }
+                
+                // Enter en campo cliente vacío para consumidor final
+                if (e.key === 'Enter' && document.activeElement === document.getElementById('cliente-nombre')) {
+                    const clienteInput = document.getElementById('cliente-nombre');
+                    if (clienteInput.value.trim() === '') {
+                        e.preventDefault();
+                        setConsumidorFinal();
+                    }
+                }
+                
+                // F8 para proceder al pago (atajo rápido)
+                if (e.key === 'F8') {
+                    e.preventDefault();
+                    document.getElementById('btn-pago-efectivo').click();
+                }
+                
+                // F10 para generar factura rápidamente
+                if (e.key === 'F10') {
+                    e.preventDefault();
+                    document.getElementById('btn-generar-factura').click();
+                }
+                
+                // Escape para cerrar modales abiertos
+                if (e.key === 'Escape') {
+                    const openModal = document.querySelector('.modal.show');
+                    if (openModal) {
+                        e.preventDefault();
+                        const closeBtn = openModal.querySelector('.modal-close');
+                        if (closeBtn) closeBtn.click();
+                    }
+                }
+            });
+            
+            // Manejar botones de minimizar y cerrar
+            document.getElementById('btn-minimize').addEventListener('click', () => {
+                window.electronAPI.minimizeWindow();
+            });
+            
+            document.getElementById('btn-close').addEventListener('click', () => {
+                closeFacturador();
+            });
+        });
+        
+        // Función para inicializar el facturador
+        function initFacturador() {
+            // Cargar datos de la sucursal y usuario
+            cargarDatosSucursalUsuario();
+            
+            // Inicializar número de comprobante
+            actualizarNumeroComprobante();
+            
+            // Establecer fecha actual por defecto
+            document.getElementById('fecha-comprobante').valueAsDate = new Date();
+            
+            // Escuchar cambios en el tipo de comprobante
+            document.getElementById('tipo-comprobante').addEventListener('change', () => {
+                actualizarNumeroComprobante();
+                actualizarEtiquetaBotonFacturar();
+            });
+            
+            // Inicializar eventos de cliente
+            initClienteEvents();
+            
+            // Inicializar eventos de productos
+            initProductosEvents();
+            
+            // Inicializar eventos de pagos
+            initPagosEvents();
+            
+            // Inicializar otros eventos
+            initOtrosEvents();
+        }
+        
+        // Función para cargar datos de sucursal y usuario
+        function cargarDatosSucursalUsuario() {
+            // Estas funciones serían implementadas en los archivos JS correspondientes
+            // Aquí solo simulamos la carga
+            window.electronAPI.getActiveUser().then(usuario => {
+                document.getElementById('usuario-actual').textContent = `Usuario: ${usuario.nombre}`;
+            });
+            
+            window.electronAPI.getActiveSucursal().then(sucursal => {
+                document.getElementById('sucursal-actual').textContent = `Sucursal: ${sucursal.nombre}`;
+            });
+        }
+        
+        // Función para actualizar el número de comprobante
+        function actualizarNumeroComprobante() {
+            const tipoComprobante = document.getElementById('tipo-comprobante').value;
+            
+            // Esta función sería implementada para obtener el próximo número
+            window.electronAPI.getNextComprobanteNumber(tipoComprobante).then(numero => {
+                document.getElementById('numero-comprobante').value = numero;
+            });
+        }
+        
+        // Función para actualizar la etiqueta del botón de facturar
+        function actualizarEtiquetaBotonFacturar() {
+            const tipoComprobante = document.getElementById('tipo-comprobante').value;
+            const btnTexto = document.getElementById('btn-facturar-texto');
+            
+            if (tipoComprobante === 'PRESUPUESTO') {
+                btnTexto.textContent = 'Generar Presupuesto';
+            } else {
+                btnTexto.textContent = 'Generar Factura';
+            }
+        }
+        
+        // Función para establecer consumidor final
+        function setConsumidorFinal() {
+            const clienteNombre = document.getElementById('cliente-nombre');
+            clienteNombre.value = 'Consumidor Final';
+            
+            // Actualizar información del cliente
+            document.querySelector('#cliente-documento .value').textContent = '00000000';
+            document.querySelector('#cliente-direccion .value').textContent = '-';
+            document.querySelector('#cliente-iva .value').textContent = 'Consumidor Final';
+            
+            // Establecer datos en memoria (simulado aquí)
+            window.clienteActual = {
+                id: 0,
+                nombre: 'Consumidor Final',
+                documento: '00000000',
+                documentoTipo: 'DNI',
+                direccion: '',
+                condicionIva: 'CONSUMIDOR_FINAL'
+            };
+        }
+        
+        // Función para cerrar el facturador
+        function closeFacturador() {
+            // Verificar si hay cambios sin guardar
+            if (hayProductosAgregados()) {
+                if (confirm('¿Está seguro que desea salir? Se perderán los cambios no guardados.')) {
+                    window.electronAPI.closeFacturador();
+                }
+            } else {
+                window.electronAPI.closeFacturador();
+            }
+        }
+        
+        // Función para verificar si hay productos agregados
+        function hayProductosAgregados() {
+            return document.querySelector('#tabla-productos tbody').children.length > 0;
+        }
+        
+        // Estas funciones serían implementadas en sus respectivos archivos JS
+        function initClienteEvents() {
+            // Implementado en cliente.js
+        }
+        
+        function initProductosEvents() {
+            // Implementado en productos.js
+        }
+        
+        function initPagosEvents() {
+            // Implementado en pagos.js
+        }
+        
+        function initOtrosEvents() {
+            // Implementado aquí o en facturador.js
+            
+            // Evento para descuento global
+            document.getElementById('descuento-global').addEventListener('input', calcularTotales);
+            
+            // Evento para aplicar IVA
+            document.getElementById('aplicar-iva').addEventListener('change', calcularTotales);
+            
+            // Evento para botón generar factura
+            document.getElementById('btn-generar-factura').addEventListener('click', generarFactura);
+            
+            // Evento para botón cancelar
+            document.getElementById('btn-cancelar').addEventListener('click', () => {
+                if (confirm('¿Está seguro que desea cancelar la operación?')) {
+                    limpiarFacturador();
+                }
+            });
+            
+            // Evento para botón facturar con ARCA
+            document.getElementById('btn-facturar-arca').addEventListener('click', facturarConARCA);
+        }
+        
+        // Función para calcular totales
+        function calcularTotales() {
+            // Esta función sería implementada en detalle en los archivos JS correspondientes
+        }
+        
+        // Función para generar factura
+        function generarFactura() {
+            // Esta función sería implementada en detalle en los archivos JS correspondientes
+        }
+        
+        // Función para facturar con ARCA (AFIP)
+function facturarConARCA() {
+    // Mostrar modal de proceso
+    showModal('modal-arca-proceso');
+    
+    // Actualizar mensaje de proceso
+    document.getElementById('arca-mensaje-proceso').textContent = 'Conectando con ARCA...';
+    
+    // Obtener los datos de la factura
+    const facturaData = prepararDatosFactura();
+    
+    // Realizar la llamada a la API de ARCA/AFIP
+    window.electronAPI.facturarConARCA(facturaData)
+        .then(response => {
+            // Ocultar modal de proceso
+            hideModal('modal-arca-proceso');
+            
+            if (response.success) {
+                // Actualizar la factura con datos de AFIP (CAE, vencimiento, etc.)
+                actualizarDatosFacturaAFIP(response.data);
+                
+                // Mostrar mensaje de éxito
+                document.getElementById('estado-facturacion').innerHTML = 
+                    `<div class="estado-success"><i class="fas fa-check-circle"></i> Factura autorizada por AFIP. CAE: ${response.data.cae}</div>`;
+                
+                // Habilitar botón para generar factura
+                document.getElementById('btn-generar-factura').disabled = false;
+            } else {
+                // Mostrar modal de error
+                document.getElementById('arca-mensaje-error').textContent = response.message || 'Error al comunicarse con AFIP';
+                document.getElementById('arca-error-detalles').innerHTML = `<pre>${JSON.stringify(response.error, null, 2)}</pre>`;
+                showModal('modal-arca-error');
+            }
+        })
+        .catch(error => {
+            // Ocultar modal de proceso
+            hideModal('modal-arca-proceso');
+            
+            // Mostrar modal de error
+            document.getElementById('arca-mensaje-error').textContent = 'Error en la comunicación con AFIP';
+            document.getElementById('arca-error-detalles').innerHTML = `<pre>${error.message}</pre>`;
+            showModal('modal-arca-error');
+        });
+}
+
+// Función para preparar los datos de la factura para AFIP
+function prepararDatosFactura() {
+    // Obtener información del cliente
+    const cliente = window.clienteActual;
+    
+    // Obtener tipo de comprobante
+    const tipoComprobante = document.getElementById('tipo-comprobante').value;
+    
+    // Obtener productos
+    const productos = obtenerProductosTabla();
+    
+    // Obtener totales
+    const subtotal = parseFloat(document.getElementById('subtotal').textContent.replace('$', ''));
+    const descuento = parseFloat(document.getElementById('total-descuento').textContent.replace('$', ''));
+    const iva = parseFloat(document.getElementById('total-iva').textContent.replace('$', ''));
+    const total = parseFloat(document.getElementById('total-factura').textContent.replace('$', ''));
+    
+    // Crear objeto de datos para AFIP
+    return {
+        cliente,
+        tipoComprobante,
+        productos,
+        totales: {
+            subtotal,
+            descuento,
+            iva,
+            total
+        },
+        fecha: document.getElementById('fecha-comprobante').value
+    };
+}
+
+// Función para actualizar los datos de la factura con la información de AFIP
+function actualizarDatosFacturaAFIP(datosAFIP) {
+    // Guardar en variables globales o en el estado
+    window.facturaAFIP = datosAFIP;
+    
+    // Actualizar UI si es necesario
+    // Por ejemplo, mostrar el CAE en algún lugar visible
+}
+
+// Función para limpiar el facturador
+function limpiarFacturador() {
+    // Limpiar cliente
+    document.getElementById('cliente-nombre').value = '';
+    document.querySelector('#cliente-documento .value').textContent = '-';
+    document.querySelector('#cliente-direccion .value').textContent = '-';
+    document.querySelector('#cliente-iva .value').textContent = '-';
+    window.clienteActual = null;
+    
+    // Limpiar productos
+    document.querySelector('#tabla-productos tbody').innerHTML = '';
+    
+    // Limpiar campos de producto
+    document.getElementById('producto-codigo').value = '';
+    document.getElementById('producto-cantidad').value = '1';
+    document.getElementById('producto-precio').value = '';
+    document.getElementById('producto-descuento').value = '0';
+    
+    // Limpiar descuentos y totales
+    document.getElementById('descuento-global').value = '';
+    document.getElementById('subtotal').textContent = '$0.00';
+    document.getElementById('total-descuento').textContent = '$0.00';
+    document.getElementById('total-iva').textContent = '$0.00';
+    document.getElementById('total-factura').textContent = '$0.00';
+    
+    // Limpiar pagos seleccionados
+    document.getElementById('pagos-seleccionados').innerHTML = '';
+    
+    // Actualizar estado de facturación
+    document.getElementById('estado-facturacion').innerHTML = '';
+    
+    // Resetear tipo de comprobante a predeterminado
+    document.getElementById('tipo-comprobante').value = 'FACTURA_B';
+    actualizarNumeroComprobante();
+    actualizarEtiquetaBotonFacturar();
+    
+    // Poner foco en campo cliente
+    document.getElementById('cliente-nombre').focus();
+}
+
+// Funciones auxiliares para mostrar y ocultar modales
+function showModal(modalId) {
+    document.getElementById(modalId).classList.add('show');
+}
+
+function hideModal(modalId) {
+    document.getElementById(modalId).classList.remove('show');
+}
+
+// Función para obtener los productos de la tabla
+function obtenerProductosTabla() {
+    const productos = [];
+    const filas = document.querySelectorAll('#tabla-productos tbody tr');
+    
+    filas.forEach(fila => {
+        const codigo = fila.cells[0].textContent;
+        const nombre = fila.cells[1].textContent;
+        const cantidad = parseFloat(fila.cells[2].textContent);
+        const precioUnitario = parseFloat(fila.cells[3].textContent.replace('$', ''));
+        const descuento = parseFloat(fila.cells[4].textContent.replace('%', ''));
+        const subtotal = parseFloat(fila.cells[5].textContent.replace('$', ''));
+        
+        productos.push({
+            codigo,
+            nombre,
+            cantidad,
+            precioUnitario,
+            descuento,
+            subtotal
+        });
+    });
+    
+    return productos;
+}

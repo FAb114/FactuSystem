@@ -1,0 +1,505 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>FactuSystem - Módulo de Ventas</title>
+    <!-- Estilos CSS -->
+    <link rel="stylesheet" href="../assets/css/main.css">
+    <link rel="stylesheet" href="../assets/css/components/tables.css">
+    <link rel="stylesheet" href="../assets/css/components/dashboard.css">
+    <link rel="stylesheet" href="../assets/css/components/modal.css">
+    <!-- Font Awesome para íconos -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <!-- Chart.js para gráficos -->
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/Chart.js/3.9.1/chart.min.js"></script>
+    <!-- DataTables para tablas avanzadas -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/datatables/1.10.21/css/jquery.dataTables.min.css">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/datatables.net-responsive-bs4/2.4.0/responsive.bootstrap4.min.css">
+    <!-- DateRangePicker para selección de fechas -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/bootstrap-daterangepicker/3.0.5/daterangepicker.min.css">
+</head>
+<body class="ventas-module">
+    <!-- Contenedor principal -->
+    <div class="content-wrapper">
+        <!-- Encabezado -->
+        <div class="module-header">
+            <h1><i class="fas fa-chart-line"></i> Módulo de Ventas</h1>
+            <div class="header-actions">
+                <button id="refresh-data" class="btn btn-secondary">
+                    <i class="fas fa-sync-alt"></i> Actualizar
+                </button>
+                <button id="export-pdf" class="btn btn-primary">
+                    <i class="fas fa-file-pdf"></i> Exportar Informe
+                </button>
+            </div>
+        </div>
+
+        <!-- Pestañas de navegación -->
+        <div class="tab-navigation">
+            <ul class="nav-tabs">
+                <li class="tab-item active" data-tab="facturas">
+                    <i class="fas fa-file-invoice"></i> Facturas
+                </li>
+                <li class="tab-item" data-tab="estadisticas">
+                    <i class="fas fa-chart-pie"></i> Estadísticas
+                </li>
+                <li class="tab-item" data-tab="productos">
+                    <i class="fas fa-box"></i> Top Productos
+                </li>
+                <li class="tab-item" data-tab="sucursales">
+                    <i class="fas fa-store"></i> Sucursales
+                </li>
+            </ul>
+        </div>
+
+        <!-- Contenido de las pestañas -->
+        <div class="tab-content">
+            <!-- Pestaña de Facturas -->
+            <div id="facturas" class="tab-pane active">
+                <!-- Filtros -->
+                <div class="filters-container">
+                    <div class="filter-row">
+                        <div class="filter-group">
+                            <label for="filter-date">Rango de Fechas:</label>
+                            <input type="text" id="filter-date" class="form-control date-range-picker" placeholder="Seleccionar rango...">
+                        </div>
+                        <div class="filter-group">
+                            <label for="filter-tipo">Tipo:</label>
+                            <select id="filter-tipo" class="form-control">
+                                <option value="">Todos</option>
+                                <option value="A">Factura A</option>
+                                <option value="B">Factura B</option>
+                                <option value="C">Factura C</option>
+                                <option value="X">Factura X</option>
+                                <option value="P">Presupuesto</option>
+                            </select>
+                        </div>
+                        <div class="filter-group">
+                            <label for="filter-metodo-pago">Método de Pago:</label>
+                            <select id="filter-metodo-pago" class="form-control">
+                                <option value="">Todos</option>
+                                <option value="efectivo">Efectivo</option>
+                                <option value="tarjeta_debito">Tarjeta de Débito</option>
+                                <option value="tarjeta_credito">Tarjeta de Crédito</option>
+                                <option value="transferencia">Transferencia</option>
+                                <option value="qr">QR</option>
+                                <option value="otro">Otro</option>
+                            </select>
+                        </div>
+                    </div>
+                    <div class="filter-row">
+                        <div class="filter-group">
+                            <label for="filter-cliente">Cliente:</label>
+                            <input type="text" id="filter-cliente" class="form-control" placeholder="Nombre o DNI/CUIT...">
+                        </div>
+                        <div class="filter-group">
+                            <label for="filter-usuario">Usuario:</label>
+                            <select id="filter-usuario" class="form-control">
+                                <option value="">Todos</option>
+                                <!-- Se cargará dinámicamente -->
+                            </select>
+                        </div>
+                        <div class="filter-group">
+                            <label for="filter-sucursal">Sucursal:</label>
+                            <select id="filter-sucursal" class="form-control">
+                                <option value="">Todas</option>
+                                <!-- Se cargará dinámicamente -->
+                            </select>
+                        </div>
+                        <div class="filter-actions">
+                            <button id="apply-filters" class="btn btn-primary">
+                                <i class="fas fa-filter"></i> Aplicar
+                            </button>
+                            <button id="clear-filters" class="btn btn-secondary">
+                                <i class="fas fa-times"></i> Limpiar
+                            </button>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Tabla de Facturas -->
+                <div class="table-container">
+                    <table id="facturas-table" class="display responsive nowrap" width="100%">
+                        <thead>
+                            <tr>
+                                <th>N° Factura</th>
+                                <th>Fecha</th>
+                                <th>Tipo</th>
+                                <th>Cliente</th>
+                                <th>Total</th>
+                                <th>Método Pago</th>
+                                <th>Usuario</th>
+                                <th>Sucursal</th>
+                                <th>Acciones</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            <!-- Datos cargados dinámicamente -->
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+
+            <!-- Pestaña de Estadísticas -->
+            <div id="estadisticas" class="tab-pane">
+                <div class="stats-controls">
+                    <div class="period-selector">
+                        <label for="stats-period">Período:</label>
+                        <select id="stats-period" class="form-control">
+                            <option value="day">Hoy</option>
+                            <option value="week">Esta semana</option>
+                            <option value="month" selected>Este mes</option>
+                            <option value="quarter">Este trimestre</option>
+                            <option value="year">Este año</option>
+                            <option value="custom">Personalizado</option>
+                        </select>
+                    </div>
+                    <div id="custom-period-container" class="custom-period" style="display: none;">
+                        <input type="text" id="custom-date-range" class="form-control date-range-picker" placeholder="Seleccionar rango...">
+                    </div>
+                </div>
+
+                <!-- Tarjetas de resumen -->
+                <div class="stats-summary">
+                    <div class="stats-card">
+                        <div class="stats-icon">
+                            <i class="fas fa-cash-register"></i>
+                        </div>
+                        <div class="stats-data">
+                            <h3>Total Ventas</h3>
+                            <span id="total-ventas" class="stats-value">$0.00</span>
+                        </div>
+                    </div>
+                    <div class="stats-card">
+                        <div class="stats-icon">
+                            <i class="fas fa-file-invoice"></i>
+                        </div>
+                        <div class="stats-data">
+                            <h3>Facturas Emitidas</h3>
+                            <span id="total-facturas" class="stats-value">0</span>
+                        </div>
+                    </div>
+                    <div class="stats-card">
+                        <div class="stats-icon">
+                            <i class="fas fa-user"></i>
+                        </div>
+                        <div class="stats-data">
+                            <h3>Clientes Atendidos</h3>
+                            <span id="total-clientes" class="stats-value">0</span>
+                        </div>
+                    </div>
+                    <div class="stats-card">
+                        <div class="stats-icon">
+                            <i class="fas fa-percentage"></i>
+                        </div>
+                        <div class="stats-data">
+                            <h3>Variación</h3>
+                            <span id="variacion-ventas" class="stats-value">0%</span>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Gráficos de estadísticas -->
+                <div class="stats-charts">
+                    <div class="chart-container">
+                        <h3><i class="fas fa-chart-line"></i> Ventas en el Tiempo</h3>
+                        <canvas id="ventas-tiempo-chart"></canvas>
+                    </div>
+                    <div class="chart-container">
+                        <h3><i class="fas fa-chart-pie"></i> Ventas por Método de Pago</h3>
+                        <canvas id="ventas-metodo-chart"></canvas>
+                    </div>
+                </div>
+                <div class="stats-charts">
+                    <div class="chart-container">
+                        <h3><i class="fas fa-chart-bar"></i> Ventas por Tipo de Factura</h3>
+                        <canvas id="ventas-tipo-chart"></canvas>
+                    </div>
+                    <div class="chart-container">
+                        <h3><i class="fas fa-users"></i> Ventas por Usuario</h3>
+                        <canvas id="ventas-usuario-chart"></canvas>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Pestaña de Top Productos -->
+            <div id="productos" class="tab-pane">
+                <div class="products-controls">
+                    <div class="filter-row">
+                        <div class="filter-group">
+                            <label for="products-period">Período:</label>
+                            <select id="products-period" class="form-control">
+                                <option value="day">Hoy</option>
+                                <option value="week">Esta semana</option>
+                                <option value="month" selected>Este mes</option>
+                                <option value="quarter">Este trimestre</option>
+                                <option value="year">Este año</option>
+                                <option value="custom">Personalizado</option>
+                            </select>
+                        </div>
+                        <div class="filter-group">
+                            <label for="products-sort">Ordenar por:</label>
+                            <select id="products-sort" class="form-control">
+                                <option value="quantity">Cantidad Vendida</option>
+                                <option value="revenue">Ingresos Generados</option>
+                                <option value="profit">Margen de Ganancia</option>
+                            </select>
+                        </div>
+                        <div class="filter-group">
+                            <label for="products-limit">Mostrar:</label>
+                            <select id="products-limit" class="form-control">
+                                <option value="10">Top 10</option>
+                                <option value="20">Top 20</option>
+                                <option value="50">Top 50</option>
+                                <option value="100">Top 100</option>
+                            </select>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Gráfico de Top Productos -->
+                <div class="chart-container full-width">
+                    <h3><i class="fas fa-box"></i> Top Productos Vendidos</h3>
+                    <canvas id="top-productos-chart"></canvas>
+                </div>
+
+                <!-- Tabla de Top Productos -->
+                <div class="table-container">
+                    <table id="top-productos-table" class="display responsive nowrap" width="100%">
+                        <thead>
+                            <tr>
+                                <th>Posición</th>
+                                <th>Código</th>
+                                <th>Producto</th>
+                                <th>Categoría</th>
+                                <th>Cantidad</th>
+                                <th>Total Vendido</th>
+                                <th>% del Total</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            <!-- Datos cargados dinámicamente -->
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+
+            <!-- Pestaña de Sucursales -->
+            <div id="sucursales" class="tab-pane">
+                <div class="branch-controls">
+                    <div class="filter-row">
+                        <div class="filter-group">
+                            <label for="branch-period">Período:</label>
+                            <select id="branch-period" class="form-control">
+                                <option value="day">Hoy</option>
+                                <option value="week">Esta semana</option>
+                                <option value="month" selected>Este mes</option>
+                                <option value="quarter">Este trimestre</option>
+                                <option value="year">Este año</option>
+                                <option value="custom">Personalizado</option>
+                            </select>
+                        </div>
+                        <div class="filter-group">
+                            <label for="branch-comparison">Comparar por:</label>
+                            <select id="branch-comparison" class="form-control">
+                                <option value="total">Total de Ventas</option>
+                                <option value="quantity">Cantidad de Facturas</option>
+                                <option value="average">Ticket Promedio</option>
+                                <option value="products">Productos Vendidos</option>
+                            </select>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Gráfico de Comparativa entre Sucursales -->
+                <div class="chart-container full-width">
+                    <h3><i class="fas fa-store"></i> Comparativa entre Sucursales</h3>
+                    <canvas id="sucursales-chart"></canvas>
+                </div>
+
+                <!-- Tabla de Sucursales -->
+                <div class="table-container">
+                    <table id="sucursales-table" class="display responsive nowrap" width="100%">
+                        <thead>
+                            <tr>
+                                <th>Sucursal</th>
+                                <th>Total Ventas</th>
+                                <th>Cantidad Facturas</th>
+                                <th>Ticket Promedio</th>
+                                <th>Productos Vendidos</th>
+                                <th>% del Total</th>
+                                <th>Comparar</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            <!-- Datos cargados dinámicamente -->
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Modal para ver detalle de factura -->
+    <div id="factura-modal" class="modal">
+        <div class="modal-content modal-lg">
+            <div class="modal-header">
+                <h2 id="factura-modal-title">Detalle de Factura</h2>
+                <span class="close-modal">&times;</span>
+            </div>
+            <div class="modal-body">
+                <div class="factura-info">
+                    <div class="factura-header">
+                        <div class="factura-datos">
+                            <p><strong>N° Factura:</strong> <span id="modal-factura-numero"></span></p>
+                            <p><strong>Fecha:</strong> <span id="modal-factura-fecha"></span></p>
+                            <p><strong>Tipo:</strong> <span id="modal-factura-tipo"></span></p>
+                            <p><strong>Cliente:</strong> <span id="modal-factura-cliente"></span></p>
+                            <p><strong>CUIT/DNI:</strong> <span id="modal-factura-cuit"></span></p>
+                        </div>
+                        <div class="factura-totales">
+                            <p><strong>Subtotal:</strong> $<span id="modal-factura-subtotal"></span></p>
+                            <p><strong>IVA:</strong> $<span id="modal-factura-iva"></span></p>
+                            <p><strong>Descuento:</strong> $<span id="modal-factura-descuento"></span></p>
+                            <p><strong>Total:</strong> $<span id="modal-factura-total"></span></p>
+                            <p><strong>Método de Pago:</strong> <span id="modal-factura-pago"></span></p>
+                        </div>
+                    </div>
+                    <div class="factura-items">
+                        <h3>Detalle de Productos</h3>
+                        <table id="modal-factura-items" class="display responsive nowrap" width="100%">
+                            <thead>
+                                <tr>
+                                    <th>Código</th>
+                                    <th>Producto</th>
+                                    <th>Cantidad</th>
+                                    <th>Precio Unit.</th>
+                                    <th>Descuento</th>
+                                    <th>Subtotal</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                <!-- Datos cargados dinámicamente -->
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
+                <div class="factura-preview">
+                    <div class="preview-tabs">
+                        <button class="preview-tab active" data-preview="pdf-a4">Ver PDF A4</button>
+                        <button class="preview-tab" data-preview="pdf-ticket">Ver Ticket</button>
+                    </div>
+                    <div class="preview-content">
+                        <iframe id="pdf-preview" src="" width="100%" height="500px"></iframe>
+                    </div>
+                </div>
+            </div>
+            <div class="modal-footer">
+                <div class="modal-actions">
+                    <button id="print-factura" class="btn btn-primary">
+                        <i class="fas fa-print"></i> Imprimir
+                    </button>
+                    <button id="email-factura" class="btn btn-info">
+                        <i class="fas fa-envelope"></i> Enviar por Email
+                    </button>
+                    <button id="whatsapp-factura" class="btn btn-success">
+                        <i class="fab fa-whatsapp"></i> Enviar por WhatsApp
+                    </button>
+                    <button id="descargar-factura" class="btn btn-secondary">
+                        <i class="fas fa-download"></i> Descargar PDF
+                    </button>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Modal para exportar reporte -->
+    <div id="export-modal" class="modal">
+        <div class="modal-content modal-md">
+            <div class="modal-header">
+                <h2>Exportar Informe de Ventas</h2>
+                <span class="close-modal">&times;</span>
+            </div>
+            <div class="modal-body">
+                <div class="export-options">
+                    <h3>Periodo del informe</h3>
+                    <div class="export-period">
+                        <select id="export-period-type" class="form-control">
+                            <option value="day">Hoy</option>
+                            <option value="week">Esta semana</option>
+                            <option value="month" selected>Este mes</option>
+                            <option value="quarter">Este trimestre</option>
+                            <option value="year">Este año</option>
+                            <option value="custom">Personalizado</option>
+                        </select>
+                        <div id="export-custom-period" style="display: none;">
+                            <input type="text" id="export-date-range" class="form-control date-range-picker" placeholder="Seleccionar rango...">
+                        </div>
+                    </div>
+
+                    <h3>Contenido del informe</h3>
+                    <div class="export-content">
+                        <div class="checkbox-group">
+                            <input type="checkbox" id="export-resumen" checked>
+                            <label for="export-resumen">Resumen de ventas</label>
+                        </div>
+                        <div class="checkbox-group">
+                            <input type="checkbox" id="export-facturas" checked>
+                            <label for="export-facturas">Listado de facturas</label>
+                        </div>
+                        <div class="checkbox-group">
+                            <input type="checkbox" id="export-productos" checked>
+                            <label for="export-productos">Top productos</label>
+                        </div>
+                        <div class="checkbox-group">
+                            <input type="checkbox" id="export-metodos" checked>
+                            <label for="export-metodos">Métodos de pago</label>
+                        </div>
+                        <div class="checkbox-group">
+                            <input type="checkbox" id="export-sucursales">
+                            <label for="export-sucursales">Comparativa de sucursales</label>
+                        </div>
+                        <div class="checkbox-group">
+                            <input type="checkbox" id="export-graficos" checked>
+                            <label for="export-graficos">Incluir gráficos</label>
+                        </div>
+                    </div>
+
+                    <h3>Formato del informe</h3>
+                    <div class="export-format">
+                        <div class="radio-group">
+                            <input type="radio" id="export-format-pdf" name="export-format" value="pdf" checked>
+                            <label for="export-format-pdf">PDF</label>
+                        </div>
+                        <div class="radio-group">
+                            <input type="radio" id="export-format-excel" name="export-format" value="excel">
+                            <label for="export-format-excel">Excel</label>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            <div class="modal-footer">
+                <button id="generate-report" class="btn btn-primary">
+                    <i class="fas fa-file-export"></i> Generar Informe
+                </button>
+                <button class="btn btn-secondary close-modal-btn">
+                    <i class="fas fa-times"></i> Cancelar
+                </button>
+            </div>
+        </div>
+    </div>
+
+    <!-- Scripts -->
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/jquery/3.6.0/jquery.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/datatables/1.10.21/js/jquery.dataTables.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/moment.js/2.29.1/moment.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/bootstrap-daterangepicker/3.0.5/daterangepicker.min.js"></script>
+    <script src="../assets/js/renderer.js"></script>
+    <script src="../assets/js/utils/validation.js"></script>
+    <script src="../assets/js/modules/ventas/index.js"></script>
+    <script src="../assets/js/modules/ventas/historial.js"></script>
+    <script src="../assets/js/modules/ventas/estadisticas.js"></script>
+    <script src="../assets/js/modules/ventas/reportes.js"></script>
+</body>
+</html>

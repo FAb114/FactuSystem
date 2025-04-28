@@ -1,0 +1,1235 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>FactuSystem - Gestión de Clientes</title>
+    <link rel="stylesheet" href="../assets/css/main.css">
+    <link rel="stylesheet" href="../assets/css/components/tables.css">
+    <link rel="stylesheet" href="../assets/css/components/modal.css">
+    <!-- Integración de Font Awesome para íconos -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <!-- Integración de Chart.js para gráficos -->
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/Chart.js/3.9.1/chart.min.js"></script>
+</head>
+<body class="module-page">
+    <div class="content-wrapper">
+        <div class="module-header">
+            <h1><i class="fas fa-users"></i> Gestión de Clientes</h1>
+            <div class="module-actions">
+                <button id="btnNuevoCliente" class="btn btn-primary">
+                    <i class="fas fa-plus"></i> Nuevo Cliente
+                </button>
+                <button id="btnImportarClientes" class="btn btn-secondary">
+                    <i class="fas fa-file-import"></i> Importar
+                </button>
+                <button id="btnExportarClientes" class="btn btn-secondary">
+                    <i class="fas fa-file-export"></i> Exportar
+                </button>
+            </div>
+        </div>
+
+        <div class="filter-bar">
+            <div class="search-container">
+                <input type="text" id="searchCliente" placeholder="Buscar por nombre, DNI o CUIT...">
+                <button id="btnBuscar"><i class="fas fa-search"></i></button>
+            </div>
+            <div class="filter-options">
+                <select id="filterSucursal">
+                    <option value="todas">Todas las sucursales</option>
+                    <!-- Se cargarán dinámicamente desde JS -->
+                </select>
+                <select id="filterCategoria">
+                    <option value="todas">Todas las categorías</option>
+                    <option value="regular">Regular</option>
+                    <option value="vip">VIP</option>
+                    <option value="mayorista">Mayorista</option>
+                    <option value="inactivo">Inactivo</option>
+                </select>
+                <button id="btnLimpiarFiltros" class="btn btn-small">Limpiar</button>
+            </div>
+        </div>
+
+        <div class="tabs-container">
+            <ul class="tabs-header">
+                <li class="tab active" data-tab="listado">Listado</li>
+                <li class="tab" data-tab="fidelizacion">Programa de Fidelización</li>
+                <li class="tab" data-tab="estadisticas">Estadísticas</li>
+            </ul>
+            
+            <div class="tab-content active" id="listado">
+                <div class="table-container">
+                    <table id="tablaClientes" class="data-table">
+                        <thead>
+                            <tr>
+                                <th>ID</th>
+                                <th>Nombre/Razón Social</th>
+                                <th>DNI/CUIT</th>
+                                <th>Teléfono</th>
+                                <th>Email</th>
+                                <th>Condición IVA</th>
+                                <th>Sucursal</th>
+                                <th>Categoría</th>
+                                <th>Última Compra</th>
+                                <th>Acciones</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            <!-- Se cargarán dinámicamente desde JS -->
+                        </tbody>
+                    </table>
+                </div>
+                <div class="pagination">
+                    <button id="btnPrevPage" disabled><i class="fas fa-chevron-left"></i></button>
+                    <span id="paginationInfo">Página 1 de 1</span>
+                    <button id="btnNextPage"><i class="fas fa-chevron-right"></i></button>
+                </div>
+            </div>
+            
+            <div class="tab-content" id="fidelizacion">
+                <div class="fidelizacion-header">
+                    <h2>Programa de Fidelización</h2>
+                    <button id="btnConfigFidelizacion" class="btn btn-secondary">
+                        <i class="fas fa-cog"></i> Configurar Programa
+                    </button>
+                </div>
+                
+                <div class="fidelizacion-stats">
+                    <div class="stat-card">
+                        <h3>Clientes Activos</h3>
+                        <p class="stat-number" id="clientesActivos">0</p>
+                    </div>
+                    <div class="stat-card">
+                        <h3>Puntos Otorgados</h3>
+                        <p class="stat-number" id="puntosOtorgados">0</p>
+                    </div>
+                    <div class="stat-card">
+                        <h3>Puntos Canjeados</h3>
+                        <p class="stat-number" id="puntosCanjeados">0</p>
+                    </div>
+                    <div class="stat-card">
+                        <h3>Descuentos Aplicados</h3>
+                        <p class="stat-number" id="descuentosAplicados">$0</p>
+                    </div>
+                </div>
+                
+                <div class="fidelizacion-tables">
+                    <div class="top-clientes">
+                        <h3>Top Clientes por Puntos</h3>
+                        <table class="data-table">
+                            <thead>
+                                <tr>
+                                    <th>Cliente</th>
+                                    <th>Puntos</th>
+                                    <th>Nivel</th>
+                                    <th>Acciones</th>
+                                </tr>
+                            </thead>
+                            <tbody id="topClientesPuntos">
+                                <!-- Se cargarán dinámicamente desde JS -->
+                            </tbody>
+                        </table>
+                    </div>
+                    
+                    <div class="proximos-cumpleanos">
+                        <h3>Próximos Cumpleaños</h3>
+                        <table class="data-table">
+                            <thead>
+                                <tr>
+                                    <th>Cliente</th>
+                                    <th>Fecha</th>
+                                    <th>Días</th>
+                                    <th>Acciones</th>
+                                </tr>
+                            </thead>
+                            <tbody id="proximosCumpleanos">
+                                <!-- Se cargarán dinámicamente desde JS -->
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
+                
+                <div class="campanas-promociones">
+                    <h3>Campañas y Promociones</h3>
+                    <div class="campanas-container">
+                        <div class="campana-card">
+                            <h4>Cumpleaños</h4>
+                            <p>Descuento del 15%</p>
+                            <label class="switch">
+                                <input type="checkbox" id="toggleCumpleanos" checked>
+                                <span class="slider round"></span>
+                            </label>
+                        </div>
+                        <div class="campana-card">
+                            <h4>Clientes VIP</h4>
+                            <p>Doble puntos</p>
+                            <label class="switch">
+                                <input type="checkbox" id="toggleVIP" checked>
+                                <span class="slider round"></span>
+                            </label>
+                        </div>
+                        <div class="campana-card">
+                            <h4>Primera compra</h4>
+                            <p>Bienvenida con 10%</p>
+                            <label class="switch">
+                                <input type="checkbox" id="togglePrimeraCompra" checked>
+                                <span class="slider round"></span>
+                            </label>
+                        </div>
+                        <div class="campana-card">
+                            <h4>Reactivación</h4>
+                            <p>20% tras 3 meses</p>
+                            <label class="switch">
+                                <input type="checkbox" id="toggleReactivacion">
+                                <span class="slider round"></span>
+                            </label>
+                        </div>
+                        <div class="campana-card nueva-campana">
+                            <h4><i class="fas fa-plus"></i></h4>
+                            <p>Nueva Campaña</p>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            
+            <div class="tab-content" id="estadisticas">
+                <div class="estadisticas-header">
+                    <h2>Estadísticas de Clientes</h2>
+                    <div class="periodo-selector">
+                        <label for="periodoEstadisticas">Período:</label>
+                        <select id="periodoEstadisticas">
+                            <option value="mes">Último mes</option>
+                            <option value="trimestre">Último trimestre</option>
+                            <option value="semestre">Último semestre</option>
+                            <option value="anio" selected>Último año</option>
+                        </select>
+                    </div>
+                </div>
+                
+                <div class="charts-row">
+                    <div class="chart-container">
+                        <h3>Evolución de Clientes</h3>
+                        <canvas id="evolucionClientes"></canvas>
+                    </div>
+                    <div class="chart-container">
+                        <h3>Distribución por Categoría</h3>
+                        <canvas id="distribucionCategorias"></canvas>
+                    </div>
+                </div>
+                
+                <div class="charts-row">
+                    <div class="chart-container">
+                        <h3>Top 10 Clientes por Ventas</h3>
+                        <canvas id="topClientesVentas"></canvas>
+                    </div>
+                    <div class="chart-container">
+                        <h3>Frecuencia de Compra</h3>
+                        <canvas id="frecuenciaCompra"></canvas>
+                    </div>
+                </div>
+                
+                <div class="indicadores-rendimiento">
+                    <h3>Indicadores Clave</h3>
+                    <div class="kpi-cards">
+                        <div class="kpi-card">
+                            <h4>Valor Promedio Ticket</h4>
+                            <p class="kpi-value" id="valorPromedioTicket">$0</p>
+                            <p class="kpi-trend up"><i class="fas fa-arrow-up"></i> 5.2%</p>
+                        </div>
+                        <div class="kpi-card">
+                            <h4>Tasa de Retención</h4>
+                            <p class="kpi-value" id="tasaRetencion">0%</p>
+                            <p class="kpi-trend down"><i class="fas fa-arrow-down"></i> 1.3%</p>
+                        </div>
+                        <div class="kpi-card">
+                            <h4>Clientes Nuevos</h4>
+                            <p class="kpi-value" id="clientesNuevos">0</p>
+                            <p class="kpi-trend up"><i class="fas fa-arrow-up"></i> 12.8%</p>
+                        </div>
+                        <div class="kpi-card">
+                            <h4>Clientes Inactivos</h4>
+                            <p class="kpi-value" id="clientesInactivos">0</p>
+                            <p class="kpi-trend up"><i class="fas fa-arrow-up"></i> 3.5%</p>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- MODALES -->
+    
+    <!-- Modal Nuevo/Editar Cliente -->
+    <div id="modalCliente" class="modal">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h2 id="modalClienteTitle">Nuevo Cliente</h2>
+                <span class="close">&times;</span>
+            </div>
+            <div class="modal-body">
+                <form id="formCliente">
+                    <input type="hidden" id="clienteId">
+                    
+                    <div class="form-tabs">
+                        <div class="form-tab active" data-tab="datosGenerales">Datos Generales</div>
+                        <div class="form-tab" data-tab="datosFiscales">Datos Fiscales</div>
+                        <div class="form-tab" data-tab="datosContacto">Contacto</div>
+                        <div class="form-tab" data-tab="datosAdicionales">Adicionales</div>
+                    </div>
+                    
+                    <div class="form-tab-content active" id="datosGenerales">
+                        <div class="form-row">
+                            <div class="form-group">
+                                <label for="tipoCliente">Tipo de Cliente</label>
+                                <select id="tipoCliente" required>
+                                    <option value="persona">Persona Física</option>
+                                    <option value="empresa">Empresa</option>
+                                </select>
+                            </div>
+                            <div class="form-group">
+                                <label for="categoriaCliente">Categoría</label>
+                                <select id="categoriaCliente">
+                                    <option value="regular">Regular</option>
+                                    <option value="vip">VIP</option>
+                                    <option value="mayorista">Mayorista</option>
+                                </select>
+                            </div>
+                        </div>
+                        
+                        <div class="form-row persona-fields">
+                            <div class="form-group">
+                                <label for="nombre">Nombre</label>
+                                <input type="text" id="nombre" required>
+                            </div>
+                            <div class="form-group">
+                                <label for="apellido">Apellido</label>
+                                <input type="text" id="apellido" required>
+                            </div>
+                        </div>
+                        
+                        <div class="form-row empresa-fields" style="display:none">
+                            <div class="form-group full-width">
+                                <label for="razonSocial">Razón Social</label>
+                                <input type="text" id="razonSocial">
+                            </div>
+                        </div>
+                        
+                        <div class="form-row">
+                            <div class="form-group">
+                                <label for="documento">DNI/CUIT</label>
+                                <input type="text" id="documento" required>
+                            </div>
+                            <div class="form-group">
+                                <label for="fechaNacimiento">Fecha de Nacimiento</label>
+                                <input type="date" id="fechaNacimiento">
+                            </div>
+                        </div>
+                        
+                        <div class="form-row">
+                            <div class="form-group">
+                                <label for="sucursalAsignada">Sucursal Asignada</label>
+                                <select id="sucursalAsignada">
+                                    <!-- Se cargarán dinámicamente desde JS -->
+                                </select>
+                            </div>
+                            <div class="form-group">
+                                <label for="vendedorAsignado">Vendedor Asignado</label>
+                                <select id="vendedorAsignado">
+                                    <option value="">Sin vendedor asignado</option>
+                                    <!-- Se cargarán dinámicamente desde JS -->
+                                </select>
+                            </div>
+                        </div>
+                    </div>
+                    
+                    <div class="form-tab-content" id="datosFiscales">
+                        <div class="form-row">
+                            <div class="form-group">
+                                <label for="condicionIVA">Condición frente al IVA</label>
+                                <select id="condicionIVA" required>
+                                    <option value="CF">Consumidor Final</option>
+                                    <option value="RI">Responsable Inscripto</option>
+                                    <option value="MT">Monotributista</option>
+                                    <option value="EX">Exento</option>
+                                </select>
+                            </div>
+                            <div class="form-group">
+                                <label for="condicionIIBB">Condición IIBB</label>
+                                <select id="condicionIIBB">
+                                    <option value="CM">Convenio Multilateral</option>
+                                    <option value="LO">Local</option>
+                                    <option value="EX">Exento</option>
+                                </select>
+                            </div>
+                        </div>
+                        
+                        <div class="form-row">
+                            <div class="form-group">
+                                <label for="nroIIBB">Nro. IIBB</label>
+                                <input type="text" id="nroIIBB">
+                            </div>
+                            <div class="form-group">
+                                <label for="tipoFactura">Tipo de Factura Preferida</label>
+                                <select id="tipoFactura">
+                                    <option value="B">Factura B</option>
+                                    <option value="A">Factura A</option>
+                                    <option value="C">Factura C</option>
+                                </select>
+                            </div>
+                        </div>
+                    </div>
+                    
+                    <div class="form-tab-content" id="datosContacto">
+                        <div class="form-row">
+                            <div class="form-group">
+                                <label for="telefono">Teléfono</label>
+                                <input type="tel" id="telefono">
+                            </div>
+                            <div class="form-group">
+                                <label for="celular">Celular</label>
+                                <input type="tel" id="celular">
+                            </div>
+                        </div>
+                        
+                        <div class="form-row">
+                            <div class="form-group full-width">
+                                <label for="email">Email</label>
+                                <input type="email" id="email">
+                            </div>
+                        </div>
+                        
+                        <div class="form-row">
+                            <div class="form-group full-width">
+                                <label for="direccion">Dirección</label>
+                                <input type="text" id="direccion">
+                            </div>
+                        </div>
+                        
+                        <div class="form-row">
+                            <div class="form-group">
+                                <label for="localidad">Localidad</label>
+                                <input type="text" id="localidad">
+                            </div>
+                            <div class="form-group">
+                                <label for="provincia">Provincia</label>
+                                <select id="provincia">
+                                    <option value="">Seleccione provincia</option>
+                                    <!-- Se cargarán dinámicamente desde JS -->
+                                </select>
+                            </div>
+                        </div>
+                        
+                        <div class="form-row">
+                            <div class="form-group">
+                                <label for="codigoPostal">Código Postal</label>
+                                <input type="text" id="codigoPostal">
+                            </div>
+                            <div class="form-group">
+                                <label for="pais">País</label>
+                                <select id="pais">
+                                    <option value="AR" selected>Argentina</option>
+                                    <!-- Se cargarán otros países dinámicamente desde JS -->
+                                </select>
+                            </div>
+                        </div>
+                    </div>
+                    
+                    <div class="form-tab-content" id="datosAdicionales">
+                        <div class="form-row">
+                            <div class="form-group">
+                                <label for="limiteCredito">Límite de Crédito</label>
+                                <input type="number" id="limiteCredito" min="0" step="0.01" value="0">
+                            </div>
+                            <div class="form-group">
+                                <label for="plazoCredito">Plazo de Crédito (días)</label>
+                                <input type="number" id="plazoCredito" min="0" value="30">
+                            </div>
+                        </div>
+                        
+                        <div class="form-row">
+                            <div class="form-group">
+                                <label for="listaPrecio">Lista de Precios</label>
+                                <select id="listaPrecio">
+                                    <option value="estandar">Estándar</option>
+                                    <option value="mayorista">Mayorista</option>
+                                    <option value="especial">Especial</option>
+                                </select>
+                            </div>
+                            <div class="form-group">
+                                <label for="descuentoGeneral">Descuento General (%)</label>
+                                <input type="number" id="descuentoGeneral" min="0" max="100" step="0.01" value="0">
+                            </div>
+                        </div>
+                        
+                        <div class="form-row">
+                            <div class="form-group full-width">
+                                <label for="observaciones">Observaciones</label>
+                                <textarea id="observaciones" rows="4"></textarea>
+                            </div>
+                        </div>
+                        
+                        <div class="form-row">
+                            <div class="form-group">
+                                <label>Programa de Fidelización</label>
+                                <div class="checkbox-group">
+                                    <input type="checkbox" id="participaFidelizacion" checked>
+                                    <label for="participaFidelizacion">Participa en programa de fidelización</label>
+                                </div>
+                            </div>
+                            <div class="form-group">
+                                <label for="puntosFidelizacion">Puntos Acumulados</label>
+                                <input type="number" id="puntosFidelizacion" min="0" value="0" disabled>
+                            </div>
+                        </div>
+                    </div>
+                    
+                    <div class="form-actions">
+                        <button type="button" id="btnCancelarCliente" class="btn btn-secondary">Cancelar</button>
+                        <button type="submit" class="btn btn-primary">Guardar</button>
+                    </div>
+                </form>
+            </div>
+        </div>
+    </div>
+    
+    <!-- Modal Ver Cliente -->
+    <div id="modalVerCliente" class="modal">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h2 id="modalVerClienteTitle">Detalles del Cliente</h2>
+                <span class="close">&times;</span>
+            </div>
+            <div class="modal-body">
+                <div class="cliente-detalle-header">
+                    <div class="cliente-info-principal">
+                        <h3 id="clienteNombreCompleto">Nombre del Cliente</h3>
+                        <p id="clienteTipoDocumento">DNI/CUIT: <span id="clienteDocumento">00000000</span></p>
+                        <p id="clienteContacto">Teléfono: <span id="clienteTelefono">-</span> | Email: <span id="clienteEmailDetalle">-</span></p>
+                    </div>
+                    <div class="cliente-actions">
+                        <button id="btnEditarClienteDetalle" class="btn btn-small">
+                            <i class="fas fa-edit"></i> Editar
+                        </button>
+                        <button id="btnEnviarWhatsApp" class="btn btn-small btn-whatsapp">
+                            <i class="fab fa-whatsapp"></i> WhatsApp
+                        </button>
+                        <button id="btnEnviarEmail" class="btn btn-small btn-email">
+                            <i class="fas fa-envelope"></i> Email
+                        </button>
+                    </div>
+                </div>
+                
+                <div class="cliente-tabs">
+                    <div class="cliente-tabs-header">
+                        <div class="cliente-tab active" data-tab="resumen">Resumen</div>
+                        <div class="cliente-tab" data-tab="historial">Historial de Compras</div>
+                        <div class="cliente-tab" data-tab="cuenta">Estado de Cuenta</div>
+                        <div class="cliente-tab" data-tab="fidelizacion">Fidelización</div>
+                    </div>
+                    
+                    <div class="cliente-tab-content active" id="resumen">
+                        <div class="cliente-stats">
+                            <div class="stat-card">
+                                <h4>Total Compras</h4>
+                                <p class="stat-number" id="clienteTotalCompras">$0</p>
+                            </div>
+                            <div class="stat-card">
+                                <h4>Compras Último Año</h4>
+                                <p class="stat-number" id="clienteComprasAnual">$0</p>
+                            </div>
+                            <div class="stat-card">
+                                <h4>Ticket Promedio</h4>
+                                <p class="stat-number" id="clienteTicketPromedio">$0</p>
+                            </div>
+                            <div class="stat-card">
+                                <h4>Última Compra</h4>
+                                <p class="stat-number" id="clienteUltimaCompra">-</p>
+                            </div>
+                        </div>
+                        
+                        <div class="cliente-info-detallada">
+                            <div class="info-section">
+                                <h4>Datos Generales</h4>
+                                <table class="info-table">
+                                    <tr>
+                                        <td>Categoría:</td>
+                                        <td id="clienteCategoriaDetalle">Regular</td>
+                                    </tr>
+                                    <tr>
+                                        <td>Sucursal Asignada:</td>
+                                        <td id="clienteSucursalDetalle">Principal</td>
+                                    </tr>
+                                    <tr>
+                                        <td>Vendedor:</td>
+                                        <td id="clienteVendedorDetalle">-</td>
+                                    </tr>
+                                    <tr>
+                                        <td>Fecha de Alta:</td>
+                                        <td id="clienteFechaAlta">01/01/2023</td>
+                                    </tr>
+                                </table>
+                            </div>
+                            
+                            <div class="info-section">
+                                <h4>Datos Fiscales</h4>
+                                <table class="info-table">
+                                    <tr>
+                                        <td>Condición IVA:</td>
+                                        <td id="clienteIVADetalle">Consumidor Final</td>
+                                    </tr>
+                                    <tr>
+                                        <td>Condición IIBB:</td>
+                                        <td id="clienteIIBBDetalle">-</td>
+                                    </tr>
+                                    <tr>
+                                        <td>Tipo de Factura:</td>
+                                        <td id="clienteTipoFacturaDetalle">B</td>
+                                    </tr>
+                                </table>
+                            </div>
+                            
+                            <div class="info-section">
+                                <h4>Dirección</h4>
+                                <p id="clienteDireccionCompleta">Calle, Número, Localidad, Provincia (CP)</p>
+                            </div>
+                            
+                            <div class="info-section">
+                                <h4>Crédito y Precios</h4>
+                                <table class="info-table">
+                                    <tr>
+                                        <td>Límite de Crédito:</td>
+                                        <td id="clienteLimiteCreditoDetalle">$0</td>
+                                    </tr>
+                                    <tr>
+                                        <td>Saldo Actual:</td>
+                                        <td id="clienteSaldoActual">$0</td>
+                                    </tr>
+                                    <tr>
+                                        <td>Lista de Precios:</td>
+                                        <td id="clienteListaPrecioDetalle">Estándar</td>
+                                    </tr>
+                                    <tr>
+                                        <td>Descuento General:</td>
+                                        <td id="clienteDescuentoDetalle">0%</td>
+                                    </tr>
+                                </table>
+                            </div>
+                            
+                            <div class="info-section">
+                                <h4>Observaciones</h4>
+                                <p id="clienteObservacionesDetalle">-</p>
+                            </div>
+                        </div>
+                    </div>
+                    
+                    <div class="cliente-tab-content" id="historial">
+                        <div class="historial-filtros">
+                            <div class="filtro-fecha">
+                                <label for="fechaDesdeHistorial">Desde:</label>
+                                <input type="date" id="fechaDesdeHistorial">
+                                
+                                <label for="fechaHastaHistorial">Hasta:</label>
+                                <input type="date" id="fechaHastaHistorial">
+                                
+                                <button id="btnFiltrarHistorial" class="btn btn-small">Filtrar</button>
+                            </div>
+                        </div>
+                        
+                        <div class="table-container">
+                            <table class="data-table">
+                                <thead>
+                                    <tr>
+                                        <th>Fecha</th>
+                                        <th>Comprobante</th>
+                                        <th>Total</th>
+                                        <th>Forma de Pago</th>
+                                        <th>Estado</th>
+                                        <th>Acciones</th>
+                                    </tr>
+                                </thead>
+                                <tbody id="clienteHistorialCompras">
+                                    <!-- Se cargarán dinámicamente desde JS -->
+                                </tbody>
+                            </table>
+                        </div>
+                        
+                        <div class="historial-stats">
+                            <div class="stat-card">
+                                <h4>Total Período</h4>
+                                <p class="stat-number" id="historialTotalPeriodo">$0</p>
+                            </div>
+                            <div class="stat-card">
+                                <h4>Cantidad Compras</h4>
+                                <p class="stat-number" id="historialCantidadCompras">0</p>
+                            </div>
+                            <div class="stat-card">
+                                <h4>Productos Distintos</h4>
+                                <p class="stat-number" id="historialProductosDistintos">0</p>
+                            </div>
+                        </div>
+                        
+                        <div class="historial-charts">
+                            <div class="chart-container">
+                                <h4>Compras por Mes</h4>
+                                <canvas id="historialComprasMes"></canvas>
+                            </div>
+                            <div class="chart-container">
+                                <h4>Productos Más Comprados</h4>
+                                <canvas id="historialProductosFrecuentes"></canvas>
+                            </div>
+                        </div>
+                    </div>
+                    
+                    <div class="cliente-tab-content" id="cuenta">
+                        <div class="cuenta-header">
+                            <div class="cuenta-resumen">
+                                <div class="stat-card">
+                                    <h4>Saldo Total</h4>
+                                    <p class="stat-number" id="cuentaSaldoTotal">$0</p>
+                                </div>
+                                <div class="stat-card">
+                                    <h4>Vencido</h4>
+                                    <p class="stat-number" id="cuentaSaldoVencido">$0</p>
+                                </div>
+                                <div class="stat-card">
+                                    <h4>A Vencer</h4>
+                                    <p class="stat-number" id="cuentaSaldoAVencer">$0</p>
+                                </div>
+                            </div>
+                            <div class="cuenta-actions">
+                                <button id="btnRegistrarPago" class="btn btn-primary">
+                                    <i class="fas fa-money-bill-wave"></i> Registrar Pago
+                                </button>
+                                <button id="btnImprimirCtaCte" class="btn btn-secondary">
+                                    <i class="fas fa-print"></i> Imprimir
+                                </button>
+                                <button id="btnEnviarCtaCte" class="btn btn-secondary">
+                                    <i class="fas fa-envelope"></i> Enviar
+                                </button>
+                            </div>
+                        </div>
+                        
+                        <div class="cuenta-corriente">
+                            <h4>Cuenta Corriente</h4>
+                            <div class="table-container">
+                                <table class="data-table">
+                                    <thead>
+                                        <tr>
+                                            <th>Fecha</th>
+                                            <th>Concepto</th>
+                                            <th>Comprobante</th>
+                                            <th>Debe</th>
+                                            <th>Haber</th>
+                                            <th>Saldo</th>
+                                            <th>Vencimiento</th>
+                                            <th>Estado</th>
+                                        </tr>
+                                    </thead>
+                                    <tbody id="clienteCuentaCorriente">
+                                        <!-- Se cargarán dinámicamente desde JS -->
+                                    </tbody>
+                                </table>
+                            </div>
+                        </div>
+                    </div>
+                    
+                    <div class="cliente-tab-content" id="fidelizacion">
+                        <div class="fidelizacion-cliente-header">
+                            <div class="fidelizacion-stats">
+                                <div class="stat-card">
+                                    <h4>Puntos Actuales</h4>
+                                    <p class="stat-number" id="fidelizacionPuntosActuales">0</p>
+                                </div>
+                                <div class="stat-card">
+                                    <h4>Puntos Canjeados</h4>
+                                    <p class="stat-number" id="fidelizacionPuntosCanjeados">0</p>
+                                </div>
+                                <div class="stat-card">
+                                    <h4>Nivel</h4>
+                                    <p class="stat-number" id="fidelizacionNivel">Regular</p>
+                                </div>
+                                <div class="stat-card">
+                                    <h4>Próximo Nivel</h4>
+                                    <div class="progress-bar">
+                                        <div class="progress" id="fidelizacionProgresoNivel" style="width: 45%"></div>
+                                    </div>
+                                    <p class="progress-text">45%</p>
+                                </div>
+                            </div>
+                            <div class="fidelizacion-actions">
+                                <button id="btnCanjearPuntos" class="btn btn-primary">
+                                    <i class="fas fa-gift"></i> Canjear Puntos
+                                </button>
+                                <button id="btnAjustePuntos" class="btn btn-secondary">
+                                    <i class="fas fa-sliders-h"></i> Ajustar Puntos
+                                </button>
+                            </div>
+                        </div>
+                        
+                        <div class="fidelizacion-movimientos">
+                            <h4>Historial de Movimientos</h4>
+                            <div class="table-container">
+                                <table class="data-table">
+                                    <thead>
+                                        <tr>
+                                            <th>Fecha</th>
+                                            <th>Concepto</th>
+                                            <th>Puntos Ganados</th>
+                                            <th>Puntos Canjeados</th>
+                                            <th>Saldo</th>
+                                        </tr>
+                                    </thead>
+                                    <tbody id="clienteMovimientosPuntos">
+                                        <!-- Se cargarán dinámicamente desde JS -->
+                                    </tbody>
+                                </table>
+                            </div>
+                        </div>
+                        
+                        <div class="fidelizacion-beneficios">
+                            <h4>Beneficios Disponibles</h4>
+                            <div class="beneficios-container">
+                                <div class="beneficio-card">
+                                    <div class="beneficio-icon">
+                                        <i class="fas fa-percentage"></i>
+                                    </div>
+                                    <div class="beneficio-info">
+                                        <h5>10% de Descuento</h5>
+                                        <p>200 puntos</p>
+                                    </div>
+                                    <button class="btn btn-small" disabled>Canjear</button>
+                                </div>
+                                <div class="beneficio-card disponible">
+                                    <div class="beneficio-icon">
+                                        <i class="fas fa-shipping-fast"></i>
+                                    </div>
+                                    <div class="beneficio-info">
+                                        <h5>Envío Gratis</h5>
+                                        <p>150 puntos</p>
+                                    </div>
+                                    <button class="btn btn-small">Canjear</button>
+                                </div>
+                                <div class="beneficio-card disponible">
+                                    <div class="beneficio-icon">
+                                        <i class="fas fa-gift"></i>
+                                    </div>
+                                    <div class="beneficio-info">
+                                        <h5>Producto Gratis</h5>
+                                        <p>500 puntos</p>
+                                    </div>
+                                    <button class="btn btn-small">Canjear</button>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+    
+    <!-- Modal Configuración Fidelización -->
+    <div id="modalConfigFidelizacion" class="modal">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h2>Configuración Programa de Fidelización</h2>
+                <span class="close">&times;</span>
+            </div>
+            <div class="modal-body">
+                <form id="formConfigFidelizacion">
+                    <div class="form-section">
+                        <h3>Configuración General</h3>
+                        <div class="form-row">
+                            <div class="form-group">
+                                <label for="configActivarPrograma">Estado del Programa</label>
+                                <div class="toggle-switch">
+                                    <input type="checkbox" id="configActivarPrograma" checked>
+                                    <label for="configActivarPrograma"></label>
+                                </div>
+                            </div>
+                            <div class="form-group">
+                                <label for="configNombrePrograma">Nombre del Programa</label>
+                                <input type="text" id="configNombrePrograma" value="Clientes Estrellas" required>
+                            </div>
+                        </div>
+                    </div>
+                    
+                    <div class="form-section">
+                        <h3>Reglas de Acumulación</h3>
+                        <div class="form-row">
+                            <div class="form-group">
+                                <label for="configPuntosPorPeso">Puntos por cada $1000</label>
+                                <input type="number" id="configPuntosPorPeso" min="0" step="1" value="10" required>
+                            </div>
+                            <div class="form-group">
+                                <label for="configRedondeo">Redondeo de Puntos</label>
+                                <select id="configRedondeo">
+                                    <option value="abajo">Hacia abajo</option>
+                                    <option value="arriba">Hacia arriba</option>
+                                    <option value="matematico" selected>Matemático</option>
+                                </select>
+                            </div>
+                        </div>
+                        
+                        <div class="form-row">
+                            <div class="form-group">
+                                <label for="configPuntosCaducidad">Caducidad de Puntos (días)</label>
+                                <input type="number" id="configPuntosCaducidad" min="0" value="365" required>
+                                <small>0 = nunca caducan</small>
+                            </div>
+                            <div class="form-group">
+                                <label for="configMinimoPuntos">Mínimo para Canjear</label>
+                                <input type="number" id="configMinimoPuntos" min="0" value="100" required>
+                            </div>
+                        </div>
+                    </div>
+                    
+                    <div class="form-section">
+                        <h3>Niveles de Cliente</h3>
+                        <div class="table-container small">
+                            <table class="data-table" id="tablaNivelesFidelizacion">
+                                <thead>
+                                    <tr>
+                                        <th>Nivel</th>
+                                        <th>Puntos Mínimos</th>
+                                        <th>Multiplicador</th>
+                                        <th>Beneficios</th>
+                                        <th>Acciones</th>
+                                    </tr>
+                                </thead>
+                                <tbody>
+                                    <tr>
+                                        <td>Bronce</td>
+                                        <td>0</td>
+                                        <td>1x</td>
+                                        <td>Básicos</td>
+                                        <td><button type="button" class="btn-icon"><i class="fas fa-edit"></i></button></td>
+                                    </tr>
+                                    <tr>
+                                        <td>Plata</td>
+                                        <td>1000</td>
+                                        <td>1.5x</td>
+                                        <td>Envío gratis</td>
+                                        <td><button type="button" class="btn-icon"><i class="fas fa-edit"></i></button></td>
+                                    </tr>
+                                    <tr>
+                                        <td>Oro</td>
+                                        <td>5000</td>
+                                        <td>2x</td>
+                                        <td>Envío gratis, 5% descuento</td>
+                                        <td><button type="button" class="btn-icon"><i class="fas fa-edit"></i></button></td>
+                                    </tr>
+                                    <tr>
+                                        <td>Platino</td>
+                                        <td>10000</td>
+                                        <td>3x</td>
+                                        <td>Todos los beneficios</td>
+                                        <td><button type="button" class="btn-icon"><i class="fas fa-edit"></i></button></td>
+                                    </tr>
+                                </tbody>
+                            </table>
+                        </div>
+                        <button type="button" id="btnAgregarNivel" class="btn btn-small">
+                            <i class="fas fa-plus"></i> Agregar Nivel
+                        </button>
+                    </div>
+                    
+                    <div class="form-section">
+                        <h3>Beneficios y Canjes</h3>
+                        <div class="table-container small">
+                            <table class="data-table" id="tablaBeneficiosFidelizacion">
+                                <thead>
+                                    <tr>
+                                        <th>Beneficio</th>
+                                        <th>Puntos Requeridos</th>
+                                        <th>Tipo</th>
+                                        <th>Nivel Mínimo</th>
+                                        <th>Acciones</th>
+                                    </tr>
+                                </thead>
+                                <tbody>
+                                    <tr>
+                                        <td>5% de Descuento</td>
+                                        <td>200</td>
+                                        <td>Descuento</td>
+                                        <td>Bronce</td>
+                                        <td><button type="button" class="btn-icon"><i class="fas fa-edit"></i></button></td>
+                                    </tr>
+                                    <tr>
+                                        <td>10% de Descuento</td>
+                                        <td>400</td>
+                                        <td>Descuento</td>
+                                        <td>Plata</td>
+                                        <td><button type="button" class="btn-icon"><i class="fas fa-edit"></i></button></td>
+                                    </tr>
+                                    <tr>
+                                        <td>Envío Gratis</td>
+                                        <td>150</td>
+                                        <td>Envío</td>
+                                        <td>Bronce</td>
+                                        <td><button type="button" class="btn-icon"><i class="fas fa-edit"></i></button></td>
+                                    </tr>
+                                    <tr>
+                                        <td>Producto Gratis</td>
+                                        <td>500</td>
+                                        <td>Producto</td>
+                                        <td>Oro</td>
+                                        <td><button type="button" class="btn-icon"><i class="fas fa-edit"></i></button></td>
+                                    </tr>
+                                </tbody>
+                            </table>
+                        </div>
+                        <button type="button" id="btnAgregarBeneficio" class="btn btn-small">
+                            <i class="fas fa-plus"></i> Agregar Beneficio
+                        </button>
+                    </div>
+                    
+                    <div class="form-section">
+                        <h3>Comunicaciones</h3>
+                        <div class="form-row">
+                            <div class="form-group">
+                                <label for="configNotificarPuntos">Notificar Puntos</label>
+                                <div class="checkbox-group">
+                                    <input type="checkbox" id="configNotificarPuntos" checked>
+                                    <label for="configNotificarPuntos">Enviar notificación por cada acumulación</label>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="form-row">
+                            <div class="form-group">
+                                <label for="configMedioComunicacion">Medio de Comunicación</label>
+                                <div class="checkbox-group">
+                                    <input type="checkbox" id="configMedioEmail" checked>
+                                    <label for="configMedioEmail">Email</label>
+                                    <input type="checkbox" id="configMedioWhatsApp" checked>
+                                    <label for="configMedioWhatsApp">WhatsApp</label>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                    
+                    <div class="form-actions">
+                        <button type="button" id="btnCancelarConfigFidelizacion" class="btn btn-secondary">Cancelar</button>
+                        <button type="submit" class="btn btn-primary">Guardar Configuración</button>
+                    </div>
+                </form>
+            </div>
+        </div>
+    </div>
+    
+    <!-- Modal Registrar Pago -->
+    <div id="modalRegistrarPago" class="modal">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h2>Registrar Pago</h2>
+                <span class="close">&times;</span>
+            </div>
+            <div class="modal-body">
+                <form id="formRegistrarPago">
+                    <div class="form-row">
+                        <div class="form-group">
+                            <label for="fechaPago">Fecha</label>
+                            <input type="date" id="fechaPago" required>
+                        </div>
+                        <div class="form-group">
+                            <label for="montoPago">Monto</label>
+                            <input type="number" id="montoPago" min="0" step="0.01" required>
+                        </div>
+                    </div>
+                    
+                    <div class="form-row">
+                        <div class="form-group">
+                            <label for="formaPago">Forma de Pago</label>
+                            <select id="formaPago" required>
+                                <option value="efectivo">Efectivo</option>
+                                <option value="transferencia">Transferencia</option>
+                                <option value="debito">Tarjeta de Débito</option>
+                                <option value="credito">Tarjeta de Crédito</option>
+                                <option value="mercadopago">Mercado Pago</option>
+                                <option value="cheque">Cheque</option>
+                            </select>
+                        </div>
+                        <div class="form-group">
+                            <label for="referenciaPago">Referencia/Comprobante</label>
+                            <input type="text" id="referenciaPago">
+                        </div>
+                    </div>
+                    
+                    <div class="form-row">
+                        <div class="form-group full-width">
+                            <label for="conceptoPago">Concepto</label>
+                            <input type="text" id="conceptoPago" value="Pago de cuenta corriente">
+                        </div>
+                    </div>
+                    
+                    <div class="form-row">
+                        <div class="form-group full-width">
+                            <label for="observacionesPago">Observaciones</label>
+                            <textarea id="observacionesPago" rows="3"></textarea>
+                        </div>
+                    </div>
+                    
+                    <div class="form-actions">
+                        <button type="button" id="btnCancelarPago" class="btn btn-secondary">Cancelar</button>
+                        <button type="submit" class="btn btn-primary">Registrar Pago</button>
+                    </div>
+                </form>
+            </div>
+        </div>
+    </div>
+    
+    <!-- Modal Canjear Puntos -->
+    <div id="modalCanjearPuntos" class="modal">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h2>Canjear Puntos</h2>
+                <span class="close">&times;</span>
+            </div>
+            <div class="modal-body">
+                <div class="puntos-disponibles">
+                    <h3>Puntos Disponibles: <span id="puntosDisponiblesCanje">750</span></h3>
+                </div>
+                
+                <div class="beneficios-canje">
+                    <h3>Beneficios Disponibles</h3>
+                    <div class="beneficios-lista">
+                        <div class="beneficio-item">
+                            <div class="beneficio-checkbox">
+                                <input type="radio" name="beneficio" id="beneficio1" value="descuento5">
+                            </div>
+                            <div class="beneficio-info">
+                                <h4>5% de Descuento</h4>
+                                <p>Aplicable en tu próxima compra</p>
+                            </div>
+                            <div class="beneficio-puntos">
+                                <span>200 puntos</span>
+                            </div>
+                        </div>
+                        
+                        <div class="beneficio-item">
+                            <div class="beneficio-checkbox">
+                                <input type="radio" name="beneficio" id="beneficio2" value="descuento10">
+                            </div>
+                            <div class="beneficio-info">
+                                <h4>10% de Descuento</h4>
+                                <p>Aplicable en tu próxima compra</p>
+                            </div>
+                            <div class="beneficio-puntos">
+                                <span>400 puntos</span>
+                            </div>
+                        </div>
+                        
+                        <div class="beneficio-item">
+                            <div class="beneficio-checkbox">
+                                <input type="radio" name="beneficio" id="beneficio3" value="envioGratis" checked>
+                            </div>
+                            <div class="beneficio-info">
+                                <h4>Envío Gratis</h4>
+                                <p>En tu próxima compra</p>
+                            </div>
+                            <div class="beneficio-puntos">
+                                <span>150 puntos</span>
+                            </div>
+                        </div>
+                        
+                        <div class="beneficio-item">
+                            <div class="beneficio-checkbox">
+                                <input type="radio" name="beneficio" id="beneficio4" value="productoGratis">
+                            </div>
+                            <div class="beneficio-info">
+                                <h4>Producto Gratis</h4>
+                                <p>A elegir entre productos seleccionados</p>
+                            </div>
+                            <div class="beneficio-puntos">
+                                <span>500 puntos</span>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                
+                <div class="canje-actions">
+                    <button type="button" id="btnCancelarCanje" class="btn btn-secondary">Cancelar</button>
+                    <button type="button" id="btnConfirmarCanje" class="btn btn-primary">Confirmar Canje</button>
+                </div>
+            </div>
+        </div>
+    </div>
+    
+    <!-- Modal Importar Clientes -->
+    <div id="modalImportarClientes" class="modal">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h2>Importar Clientes</h2>
+                <span class="close">&times;</span>
+            </div>
+            <div class="modal-body">
+                <div class="import-instructions">
+                    <h3>Instrucciones</h3>
+                    <ol>
+                        <li>Descargue la plantilla de Excel para importar clientes.</li>
+                        <li>Complete la información de los clientes en la plantilla.</li>
+                        <li>Guarde el archivo y súbalo utilizando el formulario a continuación.</li>
+                    </ol>
+                    <p>
+                        <button id="btnDescargarPlantilla" class="btn btn-secondary">
+                            <i class="fas fa-download"></i> Descargar Plantilla
+                        </button>
+                    </p>
+                </div>
+                
+                <div class="import-form">
+                    <form id="formImportarClientes">
+                        <div class="form-row">
+                            <div class="form-group full-width">
+                                <label for="archivoImportar">Archivo Excel</label>
+                                <input type="file" id="archivoImportar" accept=".xlsx,.xls,.csv" required>
+                            </div>
+                        </div>
+                        
+                        <div class="form-row">
+                            <div class="form-group">
+                                <label for="sucursalImportacion">Asignar a Sucursal</label>
+                                <select id="sucursalImportacion">
+                                    <option value="">Usar valor del archivo</option>
+                                    <!-- Se cargarán dinámicamente desde JS -->
+                                </select>
+                            </div>
+                            <div class="form-group">
+                                <label for="categoriaImportacion">Categoría por Defecto</label>
+                                <select id="categoriaImportacion">
+                                    <option value="">Usar valor del archivo</option>
+                                    <option value="regular">Regular</option>
+                                    <option value="vip">VIP</option>
+                                    <option value="mayorista">Mayorista</option>
+                                </select>
+                            </div>
+                        </div>
+                        
+                        <div class="form-row">
+                            <div class="form-group full-width">
+                                <div class="checkbox-group">
+                                    <input type="checkbox" id="permitirActualizar" checked>
+                                    <label for="permitirActualizar">Actualizar clientes existentes</label>
+                                </div>
+                            </div>
+                        </div>
+                        
+                        <div class="form-actions">
+                            <button type="button" id="btnCancelarImportacion" class="btn btn-secondary">Cancelar</button>
+                            <button type="submit" class="btn btn-primary">Importar Clientes</button>
+                        </div>
+                    </form>
+                </div>
+            </div>
+        </div>
+    </div>
+    
+    <!-- Incluir scripts -->
+    <script src="../assets/js/renderer.js"></script>
+    <script src="../assets/js/utils/database.js"></script>
+    <script src="../assets/js/utils/validation.js"></script>
+    <script src="../assets/js/modules/clientes/index.js"></script>
+    <script src="../assets/js/modules/clientes/editor.js"></script>
+    <script src="../assets/js/modules/clientes/historial.js"></script>
+    <script src="../assets/js/modules/clientes/fidelizacion.js"></script>
+</body>
+</html>

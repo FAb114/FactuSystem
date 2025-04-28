@@ -1,0 +1,486 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Nota de Débito - FactuSystem</title>
+    <style>
+        :root {
+            --primary-color: #3498db;
+            --secondary-color: #2c3e50;
+            --accent-color: #e74c3c;
+            --light-gray: #f5f5f5;
+            --dark-gray: #777;
+            --border-color: #ddd;
+        }
+        
+        * {
+            box-sizing: border-box;
+            margin: 0;
+            padding: 0;
+            font-family: Arial, Helvetica, sans-serif;
+        }
+        
+        body {
+            font-size: 12px;
+            line-height: 1.4;
+            color: #333;
+            background-color: white;
+        }
+        
+        .nota-debito-container {
+            width: 100%;
+            max-width: 800px;
+            margin: 0 auto;
+            padding: 20px;
+            position: relative;
+        }
+        
+        .print-only {
+            display: none;
+        }
+        
+        @media print {
+            .print-only {
+                display: block;
+            }
+            
+            .no-print {
+                display: none !important;
+            }
+            
+            body {
+                font-size: 11px;
+            }
+        }
+        
+        .header {
+            display: flex;
+            justify-content: space-between;
+            margin-bottom: 20px;
+            border-bottom: 2px solid var(--primary-color);
+            padding-bottom: 10px;
+        }
+        
+        .company-info {
+            flex: 1;
+        }
+        
+        .company-logo {
+            max-width: 200px;
+            max-height: 80px;
+        }
+        
+        .company-name {
+            font-size: 18px;
+            font-weight: bold;
+            color: var(--secondary-color);
+        }
+        
+        .company-details {
+            font-size: 11px;
+            color: var(--dark-gray);
+        }
+        
+        .document-type {
+            flex: 1;
+            text-align: right;
+            border: 2px solid var(--accent-color);
+            padding: 10px;
+            border-radius: 5px;
+            max-width: 180px;
+        }
+        
+        .document-title {
+            font-size: 16px;
+            font-weight: bold;
+            color: var(--accent-color);
+        }
+        
+        .document-letter {
+            font-size: 28px;
+            font-weight: bold;
+            display: inline-block;
+            padding: 5px 10px;
+            margin: 5px 0;
+            border: 2px solid var(--accent-color);
+            border-radius: 5px;
+            color: var(--accent-color);
+        }
+        
+        .document-number {
+            font-size: 14px;
+            font-weight: bold;
+        }
+        
+        .client-info {
+            display: flex;
+            justify-content: space-between;
+            margin-bottom: 20px;
+            padding: 15px;
+            background-color: var(--light-gray);
+            border-radius: 5px;
+        }
+        
+        .client-details, .document-details {
+            flex: 1;
+        }
+        
+        .section-title {
+            font-size: 12px;
+            font-weight: bold;
+            color: var(--secondary-color);
+            margin-bottom: 5px;
+        }
+        
+        .details-table {
+            width: 100%;
+            border-collapse: collapse;
+            margin: 20px 0;
+        }
+        
+        .details-table th {
+            background-color: var(--primary-color);
+            color: white;
+            font-weight: normal;
+            text-align: left;
+            padding: 8px;
+        }
+        
+        .details-table td {
+            padding: 8px;
+            border-bottom: 1px solid var(--border-color);
+        }
+        
+        .details-table .cantidad {
+            text-align: center;
+            width: 10%;
+        }
+        
+        .details-table .descripcion {
+            width: 50%;
+        }
+        
+        .details-table .precio, .details-table .subtotal {
+            text-align: right;
+            width: 20%;
+        }
+        
+        .totals {
+            margin-top: 20px;
+            display: flex;
+            justify-content: flex-end;
+        }
+        
+        .totals-table {
+            width: 40%;
+            border-collapse: collapse;
+        }
+        
+        .totals-table td {
+            padding: 5px;
+        }
+        
+        .totals-table .total-label {
+            text-align: right;
+            font-weight: bold;
+        }
+        
+        .totals-table .total-value {
+            text-align: right;
+            padding-left: 20px;
+        }
+        
+        .totals-table .grand-total {
+            font-size: 14px;
+            font-weight: bold;
+            color: var(--accent-color);
+            border-top: 1px solid var(--border-color);
+            padding-top: 10px;
+        }
+        
+        .reference {
+            margin: 20px 0;
+            padding: 10px;
+            background-color: var(--light-gray);
+            border-radius: 5px;
+        }
+        
+        .notes {
+            margin-top: 30px;
+            padding-top: 10px;
+            border-top: 1px dashed var(--border-color);
+        }
+        
+        .footer {
+            margin-top: 40px;
+            padding-top: 10px;
+            border-top: 1px solid var(--border-color);
+            text-align: center;
+            font-size: 11px;
+            color: var(--dark-gray);
+        }
+        
+        .barcode {
+            margin: 20px 0;
+            text-align: center;
+        }
+        
+        .electronic-info {
+            margin-top: 20px;
+            text-align: right;
+            font-size: 10px;
+            color: var(--dark-gray);
+        }
+        
+        .afip-info {
+            display: flex;
+            align-items: center;
+            justify-content: flex-end;
+            margin-top: 10px;
+        }
+        
+        .afip-logo {
+            width: 50px;
+            margin-right: 10px;
+        }
+        
+        .qr-container {
+            text-align: center;
+            margin: 20px 0;
+        }
+        
+        .qr-code {
+            width: 100px;
+            height: 100px;
+        }
+        
+        /* Estilos para ticket (58mm) */
+        @media print and (max-width: 58mm) {
+            .nota-debito-container {
+                padding: 5px;
+                width: 58mm;
+            }
+            
+            .header {
+                flex-direction: column;
+            }
+            
+            .document-type {
+                margin-top: 10px;
+                text-align: center;
+                max-width: none;
+            }
+            
+            .client-info {
+                flex-direction: column;
+            }
+            
+            .document-details {
+                margin-top: 10px;
+            }
+            
+            .details-table th {
+                font-size: 9px;
+                padding: 3px;
+            }
+            
+            .details-table td {
+                font-size: 9px;
+                padding: 3px;
+            }
+            
+            .totals-table {
+                width: 100%;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="nota-debito-container">
+        <!-- Marca de agua para copias -->
+        <div class="print-only watermark" id="watermarkText"></div>
+        
+        <!-- Encabezado -->
+        <div class="header">
+            <div class="company-info">
+                <img src="{{company_logo}}" alt="Logo de la empresa" class="company-logo" id="companyLogo">
+                <div class="company-name" id="companyName">{{company_name}}</div>
+                <div class="company-details" id="companyAddress">{{company_address}}</div>
+                <div class="company-details" id="companyTaxInfo">CUIT: {{company_cuit}} - {{company_tax_condition}}</div>
+                <div class="company-details" id="companyContacts">Tel: {{company_phone}} - Email: {{company_email}}</div>
+                <div class="company-details" id="companyIIBB">Ingresos Brutos: {{company_iibb}}</div>
+                <div class="company-details" id="companyStartActivity">Inicio de Actividades: {{company_activity_start}}</div>
+            </div>
+            
+            <div class="document-type">
+                <div class="document-title">NOTA DE DÉBITO</div>
+                <div class="document-letter" id="documentLetter">{{document_letter}}</div>
+                <div class="document-number" id="documentNumber">{{document_number}}</div>
+                <div>ORIGINAL</div>
+                <div>Fecha: {{document_date}}</div>
+            </div>
+        </div>
+        
+        <!-- Información del cliente -->
+        <div class="client-info">
+            <div class="client-details">
+                <div class="section-title">CLIENTE:</div>
+                <div id="clientName">{{client_name}}</div>
+                <div id="clientAddress">{{client_address}}</div>
+                <div id="clientCuit">CUIT/DNI: {{client_identification}}</div>
+                <div id="clientTaxCondition">Condición frente al IVA: {{client_tax_condition}}</div>
+            </div>
+            
+            <div class="document-details">
+                <div class="section-title">DATOS DE LA OPERACIÓN:</div>
+                <div>Punto de Venta: {{pos_number}}</div>
+                <div>Condición de Venta: {{payment_terms}}</div>
+                <div>Sucursal: {{branch_name}}</div>
+                <div>Vendedor: {{seller_name}}</div>
+            </div>
+        </div>
+        
+        <!-- Referencia a factura original -->
+        <div class="reference">
+            <div class="section-title">REFERENCIA:</div>
+            <div id="invoiceReference">{{reference_document_type}} {{reference_document_letter}} {{reference_document_number}} del {{reference_document_date}}</div>
+            <div id="referenceReason">Motivo: {{reference_reason}}</div>
+        </div>
+        
+        <!-- Detalle de ítems -->
+        <table class="details-table">
+            <thead>
+                <tr>
+                    <th class="cantidad">CANT.</th>
+                    <th class="descripcion">DESCRIPCIÓN</th>
+                    <th class="precio">PRECIO UNIT.</th>
+                    <th class="subtotal">SUBTOTAL</th>
+                </tr>
+            </thead>
+            <tbody id="itemsDetail">
+                {{#each items}}
+                <tr>
+                    <td class="cantidad">{{quantity}}</td>
+                    <td class="descripcion">{{description}}</td>
+                    <td class="precio">{{unit_price}}</td>
+                    <td class="subtotal">{{subtotal}}</td>
+                </tr>
+                {{/each}}
+            </tbody>
+        </table>
+        
+        <!-- Totales -->
+        <div class="totals">
+            <table class="totals-table">
+                <tr>
+                    <td class="total-label">Subtotal:</td>
+                    <td class="total-value" id="subtotal">{{subtotal}}</td>
+                </tr>
+                {{#if has_discount}}
+                <tr>
+                    <td class="total-label">{{discount_type}} ({{discount_rate}}%):</td>
+                    <td class="total-value" id="discount">{{discount_amount}}</td>
+                </tr>
+                {{/if}}
+                {{#if has_tax}}
+                <tr>
+                    <td class="total-label">IVA ({{tax_rate}}%):</td>
+                    <td class="total-value" id="tax">{{tax_amount}}</td>
+                </tr>
+                {{/if}}
+                <tr>
+                    <td class="total-label grand-total">TOTAL:</td>
+                    <td class="total-value grand-total" id="grandTotal">{{total}}</td>
+                </tr>
+            </table>
+        </div>
+        
+        <!-- Información adicional -->
+        <div class="notes">
+            <div class="section-title">OBSERVACIONES:</div>
+            <div id="notesText">{{notes}}</div>
+        </div>
+        
+        <!-- Código de barras -->
+        <div class="barcode">
+            <img id="barcodeImage" src="{{barcode_image}}" alt="Código de barras">
+        </div>
+        
+        <!-- Información fiscal electrónica -->
+        {{#if is_electronic}}
+        <div class="electronic-info">
+            <div>CAE N°: {{cae_number}}</div>
+            <div>Fecha de Vto. CAE: {{cae_expiration}}</div>
+            
+            <div class="afip-info">
+                <img src="../../../assets/img/afip-logo.png" alt="Logo AFIP" class="afip-logo">
+                <div>Comprobante Autorizado</div>
+            </div>
+            
+            <div class="qr-container">
+                <img class="qr-code" src="{{qr_code}}" alt="Código QR AFIP">
+            </div>
+        </div>
+        {{/if}}
+        
+        <!-- Pie de página -->
+        <div class="footer">
+            <div>{{company_name}} - {{legal_text}}</div>
+            <div>Documento generado por FactuSystem {{system_version}} - {{generation_date}}</div>
+        </div>
+    </div>
+    
+    <script>
+        // Este script se ejecuta cuando se renderiza el documento
+        document.addEventListener('DOMContentLoaded', function() {
+            // Agregar marca de agua si es una copia
+            const urlParams = new URLSearchParams(window.location.search);
+            const isCopy = urlParams.get('copy');
+            
+            if (isCopy === 'true') {
+                const watermarkDiv = document.getElementById('watermarkText');
+                watermarkDiv.style.position = 'absolute';
+                watermarkDiv.style.top = '50%';
+                watermarkDiv.style.left = '50%';
+                watermarkDiv.style.transform = 'translate(-50%, -50%) rotate(-45deg)';
+                watermarkDiv.style.fontSize = '80px';
+                watermarkDiv.style.opacity = '0.1';
+                watermarkDiv.style.color = '#000';
+                watermarkDiv.style.pointerEvents = 'none';
+                watermarkDiv.style.zIndex = '1000';
+                watermarkDiv.innerHTML = 'COPIA';
+            }
+            
+            // Preparar para impresión automática si está habilitado
+            const autoPrint = urlParams.get('print');
+            if (autoPrint === 'true') {
+                window.onload = function() {
+                    setTimeout(function() {
+                        window.print();
+                    }, 500);
+                };
+            }
+        });
+        
+        // Evento para comunicarse con el proceso principal de Electron
+        function notifyPrintComplete() {
+            if (window.electronAPI && window.electronAPI.printComplete) {
+                window.electronAPI.printComplete();
+            }
+        }
+        
+        // Detectar cuando la impresión ha terminado
+        if (window.matchMedia) {
+            const mediaQueryList = window.matchMedia('print');
+            mediaQueryList.addEventListener('change', function(mql) {
+                if (!mql.matches) {
+                    notifyPrintComplete();
+                }
+            });
+        }
+        
+        window.addEventListener('afterprint', notifyPrintComplete);
+    </script>
+</body>
+</html>

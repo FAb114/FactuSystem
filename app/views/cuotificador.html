@@ -1,0 +1,1080 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Cuotificador - FactuSystem</title>
+    <link rel="stylesheet" href="../assets/css/main.css">
+    <link rel="stylesheet" href="../assets/css/components/modal.css">
+    <link rel="stylesheet" href="../assets/css/components/tables.css">
+    <!-- Font Awesome para íconos -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <!-- Select2 para selects mejorados -->
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/select2/4.1.0-rc.0/css/select2.min.css" rel="stylesheet" />
+    <style>
+        .cuotificador-container {
+            padding: 20px;
+            height: 100%;
+            display: flex;
+            flex-direction: column;
+        }
+        
+        .cuotificador-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 20px;
+        }
+        
+        .cuotificador-title {
+            font-size: 24px;
+            font-weight: 600;
+            color: #333;
+        }
+        
+        .flex-container {
+            display: flex;
+            gap: 20px;
+            height: calc(100% - 60px);
+        }
+        
+        .left-panel {
+            flex: 1;
+            display: flex;
+            flex-direction: column;
+            background-color: #fff;
+            border-radius: 8px;
+            box-shadow: 0 2px 10px rgba(0, 0, 0, 0.1);
+            overflow: hidden;
+        }
+        
+        .right-panel {
+            flex: 1;
+            display: flex;
+            flex-direction: column;
+            background-color: #fff;
+            border-radius: 8px;
+            box-shadow: 0 2px 10px rgba(0, 0, 0, 0.1);
+            overflow: hidden;
+        }
+        
+        .panel-header {
+            background-color: #f8f9fa;
+            padding: 15px;
+            border-bottom: 1px solid #e9ecef;
+            font-weight: 600;
+            color: #495057;
+        }
+        
+        .panel-body {
+            padding: 15px;
+            overflow-y: auto;
+            flex-grow: 1;
+        }
+        
+        .products-list {
+            max-height: 300px;
+            overflow-y: auto;
+            margin-bottom: 15px;
+            border: 1px solid #e9ecef;
+            border-radius: 4px;
+        }
+        
+        .product-item {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding: 10px 15px;
+            border-bottom: 1px solid #e9ecef;
+        }
+        
+        .product-item:last-child {
+            border-bottom: none;
+        }
+        
+        .product-info {
+            flex-grow: 1;
+        }
+        
+        .product-name {
+            font-weight: 500;
+        }
+        
+        .product-price {
+            color: #6c757d;
+            font-size: 14px;
+        }
+        
+        .product-actions {
+            display: flex;
+            gap: 10px;
+        }
+        
+        .form-group {
+            margin-bottom: 15px;
+        }
+        
+        .form-group label {
+            display: block;
+            margin-bottom: 8px;
+            font-weight: 500;
+            color: #495057;
+        }
+        
+        .form-control {
+            width: 100%;
+            padding: 10px;
+            border: 1px solid #ced4da;
+            border-radius: 4px;
+            font-size: 16px;
+        }
+        
+        .form-control:focus {
+            border-color: #80bdff;
+            outline: 0;
+            box-shadow: 0 0 0 0.2rem rgba(0, 123, 255, 0.25);
+        }
+        
+        .btn {
+            display: inline-block;
+            font-weight: 400;
+            text-align: center;
+            white-space: nowrap;
+            vertical-align: middle;
+            user-select: none;
+            border: 1px solid transparent;
+            padding: 8px 16px;
+            font-size: 16px;
+            line-height: 1.5;
+            border-radius: 4px;
+            transition: all 0.15s ease-in-out;
+            cursor: pointer;
+        }
+        
+        .btn-primary {
+            color: #fff;
+            background-color: #007bff;
+            border-color: #007bff;
+        }
+        
+        .btn-primary:hover {
+            background-color: #0069d9;
+            border-color: #0062cc;
+        }
+        
+        .btn-success {
+            color: #fff;
+            background-color: #28a745;
+            border-color: #28a745;
+        }
+        
+        .btn-success:hover {
+            background-color: #218838;
+            border-color: #1e7e34;
+        }
+        
+        .btn-danger {
+            color: #fff;
+            background-color: #dc3545;
+            border-color: #dc3545;
+        }
+        
+        .btn-danger:hover {
+            background-color: #c82333;
+            border-color: #bd2130;
+        }
+        
+        .btn-sm {
+            padding: 4px 8px;
+            font-size: 14px;
+        }
+        
+        .total-box {
+            background-color: #f8f9fa;
+            border-radius: 4px;
+            padding: 15px;
+            margin-top: 20px;
+        }
+        
+        .total-row {
+            display: flex;
+            justify-content: space-between;
+            margin-bottom: 10px;
+        }
+        
+        .total-label {
+            font-weight: 500;
+        }
+        
+        .grand-total {
+            font-size: 24px;
+            font-weight: 600;
+            color: #28a745;
+            margin-top: 10px;
+            text-align: right;
+        }
+        
+        .cuotas-table {
+            width: 100%;
+            border-collapse: collapse;
+            margin-top: 20px;
+        }
+        
+        .cuotas-table th {
+            background-color: #f8f9fa;
+            text-align: left;
+            padding: 10px;
+            border-bottom: 2px solid #dee2e6;
+        }
+        
+        .cuotas-table td {
+            padding: 10px;
+            border-bottom: 1px solid #dee2e6;
+        }
+        
+        .cuotas-table tr:hover {
+            background-color: #f8f9fa;
+        }
+        
+        .actions-container {
+            display: flex;
+            justify-content: space-between;
+            margin-top: 20px;
+        }
+        
+        .empty-message {
+            text-align: center;
+            padding: 20px;
+            color: #6c757d;
+        }
+        
+        .search-container {
+            position: relative;
+            margin-bottom: 15px;
+        }
+        
+        .search-container i {
+            position: absolute;
+            left: 10px;
+            top: 12px;
+            color: #6c757d;
+        }
+        
+        .search-input {
+            padding-left: 35px;
+        }
+        
+        .highlighted {
+            background-color: #e2f3ff;
+        }
+        
+        .badge {
+            display: inline-block;
+            padding: 4px 8px;
+            font-size: 12px;
+            font-weight: 600;
+            border-radius: 4px;
+            margin-left: 5px;
+        }
+        
+        .badge-success {
+            background-color: #d4edda;
+            color: #155724;
+        }
+        
+        .badge-warning {
+            background-color: #fff3cd;
+            color: #856404;
+        }
+        
+        .badge-danger {
+            background-color: #f8d7da;
+            color: #721c24;
+        }
+        
+        .spinner {
+            display: inline-block;
+            width: 20px;
+            height: 20px;
+            border: 3px solid rgba(0, 123, 255, 0.3);
+            border-radius: 50%;
+            border-top-color: #007bff;
+            animation: spin 1s ease-in-out infinite;
+        }
+        
+        @keyframes spin {
+            to { transform: rotate(360deg); }
+        }
+        
+        /* Estilos para tarjetas */
+        .cards-container {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 10px;
+            margin-bottom: 15px;
+        }
+        
+        .card-option {
+            padding: 10px;
+            border: 1px solid #ced4da;
+            border-radius: 4px;
+            cursor: pointer;
+            text-align: center;
+            width: calc(25% - 10px);
+            transition: all 0.2s;
+        }
+        
+        .card-option:hover {
+            border-color: #007bff;
+        }
+        
+        .card-option.active {
+            border-color: #007bff;
+            background-color: #e2f3ff;
+        }
+        
+        .card-image {
+            height: 30px;
+            margin-bottom: 5px;
+        }
+        
+        .card-name {
+            font-size: 12px;
+            font-weight: 500;
+        }
+    </style>
+</head>
+<body>
+    <div class="cuotificador-container">
+        <div class="cuotificador-header">
+            <div class="cuotificador-title">
+                <i class="fas fa-calculator"></i> Cuotificador
+            </div>
+            <div>
+                <button id="resetButton" class="btn btn-danger">
+                    <i class="fas fa-undo"></i> Reiniciar
+                </button>
+            </div>
+        </div>
+        
+        <div class="flex-container">
+            <!-- Panel izquierdo - Selección de productos -->
+            <div class="left-panel">
+                <div class="panel-header">
+                    <i class="fas fa-shopping-cart"></i> Productos
+                </div>
+                <div class="panel-body">
+                    <div class="search-container">
+                        <i class="fas fa-search"></i>
+                        <input type="text" id="productSearch" class="form-control search-input" placeholder="Buscar productos...">
+                    </div>
+                    
+                    <div class="form-group">
+                        <label for="productCode">Código de barras:</label>
+                        <div class="input-group">
+                            <input type="text" id="productCode" class="form-control" placeholder="Escanee o ingrese el código">
+                            <button id="productSearchBtn" class="btn btn-primary">
+                                <i class="fas fa-search"></i>
+                            </button>
+                        </div>
+                        <small class="text-muted">Presione F1 para abrir búsqueda avanzada</small>
+                    </div>
+                    
+                    <div class="products-list" id="productsList">
+                        <div class="empty-message">
+                            <i class="fas fa-box-open fa-2x"></i>
+                            <p>No hay productos seleccionados</p>
+                            <p>Escanee un código de barras o busque un producto</p>
+                        </div>
+                    </div>
+                    
+                    <div class="total-box">
+                        <div class="total-row">
+                            <span class="total-label">Subtotal:</span>
+                            <span id="subtotal">$0.00</span>
+                        </div>
+                        <div class="total-row">
+                            <span class="total-label">IVA (21%):</span>
+                            <span id="iva">$0.00</span>
+                        </div>
+                        <div class="grand-total">
+                            <span>Total: </span>
+                            <span id="total">$0.00</span>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            
+            <!-- Panel derecho - Simulación de cuotas -->
+            <div class="right-panel">
+                <div class="panel-header">
+                    <i class="fas fa-credit-card"></i> Simulación de cuotas
+                </div>
+                <div class="panel-body">
+                    <div class="form-group">
+                        <label>Tarjeta:</label>
+                        <div class="cards-container">
+                            <div class="card-option" data-card="visa">
+                                <img src="../assets/img/cards/visa.png" alt="Visa" class="card-image">
+                                <div class="card-name">Visa</div>
+                            </div>
+                            <div class="card-option" data-card="mastercard">
+                                <img src="../assets/img/cards/mastercard.png" alt="Mastercard" class="card-image">
+                                <div class="card-name">Mastercard</div>
+                            </div>
+                            <div class="card-option" data-card="amex">
+                                <img src="../assets/img/cards/amex.png" alt="American Express" class="card-image">
+                                <div class="card-name">Amex</div>
+                            </div>
+                            <div class="card-option" data-card="naranja">
+                                <img src="../assets/img/cards/naranja.png" alt="Naranja" class="card-image">
+                                <div class="card-name">Naranja</div>
+                            </div>
+                        </div>
+                    </div>
+                    
+                    <div class="form-group">
+                        <label for="bankSelect">Banco:</label>
+                        <select id="bankSelect" class="form-control">
+                            <option value="">Seleccione un banco</option>
+                            <option value="galicia">Banco Galicia</option>
+                            <option value="bbva">BBVA</option>
+                            <option value="santander">Santander</option>
+                            <option value="nacion">Banco Nación</option>
+                            <option value="provincia">Banco Provincia</option>
+                            <option value="icbc">ICBC</option>
+                            <option value="macro">Banco Macro</option>
+                            <option value="otro">Otro banco</option>
+                        </select>
+                    </div>
+                    
+                    <div class="form-group">
+                        <label for="cuotasSelect">Cantidad de cuotas:</label>
+                        <select id="cuotasSelect" class="form-control">
+                            <option value="1">1 cuota</option>
+                            <option value="3">3 cuotas</option>
+                            <option value="6">6 cuotas</option>
+                            <option value="9">9 cuotas</option>
+                            <option value="12">12 cuotas</option>
+                            <option value="18">18 cuotas</option>
+                            <option value="24">24 cuotas</option>
+                        </select>
+                    </div>
+                    
+                    <button id="simularBtn" class="btn btn-primary" style="width: 100%;">
+                        <i class="fas fa-calculator"></i> Simular cuotas
+                    </button>
+                    
+                    <div id="resultContainer" style="display: none; margin-top: 20px;">
+                        <h4>Resultado de la simulación</h4>
+                        
+                        <table class="cuotas-table">
+                            <thead>
+                                <tr>
+                                    <th>#</th>
+                                    <th>Valor cuota</th>
+                                    <th>Vencimiento</th>
+                                </tr>
+                            </thead>
+                            <tbody id="cuotasTableBody">
+                                <!-- Aquí se generarán las filas de cuotas -->
+                            </tbody>
+                        </table>
+                        
+                        <div class="total-box" style="margin-top: 15px;">
+                            <div class="total-row">
+                                <span class="total-label">Total sin interés:</span>
+                                <span id="totalSinInteres">$0.00</span>
+                            </div>
+                            <div class="total-row">
+                                <span class="total-label">Total con interés:</span>
+                                <span id="totalConInteres">$0.00</span>
+                            </div>
+                            <div class="total-row">
+                                <span class="total-label">Tasa efectiva anual:</span>
+                                <span id="tea">0.00%</span>
+                            </div>
+                            <div class="total-row">
+                                <span class="total-label">CFT:</span>
+                                <span id="cft">0.00%</span>
+                            </div>
+                        </div>
+                        
+                        <div class="actions-container">
+                            <button id="printBtn" class="btn btn-primary">
+                                <i class="fas fa-print"></i> Imprimir
+                            </button>
+                            <button id="facturarBtn" class="btn btn-success">
+                                <i class="fas fa-file-invoice"></i> Ir al facturador
+                            </button>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+    
+    <!-- Modal para búsqueda avanzada de productos -->
+    <div id="productSearchModal" class="modal">
+        <div class="modal-content" style="width: 80%; max-width: 800px;">
+            <div class="modal-header">
+                <h2>Búsqueda avanzada de productos</h2>
+                <span class="close" id="closeProductSearchModal">&times;</span>
+            </div>
+            <div class="modal-body">
+                <div class="search-container">
+                    <i class="fas fa-search"></i>
+                    <input type="text" id="advancedProductSearch" class="form-control search-input" placeholder="Buscar por nombre, código, grupo o familia...">
+                </div>
+                
+                <div class="form-group">
+                    <label for="filterGroup">Filtrar por grupo:</label>
+                    <select id="filterGroup" class="form-control">
+                        <option value="">Todos los grupos</option>
+                        <!-- Grupos se cargarán dinámicamente -->
+                    </select>
+                </div>
+                
+                <table class="cuotas-table" id="productSearchTable">
+                    <thead>
+                        <tr>
+                            <th>Código</th>
+                            <th>Nombre</th>
+                            <th>Precio</th>
+                            <th>Stock</th>
+                            <th>Acciones</th>
+                        </tr>
+                    </thead>
+                    <tbody id="productSearchTableBody">
+                        <!-- Los productos se cargarán dinámicamente -->
+                    </tbody>
+                </table>
+                
+                <div id="productSearchPagination" class="pagination" style="margin-top: 15px; text-align: center;">
+                    <!-- Paginación -->
+                </div>
+            </div>
+        </div>
+    </div>
+    
+    <!-- Modal para mostrar mensajes -->
+    <div id="messageModal" class="modal">
+        <div class="modal-content" style="width: 400px;">
+            <div class="modal-header">
+                <h2 id="messageModalTitle">Mensaje</h2>
+                <span class="close" id="closeMessageModal">&times;</span>
+            </div>
+            <div class="modal-body">
+                <p id="messageModalText"></p>
+                <div style="text-align: right; margin-top: 20px;">
+                    <button id="messageModalOkBtn" class="btn btn-primary">Aceptar</button>
+                </div>
+            </div>
+        </div>
+    </div>
+    
+    <!-- Scripts necesarios -->
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/jquery/3.6.0/jquery.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/select2/4.1.0-rc.0/js/select2.min.js"></script>
+    <script src="../assets/js/renderer.js"></script>
+    <script src="../assets/js/utils/validation.js"></script>
+    <script src="../assets/js/modules/cuotificador/index.js"></script>
+    <script src="../assets/js/modules/cuotificador/simulador.js"></script>
+    <script src="../assets/js/modules/cuotificador/tasas.js"></script>
+    
+    <script>
+        // Inicialización de componentes y eventos del cuotificador
+        document.addEventListener('DOMContentLoaded', function() {
+            // Inicializar los selectores mejorados
+            $('#bankSelect').select2();
+            $('#cuotasSelect').select2();
+            $('#filterGroup').select2();
+            
+            // Cargar los grupos de productos para el filtro
+            cargarGruposProductos();
+            
+            // Cargar tasas de interés para los diferentes bancos y tarjetas
+            cargarTasasInteres();
+            
+            // Evento para tecla F1 en código de barras para búsqueda avanzada
+            document.getElementById('productCode').addEventListener('keydown', function(e) {
+                if (e.key === 'F1') {
+                    e.preventDefault();
+                    mostrarBusquedaAvanzada();
+                }
+            });
+            
+            // Eventos para los botones principales
+            document.getElementById('productSearchBtn').addEventListener('click', buscarProductoPorCodigo);
+            document.getElementById('simularBtn').addEventListener('click', simularCuotas);
+            document.getElementById('resetButton').addEventListener('click', reiniciarCuotificador);
+            document.getElementById('printBtn').addEventListener('click', imprimirSimulacion);
+            document.getElementById('facturarBtn').addEventListener('click', irAlFacturador);
+            
+            // Eventos para cerrar modales
+            document.getElementById('closeProductSearchModal').addEventListener('click', cerrarBusquedaAvanzada);
+            document.getElementById('closeMessageModal').addEventListener('click', cerrarMensajeModal);
+            document.getElementById('messageModalOkBtn').addEventListener('click', cerrarMensajeModal);
+            
+            // Evento para buscar en tiempo real en la búsqueda avanzada
+            document.getElementById('advancedProductSearch').addEventListener('input', buscarProductosAvanzado);
+            
+            // Evento para buscar productos por texto
+            document.getElementById('productSearch').addEventListener('input', function() {
+                const searchTerm = this.value.trim().toLowerCase();
+                filtrarProductosSeleccionados(searchTerm);
+            });
+            
+            // Eventos para selección de tarjetas
+            const cardOptions = document.querySelectorAll('.card-option');
+            cardOptions.forEach(card => {
+                card.addEventListener('click', function() {
+                    cardOptions.forEach(c => c.classList.remove('active'));
+                    this.classList.add('active');
+                });
+            });
+            
+            // Inicializar el campo de código con el foco
+            document.getElementById('productCode').focus();
+        });
+        
+        // Funciones para el cuotificador
+        function cargarGruposProductos() {
+            // Esta función cargaría los grupos de productos desde la base de datos
+            // Simulamos la carga con algunos grupos de ejemplo
+            const grupos = [
+                { id: 1, nombre: 'Electrónica' },
+                { id: 2, nombre: 'Línea Blanca' },
+                { id: 3, nombre: 'Muebles' },
+                { id: 4, nombre: 'Indumentaria' },
+                { id: 5, nombre: 'Calzado' }
+            ];
+            
+            const selectGrupos = document.getElementById('filterGroup');
+            grupos.forEach(grupo => {
+                const option = document.createElement('option');
+                option.value = grupo.id;
+                option.textContent = grupo.nombre;
+                selectGrupos.appendChild(option);
+            });
+        }
+        
+        function cargarTasasInteres() {
+            // Esta función cargaría las tasas de interés desde la configuración
+            // La implementación real se haría en ../assets/js/modules/cuotificador/tasas.js
+            console.log('Cargando tasas de interés...');
+        }
+        
+        function buscarProductoPorCodigo() {
+            const codigo = document.getElementById('productCode').value.trim();
+            if (!codigo) {
+                mostrarMensaje('Error', 'Ingrese un código de barras válido');
+                return;
+            }
+            
+            // Aquí se buscaría el producto en la base de datos
+            // Simulamos la búsqueda con un producto de ejemplo
+            setTimeout(() => {
+                const producto = {
+                    id: 1,
+                    codigo: codigo,
+                    nombre: 'Producto Ejemplo',
+                    precio: 15000,
+                    stock: 10
+                };
+                
+                agregarProductoALista(producto);
+                document.getElementById('productCode').value = '';
+                document.getElementById('productCode').focus();
+            }, 200);
+        }
+        
+        function agregarProductoALista(producto) {
+            const listaProductos = document.getElementById('productsList');
+            
+            // Verificar si la lista está vacía (tiene el mensaje)
+            if (listaProductos.querySelector('.empty-message')) {
+                listaProductos.innerHTML = '';
+            }
+            
+            // Verificar si el producto ya está en la lista
+            const productoExistente = document.querySelector(`[data-producto-id="${producto.id}"]`);
+            if (productoExistente) {
+                // Incrementar cantidad si ya existe
+                const cantidadElement = productoExistente.querySelector('.product-quantity');
+                const cantidad = parseInt(cantidadElement.textContent) + 1;
+                cantidadElement.textContent = cantidad;
+                
+                // Actualizar precio total
+                const precioElement = productoExistente.querySelector('.product-price');
+                precioElement.textContent = `$${(producto.precio * cantidad).toFixed(2)}`;
+            } else {
+                // Crear nuevo elemento si no existe
+                const productoItem = document.createElement('div');
+                productoItem.className = 'product-item';
+                productoItem.setAttribute('data-producto-id', producto.id);
+                productoItem.setAttribute('data-producto-precio', producto.precio);
+                
+                productoItem.innerHTML = `
+                    <div class="product-info">
+                        <div class="product-name">${producto.nombre}</div>
+                        <div class="product-price">$${producto.precio.toFixed(2)}</div>
+                    </div>
+                    <div class="product-actions">
+                        <span class="product-quantity">1</span>
+                        <button class="btn btn-sm btn-danger remove-product">
+                            <i class="fas fa-trash"></i>
+                        </button>
+                    </div>
+                `;
+                
+                listaProductos.appendChild(productoItem);
+                
+                // Agregar evento para eliminar producto
+                productoItem.querySelector('.remove-product').addEventListener('click', function() {
+                    productoItem.remove();
+                    actualizarTotales();
+                    
+                    // Si no quedan productos, mostrar mensaje
+                    if (listaProductos.children.length === 0) {
+                        listaProductos.innerHTML = `
+                            <div class="empty-message">
+                                <i class="fas fa-box-open fa-2x"></i>
+                                <p>No hay productos seleccionados</p>
+                                <p>Escanee un código de barras o busque un producto</p>
+                            </div>
+                        `;
+                    }
+                });
+            }
+            
+            actualizarTotales();
+        }
+        
+        function actualizarTotales() {
+            let subtotal = 0;
+            
+            // Sumar todos los productos
+            const productos = document.querySelectorAll('.product-item');
+            productos.forEach(producto => {
+                const precio = parseFloat(producto.getAttribute('data-producto-precio'));
+                const cantidad = parseInt(producto.querySelector('.product-quantity').textContent);
+                subtotal += precio * cantidad;
+            });
+            
+            const iva = subtotal * 0.21;
+            const total = subtotal + iva;
+            
+            // Actualizar los totales en la interfaz
+            document.getElementById('subtotal').textContent = `$${subtotal.toFixed(2)}`;
+            document.getElementById('iva').textContent = `$${iva.toFixed(2)}`;
+            document.getElementById('total').textContent = `$${total.toFixed(2)}`;
+        }
+        
+        function filtrarProductosSeleccionados(searchTerm) {
+            const productos = document.querySelectorAll('.product-item');
+            
+            productos.forEach(producto => {
+                const nombre = producto.querySelector('.product-name').textContent.toLowerCase();
+                
+                if (nombre.includes(searchTerm)) {
+                    producto.style.display = '';
+                    producto.classList.add('highlighted');
+                    
+                    // Quitar el highlight después de un tiempo
+                    setTimeout(() => {
+                        producto.classList.remove('highlighted');
+                    }, 2000);
+                } else {
+                    producto.style.display = 'none';
+                }
+            });
+        }
+        
+        function mostrarBusquedaAvanzada() {
+            const modal = document.getElementById('productSearchModal');
+            modal.style.display = 'block';
+            
+            // Cargar productos para la búsqueda avanzada
+            cargarProductosParaBusqueda();
+            
+            // Dar foco al campo de búsqueda
+            document.getElementById('advancedProductSearch').focus();
+        }
+        
+        function cerrarBusquedaAvanzada() {
+            document.getElementById('productSearchModal').style.display = 'none';
+        }
+        
+        function cargarProductosParaBusqueda() {
+            // Esta función cargaría los productos desde la base de datos
+            // Simulamos la carga con algunos productos de ejemplo
+            const productos = [
+            { id: 1, codigo: '7790001001', nombre: 'Smart TV 50"', precio: 180000, stock: 5, grupo: 'Electrónica' },
+                { id: 2, codigo: '7790001002', nombre: 'Heladera No Frost', precio: 250000, stock: 3, grupo: 'Línea Blanca' },
+                { id: 3, codigo: '7790001003', nombre: 'Lavarropas Automático', precio: 130000, stock: 7, grupo: 'Línea Blanca' },
+                { id: 4, codigo: '7790001004', nombre: 'Celular Smartphone', precio: 95000, stock: 12, grupo: 'Electrónica' },
+                { id: 5, codigo: '7790001005', nombre: 'Microondas Digital', precio: 45000, stock: 8, grupo: 'Línea Blanca' }
+            ];
+            
+            const tablaBody = document.getElementById('productSearchTableBody');
+            tablaBody.innerHTML = '';
+            
+            productos.forEach(producto => {
+                const row = document.createElement('tr');
+                
+                row.innerHTML = `
+                    <td>${producto.codigo}</td>
+                    <td>${producto.nombre}</td>
+                    <td>$${producto.precio.toFixed(2)}</td>
+                    <td>${producto.stock}</td>
+                    <td>
+                        <button class="btn btn-sm btn-primary select-product" data-producto-id="${producto.id}">
+                            <i class="fas fa-plus"></i> Seleccionar
+                        </button>
+                    </td>
+                `;
+                
+                tablaBody.appendChild(row);
+            });
+            
+            // Agregar eventos a los botones de selección
+            const selectButtons = document.querySelectorAll('.select-product');
+            selectButtons.forEach(button => {
+                button.addEventListener('click', function() {
+                    const productoId = this.getAttribute('data-producto-id');
+                    const producto = productos.find(p => p.id == productoId);
+                    if (producto) {
+                        agregarProductoALista(producto);
+                        cerrarBusquedaAvanzada();
+                    }
+                });
+            });
+        }
+        
+        function buscarProductosAvanzado() {
+            const searchTerm = document.getElementById('advancedProductSearch').value.trim().toLowerCase();
+            const grupoSeleccionado = document.getElementById('filterGroup').value;
+            
+            const filas = document.querySelectorAll('#productSearchTableBody tr');
+            
+            filas.forEach(fila => {
+                const codigo = fila.cells[0].textContent.toLowerCase();
+                const nombre = fila.cells[1].textContent.toLowerCase();
+                const dataProductoId = fila.querySelector('.select-product').getAttribute('data-producto-id');
+                
+                // Obtener el grupo del producto (en una implementación real vendría de la BD)
+                const producto = [
+                    { id: 1, grupo: 'Electrónica' },
+                    { id: 2, grupo: 'Línea Blanca' },
+                    { id: 3, grupo: 'Línea Blanca' },
+                    { id: 4, grupo: 'Electrónica' },
+                    { id: 5, grupo: 'Línea Blanca' }
+                ].find(p => p.id == dataProductoId);
+                
+                const grupoCoincide = !grupoSeleccionado || (producto && producto.grupo === document.getElementById('filterGroup').options[document.getElementById('filterGroup').selectedIndex].text);
+                const textoCoincide = !searchTerm || codigo.includes(searchTerm) || nombre.includes(searchTerm);
+                
+                fila.style.display = (grupoCoincide && textoCoincide) ? '' : 'none';
+            });
+        }
+        
+        function simularCuotas() {
+            // Verificar que haya productos seleccionados
+            const productos = document.querySelectorAll('.product-item');
+            if (productos.length === 0) {
+                mostrarMensaje('Error', 'Debe seleccionar al menos un producto para simular cuotas');
+                return;
+            }
+            
+            // Verificar que se haya seleccionado una tarjeta
+            const tarjetaSeleccionada = document.querySelector('.card-option.active');
+            if (!tarjetaSeleccionada) {
+                mostrarMensaje('Error', 'Debe seleccionar una tarjeta');
+                return;
+            }
+            
+            // Obtener valores seleccionados
+            const tarjeta = tarjetaSeleccionada.getAttribute('data-card');
+            const banco = document.getElementById('bankSelect').value;
+            const cuotas = document.getElementById('cuotasSelect').value;
+            
+            if (!banco) {
+                mostrarMensaje('Error', 'Debe seleccionar un banco');
+                return;
+            }
+            
+            // Calcular el total
+            let totalSinInteres = 0;
+            productos.forEach(producto => {
+                const precio = parseFloat(producto.getAttribute('data-producto-precio'));
+                const cantidad = parseInt(producto.querySelector('.product-quantity').textContent);
+                totalSinInteres += precio * cantidad;
+            });
+            totalSinInteres = totalSinInteres * 1.21; // Incluir IVA
+            
+            // Calcular interés (simulado)
+            // En una implementación real, esto vendría del módulo de tasas
+            const tasasInteres = {
+                visa: {
+                    1: 0,
+                    3: 0.10,
+                    6: 0.22,
+                    9: 0.35,
+                    12: 0.50,
+                    18: 0.80,
+                    24: 1.10
+                },
+                mastercard: {
+                    1: 0,
+                    3: 0.12,
+                    6: 0.25,
+                    9: 0.38,
+                    12: 0.54,
+                    18: 0.85,
+                    24: 1.15
+                },
+                amex: {
+                    1: 0,
+                    3: 0.15,
+                    6: 0.28,
+                    9: 0.42,
+                    12: 0.60,
+                    18: 0.90,
+                    24: 1.20
+                },
+                naranja: {
+                    1: 0,
+                    3: 0.11,
+                    6: 0.24,
+                    9: 0.37,
+                    12: 0.52,
+                    18: 0.82,
+                    24: 1.12
+                }
+            };
+            
+            const tasaInteres = tasasInteres[tarjeta][cuotas] || 0;
+            const totalConInteres = totalSinInteres * (1 + tasaInteres);
+            const valorCuota = totalConInteres / cuotas;
+            
+            // Calcular TEA y CFT (valores simulados)
+            const tea = (Math.pow(1 + tasaInteres, 12 / cuotas) - 1) * 100;
+            const cft = tea * 1.25; // CFT incluye otros costos, como seguro, etc.
+            
+            // Mostrar resultados
+            document.getElementById('totalSinInteres').textContent = `$${totalSinInteres.toFixed(2)}`;
+            document.getElementById('totalConInteres').textContent = `$${totalConInteres.toFixed(2)}`;
+            document.getElementById('tea').textContent = `${tea.toFixed(2)}%`;
+            document.getElementById('cft').textContent = `${cft.toFixed(2)}%`;
+            
+            // Generar tabla de cuotas
+            const cuotasTableBody = document.getElementById('cuotasTableBody');
+            cuotasTableBody.innerHTML = '';
+            
+            const hoy = new Date();
+            for (let i = 1; i <= cuotas; i++) {
+                const fechaVencimiento = new Date(hoy);
+                fechaVencimiento.setMonth(hoy.getMonth() + i);
+                
+                const row = document.createElement('tr');
+                row.innerHTML = `
+                    <td>${i}</td>
+                    <td>$${valorCuota.toFixed(2)}</td>
+                    <td>${fechaVencimiento.toLocaleDateString('es-AR')}</td>
+                `;
+                
+                cuotasTableBody.appendChild(row);
+            }
+            
+            // Mostrar el contenedor de resultados
+            document.getElementById('resultContainer').style.display = 'block';
+        }
+        
+        function reiniciarCuotificador() {
+            // Limpiar lista de productos
+            document.getElementById('productsList').innerHTML = `
+                <div class="empty-message">
+                    <i class="fas fa-box-open fa-2x"></i>
+                    <p>No hay productos seleccionados</p>
+                    <p>Escanee un código de barras o busque un producto</p>
+                </div>
+            `;
+            
+            // Reiniciar totales
+            document.getElementById('subtotal').textContent = '$0.00';
+            document.getElementById('iva').textContent = '$0.00';
+            document.getElementById('total').textContent = '$0.00';
+            
+            // Limpiar selección de tarjeta
+            document.querySelectorAll('.card-option').forEach(card => {
+                card.classList.remove('active');
+            });
+            
+            // Reiniciar selectores
+            document.getElementById('bankSelect').value = '';
+            document.getElementById('cuotasSelect').value = '1';
+            $('#bankSelect').trigger('change');
+            $('#cuotasSelect').trigger('change');
+            
+            // Ocultar resultados
+            document.getElementById('resultContainer').style.display = 'none';
+            
+            // Enfocar campo de código
+            document.getElementById('productCode').value = '';
+            document.getElementById('productCode').focus();
+        }
+        
+        function imprimirSimulacion() {
+            // Verificar que haya una simulación realizada
+            if (document.getElementById('resultContainer').style.display === 'none') {
+                mostrarMensaje('Error', 'Debe realizar una simulación antes de imprimir');
+                return;
+            }
+            
+            // En una implementación real, esto usaría el módulo de impresión
+            // Aquí simulamos una impresión con una confirmación
+            mostrarMensaje('Impresión', 'Enviando simulación a la impresora...');
+            
+            // La lógica real de impresión se implementaría en ../assets/js/modules/cuotificador/index.js
+        }
+        
+        function irAlFacturador() {
+            // Verificar que haya una simulación realizada
+            if (document.getElementById('resultContainer').style.display === 'none') {
+                mostrarMensaje('Error', 'Debe realizar una simulación antes de ir al facturador');
+                return;
+            }
+            
+            // En una implementación real, esto:
+            // 1. Guardaría los datos de la simulación
+            // 2. Abriría una nueva pestaña con el facturador
+            // 3. Cargaría los productos en el facturador
+            
+            // Simulamos el proceso
+            mostrarMensaje('Facturación', 'Redirigiendo al facturador con los productos seleccionados...');
+            
+            // La implementación real estaría en ../assets/js/modules/cuotificador/index.js
+            // y usaría el sistema de pestañas multitarea
+        }
+        
+        function mostrarMensaje(titulo, mensaje) {
+            const modal = document.getElementById('messageModal');
+            document.getElementById('messageModalTitle').textContent = titulo;
+            document.getElementById('messageModalText').textContent = mensaje;
+            modal.style.display = 'block';
+        }
+        
+        function cerrarMensajeModal() {
+            document.getElementById('messageModal').style.display = 'none';
+        }
+        
+        // Al hacer clic fuera de un modal, cerrarlo
+        window.onclick = function(event) {
+            if (event.target.classList.contains('modal')) {
+                event.target.style.display = 'none';
+            }
+        }
+    </script>
+</body>
+</html>

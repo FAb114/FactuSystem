@@ -1,0 +1,1142 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>FactuSystem - Gestión de Compras</title>
+    <link rel="stylesheet" href="../assets/css/main.css">
+    <link rel="stylesheet" href="../assets/css/components/sidebar.css">
+    <link rel="stylesheet" href="../assets/css/components/tables.css">
+    <link rel="stylesheet" href="../assets/css/components/modal.css">
+    <!-- Estilos específicos para el módulo de compras -->
+    <style>
+        .compras-container {
+            display: flex;
+            flex-direction: column;
+            height: 100%;
+            padding: 15px;
+        }
+
+        .compras-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 20px;
+        }
+
+        .compras-tabs {
+            display: flex;
+            border-bottom: 1px solid #ddd;
+            margin-bottom: 20px;
+        }
+        
+        .compras-tab {
+            padding: 10px 20px;
+            cursor: pointer;
+            border: 1px solid transparent;
+            border-bottom: none;
+            margin-right: 5px;
+            border-radius: 5px 5px 0 0;
+            transition: all 0.3s ease;
+        }
+        
+        .compras-tab.active {
+            background-color: #f8f9fa;
+            border-color: #ddd;
+            border-bottom-color: #f8f9fa;
+            font-weight: bold;
+            color: #2c3e50;
+        }
+
+        .compras-content {
+            flex: 1;
+            overflow-y: auto;
+            background-color: #fff;
+            border-radius: 5px;
+            box-shadow: 0 2px 10px rgba(0, 0, 0, 0.1);
+        }
+
+        .compras-controls {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 15px;
+            flex-wrap: wrap;
+        }
+
+        .compras-filters {
+            display: flex;
+            gap: 10px;
+            flex-wrap: wrap;
+            align-items: center;
+        }
+
+        .date-range {
+            display: flex;
+            align-items: center;
+            gap: 5px;
+        }
+
+        .table-compras {
+            width: 100%;
+            border-collapse: collapse;
+        }
+
+        .table-compras th {
+            position: sticky;
+            top: 0;
+            background-color: #f8f9fa;
+            z-index: 10;
+        }
+
+        .compra-item:hover {
+            background-color: #f8f9fa;
+        }
+
+        .compra-actions {
+            display: flex;
+            gap: 5px;
+            justify-content: center;
+        }
+
+        .btn-action {
+            border: none;
+            border-radius: 4px;
+            padding: 5px 10px;
+            cursor: pointer;
+            font-size: 0.85rem;
+            transition: all 0.2s ease;
+        }
+
+        .btn-view {
+            background-color: #3498db;
+            color: white;
+        }
+
+        .btn-edit {
+            background-color: #f39c12;
+            color: white;
+        }
+
+        .btn-delete {
+            background-color: #e74c3c;
+            color: white;
+        }
+
+        .form-compra {
+            display: grid;
+            grid-template-columns: repeat(2, 1fr);
+            gap: 15px;
+            padding: 15px;
+        }
+
+        .form-group {
+            margin-bottom: 15px;
+        }
+
+        .full-width {
+            grid-column: span 2;
+        }
+
+        .productos-list {
+            grid-column: span 2;
+            max-height: 300px;
+            overflow-y: auto;
+            border: 1px solid #ddd;
+            border-radius: 5px;
+            padding: 10px;
+        }
+
+        .producto-row {
+            display: flex;
+            justify-content: space-between;
+            padding: 10px;
+            border-bottom: 1px solid #eee;
+        }
+
+        .producto-row:last-child {
+            border-bottom: none;
+        }
+
+        .dropzone {
+            border: 2px dashed #ccc;
+            border-radius: 5px;
+            padding: 25px;
+            text-align: center;
+            cursor: pointer;
+            transition: all 0.3s ease;
+        }
+
+        .dropzone:hover {
+            border-color: #3498db;
+        }
+
+        .preview-container {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 10px;
+            margin-top: 10px;
+        }
+
+        .preview-item {
+            position: relative;
+            width: 100px;
+            height: 100px;
+            border: 1px solid #ddd;
+            border-radius: 5px;
+            overflow: hidden;
+        }
+
+        .preview-item img {
+            width: 100%;
+            height: 100%;
+            object-fit: cover;
+        }
+
+        .remove-preview {
+            position: absolute;
+            top: 5px;
+            right: 5px;
+            background-color: rgba(255, 255, 255, 0.7);
+            border-radius: 50%;
+            width: 20px;
+            height: 20px;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            cursor: pointer;
+        }
+
+        .historial-content,
+        .analisis-content {
+            padding: 20px;
+        }
+
+        .chart-container {
+            width: 100%;
+            height: 400px;
+            margin-top: 20px;
+        }
+
+        .summary-cards {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(200px, 1fr));
+            gap: 15px;
+            margin-bottom: 20px;
+        }
+
+        .summary-card {
+            background-color: #fff;
+            border-radius: 5px;
+            box-shadow: 0 2px 10px rgba(0, 0, 0, 0.1);
+            padding: 15px;
+            display: flex;
+            flex-direction: column;
+        }
+
+        .summary-value {
+            font-size: 1.5rem;
+            font-weight: bold;
+            margin-top: 10px;
+        }
+
+        .modal-compra {
+            width: 80%;
+            max-width: 1000px;
+        }
+
+        .empty-state {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            padding: 50px;
+            text-align: center;
+            color: #7f8c8d;
+        }
+
+        .empty-state i {
+            font-size: 3rem;
+            margin-bottom: 15px;
+        }
+
+        @media (max-width: 768px) {
+            .form-compra {
+                grid-template-columns: 1fr;
+            }
+            
+            .full-width {
+                grid-column: span 1;
+            }
+            
+            .modal-compra {
+                width: 95%;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="compras-container" id="compras-container">
+        <div class="compras-header">
+            <h1>Gestión de Compras</h1>
+            <button id="btn-nueva-compra" class="btn btn-primary">
+                <i class="fas fa-plus"></i> Nueva Compra
+            </button>
+        </div>
+
+        <div class="compras-tabs">
+            <div class="compras-tab active" data-tab="registrar">Registrar</div>
+            <div class="compras-tab" data-tab="historial">Historial</div>
+            <div class="compras-tab" data-tab="analisis">Análisis</div>
+        </div>
+
+        <!-- Tab: Registrar -->
+        <div class="compras-content tab-content" id="tab-registrar">
+            <div class="form-compra">
+                <div class="form-group">
+                    <label for="proveedor">Proveedor</label>
+                    <div class="input-group">
+                        <input type="text" id="proveedor" class="form-control" placeholder="Seleccione o cree un proveedor">
+                        <button class="btn btn-outline" id="btn-buscar-proveedor"><i class="fas fa-search"></i></button>
+                    </div>
+                    <small>Presione F1 para buscar o crear un proveedor</small>
+                </div>
+
+                <div class="form-group">
+                    <label for="tipo-comprobante">Tipo de Comprobante</label>
+                    <select id="tipo-comprobante" class="form-control">
+                        <option value="factura_a">Factura A</option>
+                        <option value="factura_b">Factura B</option>
+                        <option value="factura_c">Factura C</option>
+                        <option value="remito">Remito</option>
+                        <option value="otro">Otro</option>
+                    </select>
+                </div>
+
+                <div class="form-group">
+                    <label for="fecha-compra">Fecha</label>
+                    <input type="date" id="fecha-compra" class="form-control">
+                </div>
+
+                <div class="form-group">
+                    <label for="numero-comprobante">Número de Comprobante</label>
+                    <input type="text" id="numero-comprobante" class="form-control" placeholder="Ej: 0001-00012345">
+                </div>
+
+                <div class="form-group full-width">
+                    <label>Detalle de productos/servicios</label>
+                    <div class="input-group">
+                        <input type="text" id="buscar-producto" class="form-control" placeholder="Buscar o agregar producto">
+                        <button class="btn btn-outline" id="btn-agregar-producto"><i class="fas fa-plus"></i></button>
+                    </div>
+                    <small>Presione F1 para buscar productos en el inventario</small>
+                </div>
+
+                <div class="productos-list full-width" id="productos-compra">
+                    <div class="empty-state">
+                        <i class="fas fa-shopping-cart"></i>
+                        <p>No hay productos agregados</p>
+                        <p>Utilice el campo de búsqueda para agregar productos o servicios a esta compra</p>
+                    </div>
+                    <!-- Aquí se cargarán dinámicamente los productos -->
+                </div>
+
+                <div class="form-group">
+                    <label for="subtotal">Subtotal</label>
+                    <input type="number" id="subtotal" class="form-control" readonly>
+                </div>
+
+                <div class="form-group">
+                    <label for="impuestos">Impuestos</label>
+                    <input type="number" id="impuestos" class="form-control">
+                </div>
+
+                <div class="form-group">
+                    <label for="descuentos">Descuentos</label>
+                    <input type="number" id="descuentos" class="form-control">
+                </div>
+
+                <div class="form-group">
+                    <label for="total">Total</label>
+                    <input type="number" id="total" class="form-control" readonly>
+                </div>
+
+                <div class="form-group">
+                    <label for="forma-pago">Forma de Pago</label>
+                    <select id="forma-pago" class="form-control">
+                        <option value="efectivo">Efectivo</option>
+                        <option value="transferencia">Transferencia</option>
+                        <option value="tarjeta_debito">Tarjeta de Débito</option>
+                        <option value="tarjeta_credito">Tarjeta de Crédito</option>
+                        <option value="cheque">Cheque</option>
+                        <option value="cuenta_corriente">Cuenta Corriente</option>
+                    </select>
+                </div>
+
+                <div class="form-group">
+                    <label for="estado-pago">Estado del Pago</label>
+                    <select id="estado-pago" class="form-control">
+                        <option value="pagado">Pagado</option>
+                        <option value="pendiente">Pendiente</option>
+                        <option value="parcial">Parcial</option>
+                    </select>
+                </div>
+
+                <div class="form-group full-width">
+                    <label for="adjuntos">Adjuntar Factura/Comprobante</label>
+                    <div class="dropzone" id="dropzone-comprobantes">
+                        <i class="fas fa-file-upload fa-2x"></i>
+                        <p>Arrastra y suelta archivos aquí o haz clic para seleccionar</p>
+                        <input type="file" id="adjuntos" multiple style="display: none;">
+                    </div>
+                    <div class="preview-container" id="preview-container">
+                        <!-- Las previsualizaciones se cargarán aquí -->
+                    </div>
+                </div>
+
+                <div class="form-group full-width">
+                    <label for="observaciones">Observaciones</label>
+                    <textarea id="observaciones" class="form-control" rows="3"></textarea>
+                </div>
+
+                <div class="form-actions full-width">
+                    <button id="btn-guardar-compra" class="btn btn-success">
+                        <i class="fas fa-save"></i> Guardar Compra
+                    </button>
+                    <button id="btn-cancelar-compra" class="btn btn-secondary">
+                        <i class="fas fa-times"></i> Cancelar
+                    </button>
+                </div>
+            </div>
+        </div>
+
+        <!-- Tab: Historial -->
+        <div class="compras-content tab-content" id="tab-historial" style="display:none;">
+            <div class="historial-content">
+                <div class="compras-controls">
+                    <div class="compras-filters">
+                        <div class="date-range">
+                            <label for="fecha-desde">Desde:</label>
+                            <input type="date" id="fecha-desde" class="form-control">
+                            <label for="fecha-hasta">Hasta:</label>
+                            <input type="date" id="fecha-hasta" class="form-control">
+                        </div>
+                        <select id="filtro-proveedor" class="form-control">
+                            <option value="">Todos los proveedores</option>
+                            <!-- Se cargará dinámicamente -->
+                        </select>
+                        <select id="filtro-estado" class="form-control">
+                            <option value="">Todos los estados</option>
+                            <option value="pagado">Pagado</option>
+                            <option value="pendiente">Pendiente</option>
+                            <option value="parcial">Parcial</option>
+                        </select>
+                        <button id="btn-aplicar-filtros" class="btn btn-primary">
+                            <i class="fas fa-filter"></i> Filtrar
+                        </button>
+                        <button id="btn-limpiar-filtros" class="btn btn-outline">
+                            <i class="fas fa-times"></i> Limpiar
+                        </button>
+                    </div>
+                    <div>
+                        <button id="btn-exportar-excel" class="btn btn-success">
+                            <i class="fas fa-file-excel"></i> Exportar Excel
+                        </button>
+                        <button id="btn-exportar-pdf" class="btn btn-danger">
+                            <i class="fas fa-file-pdf"></i> Exportar PDF
+                        </button>
+                    </div>
+                </div>
+                
+                <div class="table-responsive">
+                    <table class="table-compras" id="tabla-compras">
+                        <thead>
+                            <tr>
+                                <th>Fecha</th>
+                                <th>Comprobante</th>
+                                <th>Proveedor</th>
+                                <th>Total</th>
+                                <th>Estado</th>
+                                <th>Forma Pago</th>
+                                <th>Usuario</th>
+                                <th>Sucursal</th>
+                                <th>Acciones</th>
+                            </tr>
+                        </thead>
+                        <tbody id="compras-list">
+                            <!-- Se cargará dinámicamente -->
+                            <tr>
+                                <td colspan="9" class="empty-state">
+                                    <i class="fas fa-search"></i>
+                                    <p>No se encontraron compras para los filtros aplicados</p>
+                                </td>
+                            </tr>
+                        </tbody>
+                    </table>
+                </div>
+
+                <div class="pagination" id="compras-pagination">
+                    <!-- Se generará dinámicamente -->
+                </div>
+            </div>
+        </div>
+
+        <!-- Tab: Análisis -->
+        <div class="compras-content tab-content" id="tab-analisis" style="display:none;">
+            <div class="analisis-content">
+                <div class="compras-controls">
+                    <div class="compras-filters">
+                        <div class="date-range">
+                            <label for="analisis-fecha-desde">Desde:</label>
+                            <input type="date" id="analisis-fecha-desde" class="form-control">
+                            <label for="analisis-fecha-hasta">Hasta:</label>
+                            <input type="date" id="analisis-fecha-hasta" class="form-control">
+                        </div>
+                        <select id="analisis-agrupacion" class="form-control">
+                            <option value="diario">Diario</option>
+                            <option value="semanal">Semanal</option>
+                            <option value="mensual">Mensual</option>
+                            <option value="trimestral">Trimestral</option>
+                            <option value="anual">Anual</option>
+                        </select>
+                        <select id="analisis-tipo" class="form-control">
+                            <option value="proveedor">Por Proveedor</option>
+                            <option value="categoria">Por Categoría</option>
+                            <option value="producto">Por Producto</option>
+                            <option value="sucursal">Por Sucursal</option>
+                        </select>
+                        <button id="btn-generar-analisis" class="btn btn-primary">
+                            <i class="fas fa-chart-line"></i> Generar Análisis
+                        </button>
+                    </div>
+                    <div>
+                        <button id="btn-exportar-analisis" class="btn btn-success">
+                            <i class="fas fa-file-export"></i> Exportar Informe
+                        </button>
+                    </div>
+                </div>
+
+                <div class="summary-cards" id="summary-cards">
+                    <div class="summary-card">
+                        <span>Total de Compras</span>
+                        <span class="summary-value" id="total-compras">$0.00</span>
+                    </div>
+                    <div class="summary-card">
+                        <span>Promedio por Compra</span>
+                        <span class="summary-value" id="promedio-compras">$0.00</span>
+                    </div>
+                    <div class="summary-card">
+                        <span>Cantidad de Compras</span>
+                        <span class="summary-value" id="cantidad-compras">0</span>
+                    </div>
+                    <div class="summary-card">
+                        <span>Pendiente de Pago</span>
+                        <span class="summary-value" id="pendiente-pago">$0.00</span>
+                    </div>
+                </div>
+
+                <div class="chart-container">
+                    <canvas id="chart-compras"></canvas>
+                </div>
+
+                <div class="chart-container">
+                    <canvas id="chart-distribucion"></canvas>
+                </div>
+
+                <div class="table-responsive" style="margin-top: 20px;">
+                    <h3>Top Proveedores</h3>
+                    <table class="table-compras" id="tabla-top-proveedores">
+                        <thead>
+                            <tr>
+                                <th>Proveedor</th>
+                                <th>Total Compras</th>
+                                <th>% del Total</th>
+                                <th>Cantidad de Compras</th>
+                                <th>Última Compra</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            <!-- Se cargará dinámicamente -->
+                        </tbody>
+                    </table>
+                </div>
+
+                <div class="table-responsive" style="margin-top: 20px;">
+                    <h3>Top Productos Comprados</h3>
+                    <table class="table-compras" id="tabla-top-productos">
+                        <thead>
+                            <tr>
+                                <th>Producto</th>
+                                <th>Cantidad</th>
+                                <th>Total</th>
+                                <th>Precio Promedio</th>
+                                <th>Última Compra</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            <!-- Se cargará dinámicamente -->
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Modales -->
+    <div class="modal" id="modal-proveedor">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h2>Seleccionar Proveedor</h2>
+                <span class="close-modal">&times;</span>
+            </div>
+            <div class="modal-body">
+                <div class="search-container">
+                    <input type="text" id="buscar-proveedor-modal" class="form-control" placeholder="Buscar proveedor...">
+                </div>
+                <div class="table-responsive">
+                    <table class="table-compras">
+                        <thead>
+                            <tr>
+                                <th>Nombre</th>
+                                <th>CUIT/RUT</th>
+                                <th>Teléfono</th>
+                                <th>Email</th>
+                                <th>Acción</th>
+                            </tr>
+                        </thead>
+                        <tbody id="proveedores-list">
+                            <!-- Se cargará dinámicamente -->
+                        </tbody>
+                    </table>
+                </div>
+                <div class="modal-footer">
+                    <button id="btn-nuevo-proveedor" class="btn btn-primary">
+                        <i class="fas fa-plus"></i> Nuevo Proveedor
+                    </button>
+                    <button id="btn-cerrar-modal-proveedor" class="btn btn-secondary">Cerrar</button>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <div class="modal" id="modal-producto">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h2>Seleccionar Producto</h2>
+                <span class="close-modal">&times;</span>
+            </div>
+            <div class="modal-body">
+                <div class="search-container">
+                    <input type="text" id="buscar-producto-modal" class="form-control" placeholder="Buscar producto...">
+                </div>
+                <div class="table-responsive">
+                    <table class="table-compras">
+                        <thead>
+                            <tr>
+                                <th>Código</th>
+                                <th>Nombre</th>
+                                <th>Categoría</th>
+                                <th>Precio Compra</th>
+                                <th>Stock Actual</th>
+                                <th>Acción</th>
+                            </tr>
+                        </thead>
+                        <tbody id="productos-list">
+                            <!-- Se cargará dinámicamente -->
+                        </tbody>
+                    </table>
+                </div>
+                <div class="modal-footer">
+                    <button id="btn-nuevo-producto" class="btn btn-primary">
+                        <i class="fas fa-plus"></i> Nuevo Producto
+                    </button>
+                    <button id="btn-producto-manual" class="btn btn-outline">
+                        <i class="fas fa-pencil-alt"></i> Agregar Manualmente
+                    </button>
+                    <button id="btn-cerrar-modal-producto" class="btn btn-secondary">Cerrar</button>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <div class="modal" id="modal-nuevo-proveedor">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h2>Nuevo Proveedor</h2>
+                <span class="close-modal">&times;</span>
+            </div>
+            <div class="modal-body">
+                <form id="form-nuevo-proveedor">
+                    <div class="form-group">
+                        <label for="nombre-proveedor">Nombre o Razón Social *</label>
+                        <input type="text" id="nombre-proveedor" class="form-control" required>
+                    </div>
+                    <div class="form-group">
+                        <label for="cuit-proveedor">CUIT/RUT *</label>
+                        <input type="text" id="cuit-proveedor" class="form-control" required>
+                    </div>
+                    <div class="form-group">
+                        <label for="condicion-iva">Condición frente al IVA</label>
+                        <select id="condicion-iva" class="form-control">
+                            <option value="responsable_inscripto">Responsable Inscripto</option>
+                            <option value="monotributo">Monotributo</option>
+                            <option value="exento">Exento</option>
+                            <option value="consumidor_final">Consumidor Final</option>
+                        </select>
+                    </div>
+                    <div class="form-group">
+                        <label for="direccion-proveedor">Dirección</label>
+                        <input type="text" id="direccion-proveedor" class="form-control">
+                    </div>
+                    <div class="form-group">
+                        <label for="telefono-proveedor">Teléfono</label>
+                        <input type="text" id="telefono-proveedor" class="form-control">
+                    </div>
+                    <div class="form-group">
+                        <label for="email-proveedor">Email</label>
+                        <input type="email" id="email-proveedor" class="form-control">
+                    </div>
+                    <div class="form-group">
+                        <label for="contacto-proveedor">Persona de Contacto</label>
+                        <input type="text" id="contacto-proveedor" class="form-control">
+                    </div>
+                    <div class="form-group">
+                        <label for="observaciones-proveedor">Observaciones</label>
+                        <textarea id="observaciones-proveedor" class="form-control" rows="3"></textarea>
+                    </div>
+                </form>
+                <div class="modal-footer">
+                    <button id="btn-guardar-proveedor" class="btn btn-success">Guardar</button>
+                    <button id="btn-cancelar-proveedor" class="btn btn-secondary">Cancelar</button>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <div class="modal" id="modal-detalle-compra">
+        <div class="modal-content modal-compra">
+            <div class="modal-header">
+                <h2>Detalle de Compra</h2>
+                <span class="close-modal">&times;</span>
+            </div>
+            <div class="modal-body" id="detalle-compra-body">
+                <!-- Se cargará dinámicamente -->
+            </div>
+            <div class="modal-footer">
+                <button id="btn-editar-compra" class="btn btn-primary">
+                    <i class="fas fa-edit"></i> Editar
+                </button>
+                <button id="btn-adjuntar-archivos" class="btn btn-outline">
+                    <i class="fas fa-paperclip"></i> Adjuntar Archivos
+                </button>
+                <button id="btn-imprimir-compra" class="btn btn-success">
+                    <i class="fas fa-print"></i> Imprimir
+                </button>
+                <button id="btn-cerrar-detalle" class="btn btn-secondary">Cerrar</button>
+            </div>
+        </div>
+    </div>
+
+    <div class="modal" id="modal-producto-manual">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h2>Agregar Producto Manual</h2>
+                <span class="close-modal">&times;</span>
+            </div>
+            <div class="modal-body">
+                <form id="form-producto-manual">
+                    <div class="form-group">
+                        <label for="nombre-producto-manual">Descripción *</label>
+                        <input type="text" id="nombre-producto-manual" class="form-control" required>
+                    </div>
+                    <div class="form-group">
+                        <label for="cantidad-producto-manual">Cantidad *</label>
+                        <input type="number" id="cantidad-producto-manual" class="form-control" min="0.01" step="0.01" required>
+                    </div>
+                    <div class="form-group">
+                        <label for="precio-producto-manual">Precio Unitario *</label>
+                        <input type="number" id="precio-producto-manual" class="form-control" min="0.01" step="0.01" required>
+                    </div>
+                    <div class="form-group">
+                        <label for="codigo-producto-manual">Código o Referencia</label>
+                        <input type="text" id="codigo-producto-manual" class="form-control">
+                    </div>
+                    <div class="form-group">
+                        <label for="impuesto-producto-manual">IVA (%)</label>
+                        <select id="impuesto-producto-manual" class="form-control">
+                            <option value="21">21%</option>
+                            <option value="10.5">10.5%</option>
+                            <option value="27">27%</option>
+                            <option value="5">5%</option>
+                            <option value="2.5">2.5%</option>
+                            <option value="0">0% / Exento</option>
+                        </select>
+                    </div>
+                    <div class="form-group">
+                        <label for="categoria-producto-manual">Categoría</label>
+                        <input type="text" id="categoria-producto-manual" class="form-control">
+                    </div>
+                    <div class="form-group">
+                        <label>¿Guardar en inventario?</label>
+                        <div class="radio-group">
+                            <label>
+                                <input type="radio" name="guardar-inventario" value="si"> Sí
+                            </label>
+                            <label>
+                                <input type="radio" name="guardar-inventario" value="no" checked> No
+                            </label>
+                        </div>
+                    </div>
+                </form>
+                <div class="modal-footer">
+                    <button id="btn-agregar-producto-manual" class="btn btn-success">Agregar</button>
+                    <button id="btn-cancelar-producto-manual" class="btn btn-secondary">Cancelar</button>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <div class="modal" id="modal-confirmacion-eliminar">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h3>Confirmar eliminación</h3>
+                <span class="close-modal">&times;</span>
+            </div>
+            <div class="modal-body">
+                <p>¿Está seguro que desea eliminar esta compra?</p>
+                <p>Esta acción no se puede deshacer.</p>
+            </div>
+            <div class="modal-footer">
+                <button id="btn-confirmar-eliminar" class="btn btn-danger">Eliminar</button>
+                <button id="btn-cancelar-eliminar" class="btn btn-secondary">Cancelar</button>
+            </div>
+        </div>
+    </div>
+
+    <!-- Scripts -->
+    <script src="../assets/js/app.js"></script>
+    <script src="../assets/js/renderer.js"></script>
+    <script src="../assets/js/utils/database.js"></script>
+    <script src="../assets/js/utils/validation.js"></script>
+    <script src="../assets/js/utils/sync.js"></script>
+    <script src="../assets/js/utils/logger.js"></script>
+    <script src="../assets/js/modules/compras/index.js"></script>
+    <script src="../assets/js/modules/compras/registrar.js"></script>
+    <script src="../assets/js/modules/compras/historial.js"></script>
+    <script src="../assets/js/modules/compras/analisis.js"></script>
+    <script>
+        // Script para inicializar la página de compras
+        document.addEventListener('DOMContentLoaded', () => {
+            // Inicializar el módulo de compras
+            if (typeof initComprasModule === 'function') {
+                initComprasModule();
+            }
+            
+            // Manejo de pestañas
+            const tabs = document.querySelectorAll('.compras-tab');
+            const tabContents = document.querySelectorAll('.tab-content');
+            
+            tabs.forEach(tab => {
+                tab.addEventListener('click', () => {
+                    const tabId = tab.getAttribute('data-tab');
+                    
+                    // Ocultar todos los contenidos de pestañas
+                    tabContents.forEach(content => {
+                        content.style.display = 'none';
+                    });
+                    
+                    // Remover la clase active de todas las pestañas
+                    tabs.forEach(t => {
+                        t.classList.remove('active');
+                    });
+                    
+                    // Mostrar el contenido de la pestaña seleccionada
+                    document.getElementById(`tab-${tabId}`).style.display = 'block';
+                    
+                    // Marcar la pestaña como activa
+                    tab.classList.add('active');
+                    
+                    // Inicializar módulos específicos según la pestaña
+                    if (tabId === 'historial' && typeof initHistorialCompras === 'function') {
+                        initHistorialCompras();
+                    } else if (tabId === 'analisis' && typeof initAnalisisCompras === 'function') {
+                        initAnalisisCompras();
+                    }
+                });
+            });
+            
+            // Inicializar manejo de modales
+            const modales = document.querySelectorAll('.modal');
+            const btnsCerrarModal = document.querySelectorAll('.close-modal');
+            
+            // Cerrar modal al hacer clic en el botón de cierre
+            btnsCerrarModal.forEach(btn => {
+                btn.addEventListener('click', () => {
+                    modales.forEach(modal => {
+                        modal.style.display = 'none';
+                    });
+                });
+            });
+            
+            // Cerrar modal al hacer clic fuera del contenido
+            window.addEventListener('click', (event) => {
+                modales.forEach(modal => {
+                    if (event.target === modal) {
+                        modal.style.display = 'none';
+                    }
+                });
+            });
+            
+            // Botones para abrir modales
+            const btnNuevaCompra = document.getElementById('btn-nueva-compra');
+            const btnBuscarProveedor = document.getElementById('btn-buscar-proveedor');
+            const btnAgregarProducto = document.getElementById('btn-agregar-producto');
+            
+            if (btnNuevaCompra) {
+                btnNuevaCompra.addEventListener('click', () => {
+                    // Resetear el formulario de compra y mostrar la pestaña de registro
+                    resetearFormularioCompra();
+                    
+                    // Activar la pestaña "Registrar"
+                    tabs.forEach(tab => {
+                        if (tab.getAttribute('data-tab') === 'registrar') {
+                            tab.click();
+                        }
+                    });
+                });
+            }
+            
+            if (btnBuscarProveedor) {
+                btnBuscarProveedor.addEventListener('click', () => {
+                    document.getElementById('modal-proveedor').style.display = 'block';
+                    cargarProveedores();
+                });
+            }
+            
+            if (btnAgregarProducto) {
+                btnAgregarProducto.addEventListener('click', () => {
+                    document.getElementById('modal-producto').style.display = 'block';
+                    cargarProductos();
+                });
+            }
+            
+            // Funciones para cargar datos
+            function cargarProveedores() {
+                // Esta función debería ser implementada en modules/compras/registrar.js
+                // Se crea un placeholder para mostrar la estructura
+                const proveedoresList = document.getElementById('proveedores-list');
+                if (proveedoresList) {
+                    proveedoresList.innerHTML = '<tr><td colspan="5" class="text-center">Cargando proveedores...</td></tr>';
+                }
+            }
+            
+            function cargarProductos() {
+                // Esta función debería ser implementada en modules/compras/registrar.js
+                // Se crea un placeholder para mostrar la estructura
+                const productosList = document.getElementById('productos-list');
+                if (productosList) {
+                    productosList.innerHTML = '<tr><td colspan="6" class="text-center">Cargando productos...</td></tr>';
+                }
+            }
+            
+            function resetearFormularioCompra() {
+                // Resetear todos los campos del formulario de compra
+                const formCompra = document.querySelector('.form-compra');
+                if (formCompra) {
+                    const inputs = formCompra.querySelectorAll('input, select, textarea');
+                    inputs.forEach(input => {
+                        if (input.type === 'date') {
+                            input.valueAsDate = new Date();
+                        } else if (input.type === 'number') {
+                            input.value = '0';
+                        } else {
+                            input.value = '';
+                        }
+                    });
+                    
+                    // Limpiar la lista de productos
+                    const productosCompra = document.getElementById('productos-compra');
+                    if (productosCompra) {
+                        productosCompra.innerHTML = `
+                            <div class="empty-state">
+                                <i class="fas fa-shopping-cart"></i>
+                                <p>No hay productos agregados</p>
+                                <p>Utilice el campo de búsqueda para agregar productos o servicios a esta compra</p>
+                            </div>
+                        `;
+                    }
+                    
+                    // Limpiar previsualizaciones de archivos
+                    const previewContainer = document.getElementById('preview-container');
+                    if (previewContainer) {
+                        previewContainer.innerHTML = '';
+                    }
+                }
+            }
+            
+            // Configurar el manejo de teclas para los atajos de teclado
+            document.addEventListener('keydown', (event) => {
+                // F1 para buscar proveedor cuando el campo de proveedor tiene el foco
+                if (event.key === 'F1') {
+                    const proveedorInput = document.getElementById('proveedor');
+                    const productoInput = document.getElementById('buscar-producto');
+                    
+                    if (document.activeElement === proveedorInput) {
+                        event.preventDefault();
+                        document.getElementById('modal-proveedor').style.display = 'block';
+                        cargarProveedores();
+                    } else if (document.activeElement === productoInput) {
+                        event.preventDefault();
+                        document.getElementById('modal-producto').style.display = 'block';
+                        cargarProductos();
+                    }
+                }
+            });
+            
+            // Configurar la funcionalidad de arrastrar y soltar para adjuntos
+            const dropzone = document.getElementById('dropzone-comprobantes');
+            const inputAdjuntos = document.getElementById('adjuntos');
+            
+            if (dropzone && inputAdjuntos) {
+                // Abrir selector de archivos al hacer clic en el dropzone
+                dropzone.addEventListener('click', () => {
+                    inputAdjuntos.click();
+                });
+                
+                // Manejar archivos seleccionados
+                inputAdjuntos.addEventListener('change', handleFileSelect);
+                
+                // Configurar eventos de arrastrar y soltar
+                dropzone.addEventListener('dragover', (e) => {
+                    e.preventDefault();
+                    dropzone.classList.add('dragover');
+                });
+                
+                dropzone.addEventListener('dragleave', () => {
+                    dropzone.classList.remove('dragover');
+                });
+                
+                dropzone.addEventListener('drop', (e) => {
+                    e.preventDefault();
+                    dropzone.classList.remove('dragover');
+                    
+                    if (e.dataTransfer.files.length > 0) {
+                        handleFiles(e.dataTransfer.files);
+                    }
+                });
+                
+                function handleFileSelect() {
+                    if (inputAdjuntos.files.length > 0) {
+                        handleFiles(inputAdjuntos.files);
+                    }
+                }
+                
+                function handleFiles(files) {
+                    const previewContainer = document.getElementById('preview-container');
+                    
+                    for (let i = 0; i < files.length; i++) {
+                        const file = files[i];
+                        const reader = new FileReader();
+                        
+                        reader.onload = function(e) {
+                            const previewItem = document.createElement('div');
+                            previewItem.className = 'preview-item';
+                            
+                            if (file.type.startsWith('image/')) {
+                                // Para imágenes
+                                const img = document.createElement('img');
+                                img.src = e.target.result;
+                                previewItem.appendChild(img);
+                            } else {
+                                // Para otros tipos de archivos
+                                const fileIcon = document.createElement('div');
+                                fileIcon.className = 'file-icon';
+                                fileIcon.innerHTML = `<i class="fas fa-file"></i><span>${file.name.substring(0, 10)}${file.name.length > 10 ? '...' : ''}</span>`;
+                                previewItem.appendChild(fileIcon);
+                            }
+                            
+                            // Botón para eliminar la previsualización
+                            const removeBtn = document.createElement('div');
+                            removeBtn.className = 'remove-preview';
+                            removeBtn.innerHTML = '&times;';
+                            removeBtn.addEventListener('click', function() {
+                                previewContainer.removeChild(previewItem);
+                            });
+                            
+                            previewItem.appendChild(removeBtn);
+                            previewContainer.appendChild(previewItem);
+                        };
+                        
+                        reader.readAsDataURL(file);
+                    }
+                }
+            }
+            
+            // Configurar eventos para totales automáticos
+            const subtotalInput = document.getElementById('subtotal');
+            const impuestosInput = document.getElementById('impuestos');
+            const descuentosInput = document.getElementById('descuentos');
+            const totalInput = document.getElementById('total');
+            
+            if (subtotalInput && impuestosInput && descuentosInput && totalInput) {
+                const calcularTotal = () => {
+                    const subtotal = parseFloat(subtotalInput.value) || 0;
+                    const impuestos = parseFloat(impuestosInput.value) || 0;
+                    const descuentos = parseFloat(descuentosInput.value) || 0;
+                    
+                    const total = subtotal + impuestos - descuentos;
+                    totalInput.value = total.toFixed(2);
+                };
+                
+                subtotalInput.addEventListener('input', calcularTotal);
+                impuestosInput.addEventListener('input', calcularTotal);
+                descuentosInput.addEventListener('input', calcularTotal);
+            }
+            
+            // Botón guardar compra
+            const btnGuardarCompra = document.getElementById('btn-guardar-compra');
+            if (btnGuardarCompra) {
+                btnGuardarCompra.addEventListener('click', () => {
+                    // Validar formulario
+                    if (validarFormularioCompra()) {
+                        // Guardar compra - esta función debería ser implementada en modules/compras/registrar.js
+                        guardarCompra();
+                    }
+                });
+            }
+            
+            function validarFormularioCompra() {
+                // Esta función debería ser implementada en modules/compras/registrar.js
+                // Aquí solo se muestra un ejemplo básico
+                const proveedor = document.getElementById('proveedor').value;
+                const numeroComprobante = document.getElementById('numero-comprobante').value;
+                
+                if (!proveedor) {
+                    alert('Debe seleccionar un proveedor');
+                    return false;
+                }
+                
+                if (!numeroComprobante) {
+                    alert('Debe ingresar un número de comprobante');
+                    return false;
+                }
+                
+                // Verificar si hay productos agregados
+                const productosCompra = document.getElementById('productos-compra');
+                if (productosCompra && productosCompra.querySelector('.empty-state')) {
+                    alert('Debe agregar al menos un producto a la compra');
+                    return false;
+                }
+                
+                return true;
+            }
+            
+            function guardarCompra() {
+                // Esta función debería ser implementada en modules/compras/registrar.js
+                alert('Compra guardada correctamente');
+                resetearFormularioCompra();
+            }
+        });
+    </script>
+</body>
+</html>

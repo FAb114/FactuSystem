@@ -1,0 +1,52 @@
+# Node.js
+node_modules/
+npm-debug.log*
+yarn-debug.log*
+yarn-error.log*
+pnpm-debug.log*
+
+# Directorios de producción o build
+dist/
+build/
+out/
+
+# Entornos de desarrollo
+.env
+.env.local
+.env.development.local
+.env.test.local
+.env.production.local
+
+# Sistemas Operativos
+.DS_Store
+Thumbs.db
+
+# Logs
+*.log
+
+# Editor de texto (Visual Studio Code, JetBrains, etc.)
+.vscode/
+.idea/
+*.suo
+*.ntvs*
+*.njsproj
+*.sln
+
+# Archivos temporales
+tmp/
+temp/
+
+# Electron
+release/
+*.asar
+
+# Tests
+coverage/
+
+# Otros
+*.zip
+*.tar
+*.gz
+
+# Git
+.git/

@@ -1,0 +1,267 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Ticket de Factura</title>
+    <style>
+        @page {
+            size: 58mm auto;
+            margin: 0;
+        }
+        body {
+            font-family: 'Arial', sans-serif;
+            font-size: 8pt;
+            width: 58mm;
+            margin: 0;
+            padding: 5px;
+        }
+        .text-center {
+            text-align: center;
+        }
+        .text-right {
+            text-align: right;
+        }
+        .logo {
+            max-width: 100%;
+            height: auto;
+            max-height: 30mm;
+            display: block;
+            margin: 0 auto;
+        }
+        hr {
+            border: none;
+            border-top: 1px dashed #000;
+            margin: 5px 0;
+        }
+        .header, .footer {
+            text-align: center;
+            margin-bottom: 5px;
+        }
+        .company-info {
+            margin-bottom: 5px;
+        }
+        .company-name {
+            font-weight: bold;
+            font-size: 10pt;
+        }
+        .customer-info, .invoice-info {
+            margin-bottom: 5px;
+        }
+        table {
+            width: 100%;
+            border-collapse: collapse;
+            font-size: 7pt;
+        }
+        th, td {
+            text-align: left;
+            padding: 2px 0;
+        }
+        .product-table th {
+            border-bottom: 1px solid #000;
+        }
+        .totals {
+            margin-top: 5px;
+        }
+        .total-amount {
+            font-weight: bold;
+            font-size: 10pt;
+        }
+        .payment-method {
+            margin-top: 5px;
+        }
+        .qr-code {
+            width: 100%;
+            max-width: 30mm;
+            height: auto;
+            margin: 5px auto;
+            display: block;
+        }
+        .no-print {
+            display: none;
+        }
+        .afip-info {
+            font-size: 6pt;
+            margin-top: 5px;
+        }
+        .ticket-copy {
+            font-size: 7pt;
+            font-style: italic;
+        }
+    </style>
+</head>
+<body>
+    <!-- Logo y encabezado -->
+    <div class="header">
+        <img src="{{logoUrl}}" alt="Logo" class="logo" id="companyLogo">
+        <div class="company-info">
+            <div class="company-name">{{companyName}}</div>
+            <div>{{companyAddress}}</div>
+            <div>{{companyCity}}, {{companyProvince}}</div>
+            <div>CUIT: {{companyCUIT}}</div>
+            <div>{{companyIvaCondition}}</div>
+            <div>Ingresos Brutos: {{companyIIBB}}</div>
+            <div>Inicio de actividades: {{companyStartDate}}</div>
+            <div>Sucursal: {{branchName}}</div>
+        </div>
+    </div>
+
+    <hr>
+    
+    <!-- Información de factura -->
+    <div class="invoice-info">
+        <div class="text-center"><b>{{invoiceType}} {{invoiceLetterType}}</b></div>
+        <div class="text-center"><b>N°: {{invoiceNumber}}</b></div>
+        <div class="text-center">Fecha: {{invoiceDate}} {{invoiceTime}}</div>
+    </div>
+
+    <hr>
+    
+    <!-- Información del cliente -->
+    <div class="customer-info">
+        <div><b>Cliente:</b> {{customerName}}</div>
+        <div><b>{{customerIdType}}:</b> {{customerIdNumber}}</div>
+        <div><b>Cond. IVA:</b> {{customerIvaCondition}}</div>
+        <div><b>Domicilio:</b> {{customerAddress}}</div>
+    </div>
+    
+    <hr>
+    
+    <!-- Listado de productos -->
+    <table class="product-table">
+        <thead>
+            <tr>
+                <th>Cant.</th>
+                <th>Descripción</th>
+                <th class="text-right">Precio</th>
+                <th class="text-right">Total</th>
+            </tr>
+        </thead>
+        <tbody id="productsBody">
+            {{#each products}}
+            <tr>
+                <td>{{this.quantity}}</td>
+                <td>{{this.description}}</td>
+                <td class="text-right">${{this.unitPrice}}</td>
+                <td class="text-right">${{this.totalPrice}}</td>
+            </tr>
+            {{/each}}
+        </tbody>
+    </table>
+    
+    <hr>
+    
+    <!-- Totales -->
+    <div class="totals">
+        {{#if hasDiscount}}
+        <div class="text-right">Subtotal: ${{subtotal}}</div>
+        <div class="text-right">{{discountType}}: ${{discountAmount}}</div>
+        {{/if}}
+        
+        {{#if showIva}}
+        <div class="text-right">Neto: ${{netAmount}}</div>
+        <div class="text-right">IVA 21%: ${{ivaAmount}}</div>
+        <div class="text-right">IVA 10.5%: ${{ivaReducedAmount}}</div>
+        {{/if}}
+        
+        <div class="text-right total-amount">TOTAL: ${{totalAmount}}</div>
+    </div>
+    
+    <hr>
+    
+    <!-- Métodos de pago -->
+    <div class="payment-method">
+        <div><b>Forma de pago:</b></div>
+        {{#each paymentMethods}}
+        <div>{{this.method}}: ${{this.amount}}</div>
+        {{/each}}
+        
+        {{#if cashPayment}}
+        <div>Efectivo: ${{cashAmount}}</div>
+        <div>Su pago: ${{receivedAmount}}</div>
+        <div>Vuelto: ${{changeAmount}}</div>
+        {{/if}}
+    </div>
+    
+    {{#if mercadoPagoPayment}}
+    <hr>
+    <!-- QR Mercado Pago si aplica -->
+    <div class="text-center">
+        <div>¡Gracias por su compra!</div>
+        <div>Puede verificar el pago escaneando el siguiente QR:</div>
+        <img src="{{mercadoPagoQR}}" alt="QR de verificación" class="qr-code">
+    </div>
+    {{/if}}
+    
+    <hr>
+    
+    <!-- Información AFIP -->
+    {{#if isElectronicInvoice}}
+    <div class="afip-info">
+        <div class="text-center">Comprobante Autorizado</div>
+        <div>CAE N°: {{caeNumber}}</div>
+        <div>Vencimiento CAE: {{caeExpirationDate}}</div>
+        {{#if showFiscalQR}}
+        <div class="text-center">
+            <img src="{{fiscalQRUrl}}" alt="QR AFIP" class="qr-code">
+        </div>
+        {{/if}}
+    </div>
+    <hr>
+    {{/if}}
+    
+    <!-- Pie de página -->
+    <div class="footer">
+        <div class="ticket-copy">{{ticketCopyType}}</div>
+        <div>Generado por FactuSystem v1.0</div>
+        <div>{{currentDateTime}}</div>
+        <div>Usuario: {{userName}}</div>
+    </div>
+
+    <script>
+        // Este script solo se ejecuta durante la vista previa, 
+        // no afecta la impresión final
+        document.addEventListener('DOMContentLoaded', function() {
+            // Establecer datos desde el sistema
+            const ticketData = window.electronAPI ? window.electronAPI.getTicketData() : null;
+            if (ticketData) {
+                // Aplicar datos dinámicos enviados desde la aplicación
+                applyTicketData(ticketData);
+            }
+
+            // Si está en modo vista previa
+            if (document.location.search.includes('preview=true')) {
+                addPreviewControls();
+            }
+        });
+
+        function applyTicketData(data) {
+            // Esta función sería llamada con los datos reales desde la aplicación
+            // Cuando se genere el ticket para impresión
+            
+            // Ejemplo de implementación: aquí se reemplazarían 
+            // variables con datos reales desde el sistema
+        }
+
+        function addPreviewControls() {
+            // Agrega controles de vista previa para pruebas
+            const controls = document.createElement('div');
+            controls.className = 'preview-controls no-print';
+            controls.innerHTML = `
+                <button onclick="window.print()">Imprimir</button>
+                <button onclick="window.close()">Cerrar</button>
+            `;
+            document.body.appendChild(controls);
+        }
+
+        // Función para imprimir directamente si viene desde la aplicación
+        if (window.electronAPI && window.electronAPI.shouldPrintDirectly()) {
+            setTimeout(() => {
+                window.print();
+                // Notificar a la aplicación que la impresión ha finalizado
+                window.electronAPI.printCompleted();
+            }, 500);
+        }
+    </script>
+</body>
+</html>

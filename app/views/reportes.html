@@ -1,0 +1,2183 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Reportes - FactuSystem</title>
+    <!-- Estilos principales -->
+    <link rel="stylesheet" href="../assets/css/main.css">
+    <link rel="stylesheet" href="../assets/css/components/tables.css">
+    <link rel="stylesheet" href="../assets/css/components/dashboard.css">
+    
+    <!-- Font Awesome para iconos -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.2/css/all.min.css">
+    
+    <!-- Chart.js para gráficos -->
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/Chart.js/3.9.1/chart.min.js"></script>
+    
+    <!-- DateRangePicker para selección de períodos -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/daterangepicker/3.1.0/daterangepicker.min.css">
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/jquery/3.6.4/jquery.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/moment.js/2.29.4/moment.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/daterangepicker/3.1.0/daterangepicker.min.js"></script>
+    
+    <style>
+        .report-section {
+            display: none;
+            padding: 20px;
+            background-color: #fff;
+            border-radius: 8px;
+            box-shadow: 0 2px 10px rgba(0, 0, 0, 0.1);
+            margin-bottom: 20px;
+        }
+        
+        .report-section.active {
+            display: block;
+        }
+        
+        .filter-container {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 15px;
+            margin-bottom: 20px;
+            background-color: #f8f9fa;
+            padding: 15px;
+            border-radius: 8px;
+        }
+        
+        .filter-item {
+            flex: 1;
+            min-width: 200px;
+        }
+        
+        .filter-item label {
+            display: block;
+            margin-bottom: 5px;
+            font-weight: 500;
+            color: #555;
+        }
+        
+        .filter-item select,
+        .filter-item input {
+            width: 100%;
+            padding: 8px 12px;
+            border: 1px solid #ddd;
+            border-radius: 4px;
+        }
+        
+        .report-menu {
+            display: flex;
+            gap: 10px;
+            margin-bottom: 20px;
+        }
+        
+        .report-tab {
+            padding: 10px 20px;
+            background-color: #f0f0f0;
+            border: none;
+            border-radius: 5px 5px 0 0;
+            cursor: pointer;
+            transition: background-color 0.3s;
+            font-weight: 500;
+        }
+        
+        .report-tab.active {
+            background-color: #4a6cf7;
+            color: white;
+        }
+        
+        .chart-container {
+            height: 400px;
+            margin: 20px 0;
+        }
+        
+        .action-buttons {
+            display: flex;
+            gap: 10px;
+            margin-top: 15px;
+        }
+        
+        .action-button {
+            padding: 8px 15px;
+            border: none;
+            border-radius: 4px;
+            cursor: pointer;
+            display: flex;
+            align-items: center;
+            gap: 5px;
+            font-weight: 500;
+            transition: background-color 0.3s;
+        }
+        
+        .action-button.primary {
+            background-color: #4a6cf7;
+            color: white;
+        }
+        
+        .action-button.secondary {
+            background-color: #6c757d;
+            color: white;
+        }
+        
+        .action-button:hover {
+            opacity: 0.9;
+        }
+        
+        .data-table {
+            width: 100%;
+            border-collapse: collapse;
+            margin-top: 20px;
+        }
+        
+        .data-table th, 
+        .data-table td {
+            padding: 12px 15px;
+            text-align: left;
+            border-bottom: 1px solid #e3e3e3;
+        }
+        
+        .data-table th {
+            background-color: #f8f9fa;
+            font-weight: 600;
+        }
+        
+        .data-table tr:hover {
+            background-color: #f5f5f5;
+        }
+        
+        .metrics-cards {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+            gap: 15px;
+            margin-bottom: 20px;
+        }
+        
+        .metric-card {
+            background-color: #fff;
+            border-radius: 8px;
+            box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
+            padding: 15px;
+            text-align: center;
+        }
+        
+        .metric-card .metric-title {
+            font-size: 14px;
+            color: #6c757d;
+            margin-bottom: 5px;
+        }
+        
+        .metric-card .metric-value {
+            font-size: 24px;
+            font-weight: 600;
+            color: #333;
+        }
+        
+        .metric-card .metric-change {
+            font-size: 12px;
+            margin-top: 5px;
+        }
+        
+        .metric-card .metric-change.positive {
+            color: #28a745;
+        }
+        
+        .metric-card .metric-change.negative {
+            color: #dc3545;
+        }
+        
+        /* Estilos para reportes fiscales */
+        .fiscal-options {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+            gap: 20px;
+            margin-bottom: 30px;
+        }
+        
+        .fiscal-option {
+            background-color: #f8f9fa;
+            border-radius: 8px;
+            padding: 20px;
+            cursor: pointer;
+            transition: all 0.3s;
+            border: 1px solid #e3e3e3;
+        }
+        
+        .fiscal-option:hover {
+            transform: translateY(-3px);
+            box-shadow: 0 5px 15px rgba(0, 0, 0, 0.1);
+        }
+        
+        .fiscal-option h3 {
+            margin-top: 0;
+            margin-bottom: 10px;
+            color: #333;
+        }
+        
+        .fiscal-option p {
+            color: #6c757d;
+            margin-bottom: 0;
+        }
+        
+        .comparison-charts {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 20px;
+        }
+        
+        @media (max-width: 992px) {
+            .comparison-charts {
+                grid-template-columns: 1fr;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="report-container">
+        <h1 class="page-title">Reportes y Análisis</h1>
+        
+        <div class="report-menu">
+            <button class="report-tab active" data-report="ventas">Ventas</button>
+            <button class="report-tab" data-report="compras">Compras</button>
+            <button class="report-tab" data-report="caja">Caja</button>
+            <button class="report-tab" data-report="stock">Stock</button>
+            <button class="report-tab" data-report="fiscales">Informes Fiscales</button>
+        </div>
+        
+        <!-- Filtros comunes para todos los reportes -->
+        <div class="filter-container">
+            <div class="filter-item">
+                <label for="date-range">Período</label>
+                <input type="text" id="date-range" name="daterange" placeholder="Seleccionar período">
+            </div>
+            <div class="filter-item">
+                <label for="sucursal">Sucursal</label>
+                <select id="sucursal">
+                    <option value="todas">Todas las sucursales</option>
+                    <!-- Se cargarán dinámicamente desde JS -->
+                </select>
+            </div>
+            <div class="filter-item">
+                <label for="usuario">Usuario</label>
+                <select id="usuario">
+                    <option value="todos">Todos los usuarios</option>
+                    <!-- Se cargarán dinámicamente desde JS -->
+                </select>
+            </div>
+            <div class="filter-item">
+                <label>&nbsp;</label>
+                <button class="action-button primary" id="aplicar-filtros">
+                    <i class="fas fa-filter"></i> Aplicar Filtros
+                </button>
+            </div>
+        </div>
+        
+        <!-- Reporte de Ventas -->
+        <div class="report-section active" id="ventas-report">
+            <h2>Reporte de Ventas</h2>
+            
+            <div class="metrics-cards">
+                <div class="metric-card">
+                    <div class="metric-title">Total Ventas</div>
+                    <div class="metric-value">$0.00</div>
+                    <div class="metric-change positive">+0% vs período anterior</div>
+                </div>
+                <div class="metric-card">
+                    <div class="metric-title">Cantidad de Ventas</div>
+                    <div class="metric-value">0</div>
+                    <div class="metric-change positive">+0% vs período anterior</div>
+                </div>
+                <div class="metric-card">
+                    <div class="metric-title">Ticket Promedio</div>
+                    <div class="metric-value">$0.00</div>
+                    <div class="metric-change negative">0% vs período anterior</div>
+                </div>
+                <div class="metric-card">
+                    <div class="metric-title">Método de Pago Principal</div>
+                    <div class="metric-value">-</div>
+                    <div class="metric-change">0% del total</div>
+                </div>
+            </div>
+            
+            <div class="chart-container">
+                <canvas id="ventas-chart"></canvas>
+            </div>
+            
+            <div class="comparison-charts">
+                <div class="chart-container">
+                    <canvas id="ventas-metodos-chart"></canvas>
+                </div>
+                <div class="chart-container">
+                    <canvas id="ventas-sucursales-chart"></canvas>
+                </div>
+            </div>
+            
+            <h3>Top Productos Vendidos</h3>
+            <table class="data-table" id="top-productos">
+                <thead>
+                    <tr>
+                        <th>Producto</th>
+                        <th>Cantidad</th>
+                        <th>Total Vendido</th>
+                        <th>% de Ventas</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    <!-- Se cargará dinámicamente desde JS -->
+                </tbody>
+            </table>
+            
+            <h3>Resumen de Ventas</h3>
+            <table class="data-table" id="ventas-table">
+                <thead>
+                    <tr>
+                        <th>Fecha</th>
+                        <th>Factura</th>
+                        <th>Cliente</th>
+                        <th>Método de Pago</th>
+                        <th>Usuario</th>
+                        <th>Total</th>
+                        <th>Acciones</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    <!-- Se cargará dinámicamente desde JS -->
+                </tbody>
+            </table>
+            
+            <div class="action-buttons">
+                <button class="action-button primary" id="exportar-ventas-pdf">
+                    <i class="fas fa-file-pdf"></i> Exportar PDF
+                </button>
+                <button class="action-button secondary" id="exportar-ventas-excel">
+                    <i class="fas fa-file-excel"></i> Exportar Excel
+                </button>
+                <button class="action-button secondary" id="enviar-ventas-email">
+                    <i class="fas fa-envelope"></i> Enviar por Email
+                </button>
+            </div>
+        </div>
+        
+        <!-- Reporte de Compras -->
+        <div class="report-section" id="compras-report">
+            <h2>Reporte de Compras</h2>
+            
+            <div class="metrics-cards">
+                <div class="metric-card">
+                    <div class="metric-title">Total Compras</div>
+                    <div class="metric-value">$0.00</div>
+                    <div class="metric-change positive">+0% vs período anterior</div>
+                </div>
+                <div class="metric-card">
+                    <div class="metric-title">Cantidad de Compras</div>
+                    <div class="metric-value">0</div>
+                    <div class="metric-change positive">+0% vs período anterior</div>
+                </div>
+                <div class="metric-card">
+                    <div class="metric-title">Proveedor Principal</div>
+                    <div class="metric-value">-</div>
+                    <div class="metric-change">0% del total</div>
+                </div>
+                <div class="metric-card">
+                    <div class="metric-title">Compra Promedio</div>
+                    <div class="metric-value">$0.00</div>
+                    <div class="metric-change negative">0% vs período anterior</div>
+                </div>
+            </div>
+            
+            <div class="chart-container">
+                <canvas id="compras-chart"></canvas>
+            </div>
+            
+            <div class="comparison-charts">
+                <div class="chart-container">
+                    <canvas id="compras-categorias-chart"></canvas>
+                </div>
+                <div class="chart-container">
+                    <canvas id="compras-proveedores-chart"></canvas>
+                </div>
+            </div>
+            
+            <h3>Resumen de Compras</h3>
+            <table class="data-table" id="compras-table">
+                <thead>
+                    <tr>
+                        <th>Fecha</th>
+                        <th>Factura</th>
+                        <th>Proveedor</th>
+                        <th>Método de Pago</th>
+                        <th>Usuario</th>
+                        <th>Total</th>
+                        <th>Acciones</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    <!-- Se cargará dinámicamente desde JS -->
+                </tbody>
+            </table>
+            
+            <div class="action-buttons">
+                <button class="action-button primary" id="exportar-compras-pdf">
+                    <i class="fas fa-file-pdf"></i> Exportar PDF
+                </button>
+                <button class="action-button secondary" id="exportar-compras-excel">
+                    <i class="fas fa-file-excel"></i> Exportar Excel
+                </button>
+                <button class="action-button secondary" id="enviar-compras-email">
+                    <i class="fas fa-envelope"></i> Enviar por Email
+                </button>
+            </div>
+        </div>
+        
+        <!-- Reporte de Caja -->
+        <div class="report-section" id="caja-report">
+            <h2>Reporte de Caja</h2>
+            
+            <div class="metrics-cards">
+                <div class="metric-card">
+                    <div class="metric-title">Ingresos</div>
+                    <div class="metric-value">$0.00</div>
+                    <div class="metric-change positive">+0% vs período anterior</div>
+                </div>
+                <div class="metric-card">
+                    <div class="metric-title">Egresos</div>
+                    <div class="metric-value">$0.00</div>
+                    <div class="metric-change negative">+0% vs período anterior</div>
+                </div>
+                <div class="metric-card">
+                    <div class="metric-title">Balance</div>
+                    <div class="metric-value">$0.00</div>
+                    <div class="metric-change positive">+0% vs período anterior</div>
+                </div>
+                <div class="metric-card">
+                    <div class="metric-title">Diferencias</div>
+                    <div class="metric-value">$0.00</div>
+                    <div class="metric-change">0% del total</div>
+                </div>
+            </div>
+            
+            <div class="chart-container">
+                <canvas id="caja-chart"></canvas>
+            </div>
+            
+            <h3>Movimientos de Caja</h3>
+            <table class="data-table" id="caja-table">
+                <thead>
+                    <tr>
+                        <th>Fecha</th>
+                        <th>Tipo</th>
+                        <th>Concepto</th>
+                        <th>Método</th>
+                        <th>Usuario</th>
+                        <th>Monto</th>
+                        <th>Saldo</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    <!-- Se cargará dinámicamente desde JS -->
+                </tbody>
+            </table>
+            
+            <h3>Cierres de Caja</h3>
+            <table class="data-table" id="cierres-table">
+                <thead>
+                    <tr>
+                        <th>Fecha</th>
+                        <th>Usuario</th>
+                        <th>Inicial</th>
+                        <th>Final</th>
+                        <th>Teórico</th>
+                        <th>Diferencia</th>
+                        <th>Acciones</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    <!-- Se cargará dinámicamente desde JS -->
+                </tbody>
+            </table>
+            
+            <div class="action-buttons">
+                <button class="action-button primary" id="exportar-caja-pdf">
+                    <i class="fas fa-file-pdf"></i> Exportar PDF
+                </button>
+                <button class="action-button secondary" id="exportar-caja-excel">
+                    <i class="fas fa-file-excel"></i> Exportar Excel
+                </button>
+                <button class="action-button secondary" id="enviar-caja-email">
+                    <i class="fas fa-envelope"></i> Enviar por Email
+                </button>
+            </div>
+        </div>
+        
+        <!-- Reporte de Stock -->
+        <div class="report-section" id="stock-report">
+            <h2>Reporte de Stock</h2>
+            
+            <div class="metrics-cards">
+                <div class="metric-card">
+                    <div class="metric-title">Total Productos</div>
+                    <div class="metric-value">0</div>
+                    <div class="metric-change">+0 nuevos en el período</div>
+                </div>
+                <div class="metric-card">
+                    <div class="metric-title">Valor del Inventario</div>
+                    <div class="metric-value">$0.00</div>
+                    <div class="metric-change positive">+0% vs período anterior</div>
+                </div>
+                <div class="metric-card">
+                    <div class="metric-title">Stock Bajo Mínimo</div>
+                    <div class="metric-value">0</div>
+                    <div class="metric-change negative">0% del total</div>
+                </div>
+                <div class="metric-card">
+                    <div class="metric-title">Rotación de Stock</div>
+                    <div class="metric-value">0</div>
+                    <div class="metric-change positive">+0% vs período anterior</div>
+                </div>
+            </div>
+            
+            <div class="chart-container">
+                <canvas id="stock-chart"></canvas>
+            </div>
+            
+            <div class="comparison-charts">
+                <div class="chart-container">
+                    <canvas id="stock-categoria-chart"></canvas>
+                </div>
+                <div class="chart-container">
+                    <canvas id="stock-rotacion-chart"></canvas>
+                </div>
+            </div>
+            
+            <h3>Productos con Stock Crítico</h3>
+            <table class="data-table" id="stock-critico-table">
+                <thead>
+                    <tr>
+                        <th>Código</th>
+                        <th>Producto</th>
+                        <th>Stock Actual</th>
+                        <th>Stock Mínimo</th>
+                        <th>Última Compra</th>
+                        <th>Última Venta</th>
+                        <th>Acciones</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    <!-- Se cargará dinámicamente desde JS -->
+                </tbody>
+            </table>
+            
+            <h3>Inventario Completo</h3>
+            <table class="data-table" id="stock-table">
+                <thead>
+                    <tr>
+                        <th>Código</th>
+                        <th>Producto</th>
+                        <th>Categoría</th>
+                        <th>Stock Actual</th>
+                        <th>Costo</th>
+                        <th>Precio Venta</th>
+                        <th>Valor Total</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    <!-- Se cargará dinámicamente desde JS -->
+                </tbody>
+            </table>
+            
+            <div class="action-buttons">
+                <button class="action-button primary" id="exportar-stock-pdf">
+                    <i class="fas fa-file-pdf"></i> Exportar PDF
+                </button>
+                <button class="action-button secondary" id="exportar-stock-excel">
+                    <i class="fas fa-file-excel"></i> Exportar Excel
+                </button>
+                <button class="action-button secondary" id="enviar-stock-email">
+                    <i class="fas fa-envelope"></i> Enviar por Email
+                </button>
+            </div>
+        </div>
+        
+        <!-- Informes Fiscales -->
+        <div class="report-section" id="fiscales-report">
+            <h2>Informes Fiscales</h2>
+            
+            <div class="fiscal-options">
+                <div class="fiscal-option" data-report="libro-iva-ventas">
+                    <h3><i class="fas fa-book"></i> Libro IVA Ventas</h3>
+                    <p>Genera el libro de IVA Ventas para el período seleccionado, listo para presentar a AFIP.</p>
+                </div>
+                <div class="fiscal-option" data-report="libro-iva-compras">
+                    <h3><i class="fas fa-book"></i> Libro IVA Compras</h3>
+                    <p>Genera el libro de IVA Compras para el período seleccionado, listo para presentar a AFIP.</p>
+                </div>
+                <div class="fiscal-option" data-report="ingresos-brutos">
+                    <h3><i class="fas fa-chart-line"></i> Ingresos Brutos</h3>
+                    <p>Calcula los Ingresos Brutos para la declaración correspondiente al período seleccionado.</p>
+                </div>
+                <div class="fiscal-option" data-report="resumen-fiscal">
+                    <h3><i class="fas fa-file-invoice-dollar"></i> Resumen Fiscal</h3>
+                    <p>Genera un resumen completo de la situación fiscal para el período seleccionado.</p>
+                </div>
+            </div>
+            
+            <div id="fiscal-detail-container" style="display: none;">
+                <div id="fiscal-detail-header">
+                    <h3 id="fiscal-report-title">Libro IVA Ventas</h3>
+                    <p id="fiscal-report-period">Período: 01/01/2025 - 20/04/2025</p>
+                </div>
+                
+                <div class="chart-container">
+                    <canvas id="fiscal-chart"></canvas>
+                </div>
+                
+                <div id="fiscal-table-container">
+                    <table class="data-table" id="fiscal-table">
+                        <thead>
+                            <tr>
+                                <th>Fecha</th>
+                                <th>Comprobante</th>
+                                <th>Tipo</th>
+                                <th>CUIT/DNI</th>
+                                <th>Nombre/Razón Social</th>
+                                <th>Neto</th>
+                                <th>IVA</th>
+                                <th>Total</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            <!-- Se cargará dinámicamente desde JS -->
+                        </tbody>
+                        <tfoot>
+                            <tr>
+                                <th colspan="5" style="text-align: right;">Totales:</th>
+                                <th>$0.00</th>
+                                <th>$0.00</th>
+                                <th>$0.00</th>
+                            </tr>
+                        </tfoot>
+                    </table>
+                </div>
+                
+                <div class="action-buttons">
+                    <button class="action-button primary" id="exportar-fiscal-pdf">
+                        <i class="fas fa-file-pdf"></i> Exportar PDF
+                    </button>
+                    <button class="action-button secondary" id="exportar-fiscal-excel">
+                        <i class="fas fa-file-excel"></i> Exportar Excel
+                    </button>
+                    <button class="action-button secondary" id="enviar-fiscal-email">
+                        <i class="fas fa-envelope"></i> Enviar por Email
+                    </button>
+                    <button class="action-button secondary" id="fiscal-back-button">
+                        <i class="fas fa-arrow-left"></i> Volver
+                    </button>
+                </div>
+            </div>
+        </div>
+    </div>
+    
+    <script>
+        // Inicialización del selector de fechas
+        $(function() {
+            // Configurar DateRangePicker en español
+            moment.locale('es');
+            
+            $('input[name="daterange"]').daterangepicker({
+                opens: 'left',
+                locale: {
+                    format: 'DD/MM/YYYY',
+                    separator: ' - ',
+                    applyLabel: 'Aplicar',
+                    cancelLabel: 'Cancelar',
+                    fromLabel: 'Desde',
+                    toLabel: 'Hasta',
+                    customRangeLabel: 'Personalizado',
+                    weekLabel: 'S',
+                    daysOfWeek: ['Do', 'Lu', 'Ma', 'Mi', 'Ju', 'Vi', 'Sa'],
+                    monthNames: ['Enero', 'Febrero', 'Marzo', 'Abril', 'Mayo', 'Junio', 'Julio', 'Agosto', 'Septiembre', 'Octubre', 'Noviembre', 'Diciembre'],
+                    firstDay: 1
+                },
+                ranges: {
+                   'Hoy': [moment(), moment()],
+                   'Ayer': [moment().subtract(1, 'days'), moment().subtract(1, 'days')],
+                   'Últimos 7 días': [moment().subtract(6, 'days'), moment()],
+                   'Últimos 30 días': [moment().subtract(29, 'days'), moment()],
+                   'Este mes': [moment().startOf('month'), moment().endOf('month')],
+                   'Mes anterior': [moment().subtract(1, 'month').startOf('month'), moment().subtract(1, 'month').endOf('month')]
+                },
+                startDate: moment().subtract(29, 'days'),
+                endDate: moment()
+            });
+            
+            // Manejo de pestañas de reportes
+            $('.report-tab').click(function() {
+                const reportId = $(this).data('report');
+                
+                // Actualizar pestañas activas
+                $('.report-tab').removeClass('active');
+                $(this).addClass('active');
+                
+                // Mostrar sección de reporte correspondiente
+                $('.report-section').removeClass('active');
+                $(`#${reportId}-report`).addClass('active');
+                
+                // Cargar datos del reporte
+                cargarDatosReporte(reportId);
+            });
+            
+            // Inicializar gráficos
+            inicializarGraficos();
+            
+            // Cargar datos iniciales de ventas
+            cargarDatosReporte('ventas');
+            
+            // Manejo de opciones fiscales
+            $('.fiscal-option').click(function() {
+                const reportType = $(this).data('report');
+                $('.fiscal-options').hide();
+                $('#fiscal-detail-container').show();
+                
+                // Actualizar título según el reporte seleccionado
+                let reportTitle = "";
+                switch(reportType) {
+                    case 'libro-iva-ventas':
+                        reportTitle = "Libro IVA Ventas";
+                        break;
+                    case 'libro-iva-compras':
+                        reportTitle = "Libro IVA Compras";
+                        break;
+                    case 'ingresos-brutos':
+                        reportTitle = "Ingresos Brutos";
+                        break;
+                    case 'resumen-fiscal':
+                        reportTitle = "Resumen Fiscal";
+                        break;
+                }
+                
+                $('#fiscal-report-title').text(reportTitle);
+                
+                // Obtener período seleccionado
+                const dateRange = $('#date-range').val();
+                $('#fiscal-report-period').text(`Período: ${dateRange}`);
+                
+                // Cargar datos fiscales
+                cargarDatosFiscales(reportType);
+            });
+            
+            // Botón para volver
+            $('#fiscal-back-button').click(function() {
+                $('#fiscal-detail-container').hide();
+                $('.fiscal-options').show();
+            });
+            
+            // Configurar botones de exportación
+            $('#exportar-ventas-pdf').click(function() {
+                exportarReporte('ventas', 'pdf');
+            });
+            
+            $('#exportar-ventas-excel').click(function() {
+                exportarReporte('ventas', 'excel');
+            });
+            
+            $('#exportar-compras-pdf').click(function() {
+                exportarReporte('compras', 'pdf');
+            });
+            
+            $('#exportar-compras-excel').click(function() {
+                exportarReporte('compras', 'excel');
+            });
+            
+            $('#exportar-caja-pdf').click(function() {
+                exportarReporte('caja', 'pdf');
+            });
+            
+            $('#exportar-caja-excel').click(function() {
+                exportarReporte('caja', 'excel');
+            });
+            
+            $('#exportar-stock-pdf').click(function() {
+                exportarReporte('stock', 'pdf');
+            });
+            
+            $('#exportar-stock-excel').click(function() {
+                exportarReporte('stock', 'excel');
+            });
+            
+            $('#exportar-fiscal-pdf').click(function() {
+                exportarReporte('fiscal', 'pdf');
+            });
+            
+            $('#exportar-fiscal-excel').click(function() {
+                exportarReporte('fiscal', 'excel');
+            });
+            
+            // Configurar botones de envío por email
+            $('#enviar-ventas-email').click(function() {
+                enviarReportePorEmail('ventas');
+            });
+            
+            $('#enviar-compras-email').click(function() {
+                enviarReportePorEmail('compras');
+            });
+            
+            $('#enviar-caja-email').click(function() {
+                enviarReportePorEmail('caja');
+            });
+            
+            $('#enviar-stock-email').click(function() {
+                enviarReportePorEmail('stock');
+            });
+            
+            $('#enviar-fiscal-email').click(function() {
+                enviarReportePorEmail('fiscal');
+            });
+            
+            // Aplicar filtros
+            $('#aplicar-filtros').click(function() {
+                const reporteActivo = $('.report-tab.active').data('report');
+                cargarDatosReporte(reporteActivo);
+            });
+            
+            // Cargar selectores de sucursales y usuarios
+            cargarSucursales();
+            cargarUsuarios();
+        });
+        
+        // Función para cargar datos de la sucursal
+        async function cargarSucursales() {
+            try {
+                // Usar IPC para comunicarse con el proceso principal de Electron
+                const sucursales = await window.api.invoke('obtener-sucursales');
+                
+                const sucursalSelect = document.getElementById('sucursal');
+                // Mantener la opción "Todas las sucursales"
+                sucursalSelect.innerHTML = '<option value="todas">Todas las sucursales</option>';
+                
+                // Agregar opciones dinámicamente
+                sucursales.forEach(sucursal => {
+                    const option = document.createElement('option');
+                    option.value = sucursal.id;
+                    option.textContent = sucursal.nombre;
+                    sucursalSelect.appendChild(option);
+                });
+            } catch (error) {
+                console.error('Error al cargar sucursales:', error);
+                mostrarNotificacion('error', 'Error al cargar sucursales');
+            }
+        }
+        
+        // Función para cargar usuarios
+        async function cargarUsuarios() {
+            try {
+                // Usar IPC para comunicarse con el proceso principal de Electron
+                const usuarios = await window.api.invoke('obtener-usuarios');
+                
+                const usuarioSelect = document.getElementById('usuario');
+                // Mantener la opción "Todos los usuarios"
+                usuarioSelect.innerHTML = '<option value="todos">Todos los usuarios</option>';
+                
+                // Agregar opciones dinámicamente
+                usuarios.forEach(usuario => {
+                    const option = document.createElement('option');
+                    option.value = usuario.id;
+                    option.textContent = usuario.nombre;
+                    usuarioSelect.appendChild(option);
+                });
+            } catch (error) {
+                console.error('Error al cargar usuarios:', error);
+                mostrarNotificacion('error', 'Error al cargar usuarios');
+            }
+        }
+        
+        // Función para cargar datos de reportes
+        async function cargarDatosReporte(tipoReporte) {
+            // Obtener valores de los filtros
+            const dateRange = $('#date-range').val().split(' - ');
+            const fechaInicio = dateRange[0];
+            const fechaFin = dateRange[1];
+            const sucursal = $('#sucursal').val();
+            const usuario = $('#usuario').val();
+            
+            try {
+                // Mostrar indicador de carga
+                mostrarCargando(true);
+                
+                // Invocar al proceso principal para obtener datos
+                const datos = await window.api.invoke('obtener-reporte', {
+                    tipo: tipoReporte,
+                    fechaInicio,
+                    fechaFin,
+                    sucursal,
+                    usuario
+                });
+                
+                // Actualizar UI según el tipo de reporte
+                switch(tipoReporte) {
+                    case 'ventas':
+                        actualizarReporteVentas(datos);
+                        break;
+                    case 'compras':
+                        actualizarReporteCompras(datos);
+                        break;
+                    case 'caja':
+                        actualizarReporteCaja(datos);
+                        break;
+                    case 'stock':
+                        actualizarReporteStock(datos);
+                        break;
+                }
+                
+                // Ocultar indicador de carga
+                mostrarCargando(false);
+                
+            } catch (error) {
+                console.error(`Error al cargar datos del reporte ${tipoReporte}:`, error);
+                mostrarNotificacion('error', `Error al cargar datos del reporte de ${tipoReporte}`);
+                mostrarCargando(false);
+            }
+        }
+        
+        // Función para cargar datos fiscales
+        async function cargarDatosFiscales(tipoReporteFiscal) {
+            // Obtener valores de los filtros
+            const dateRange = $('#date-range').val().split(' - ');
+            const fechaInicio = dateRange[0];
+            const fechaFin = dateRange[1];
+            const sucursal = $('#sucursal').val();
+            
+            try {
+                // Mostrar indicador de carga
+                mostrarCargando(true);
+                
+                // Invocar al proceso principal para obtener datos fiscales
+                const datos = await window.api.invoke('obtener-reporte-fiscal', {
+                    tipo: tipoReporteFiscal,
+                    fechaInicio,
+                    fechaFin,
+                    sucursal
+                });
+                
+                // Actualizar tabla fiscal
+                actualizarTablaFiscal(datos, tipoReporteFiscal);
+                
+                // Actualizar gráfico fiscal
+                actualizarGraficoFiscal(datos, tipoReporteFiscal);
+                
+                // Ocultar indicador de carga
+                mostrarCargando(false);
+                
+            } catch (error) {
+                console.error(`Error al cargar datos fiscales ${tipoReporteFiscal}:`, error);
+                mostrarNotificacion('error', `Error al cargar datos fiscales`);
+                mostrarCargando(false);
+            }
+        }
+        
+        // Función para inicializar los gráficos
+        function inicializarGraficos() {
+            // Gráfico de ventas
+            const ventasCtx = document.getElementById('ventas-chart').getContext('2d');
+            window.ventasChart = new Chart(ventasCtx, {
+                type: 'line',
+                data: {
+                    labels: [],
+                    datasets: [{
+                        label: 'Ventas diarias',
+                        data: [],
+                        backgroundColor: 'rgba(74, 108, 247, 0.2)',
+                        borderColor: 'rgba(74, 108, 247, 1)',
+                        borderWidth: 2,
+                        tension: 0.4
+                    }]
+                },
+                options: {
+                    responsive: true,
+                    maintainAspectRatio: false,
+                    scales: {
+                        y: {
+                            beginAtZero: true,
+                            ticks: {
+                                callback: function(value) {
+                                    return '$' + value.toLocaleString('es-AR');
+                                }
+                            }
+                        }
+                    },
+                    plugins: {
+                        title: {
+                            display: true,
+                            text: 'Ventas por día',
+                            font: {
+                                size: 16
+                            }
+                        },
+                        tooltip: {
+                            callbacks: {
+                                label: function(context) {
+                                    let label = context.dataset.label || '';
+                                    if (label) {
+                                        label += ': ';
+                                    }
+                                    label += '$' + context.parsed.y.toLocaleString('es-AR');
+                                    return label;
+                                }
+                            }
+                        }
+                    }
+                }
+            });
+            
+            // Gráfico de métodos de pago
+            const metodosCtx = document.getElementById('ventas-metodos-chart').getContext('2d');
+            window.metodosChart = new Chart(metodosCtx, {
+                type: 'doughnut',
+                data: {
+                    labels: ['Efectivo', 'Tarjeta', 'Transferencia', 'QR'],
+                    datasets: [{
+                        data: [0, 0, 0, 0],
+                        backgroundColor: [
+                            'rgba(75, 192, 192, 0.7)',
+                            'rgba(54, 162, 235, 0.7)',
+                            'rgba(153, 102, 255, 0.7)',
+                            'rgba(255, 159, 64, 0.7)'
+                        ],
+                        borderColor: [
+                            'rgba(75, 192, 192, 1)',
+                            'rgba(54, 162, 235, 1)',
+                            'rgba(153, 102, 255, 1)',
+                            'rgba(255, 159, 64, 1)'
+                        ],
+                        borderWidth: 1
+                    }]
+                },
+                options: {
+                    responsive: true,
+                    maintainAspectRatio: false,
+                    plugins: {
+                        title: {
+                            display: true,
+                            text: 'Ventas por método de pago',
+                            font: {
+                                size: 16
+                            }
+                        },
+                        tooltip: {
+                            callbacks: {
+                                label: function(context) {
+                                    const label = context.label || '';
+                                    const value = context.raw;
+                                    const total = context.dataset.data.reduce((a, b) => a + b, 0);
+                                    const percentage = total > 0 ? Math.round((value / total) * 100) : 0;
+                                    return `${label}: $${value.toLocaleString('es-AR')} (${percentage}%)`;
+                                }
+                            }
+                        }
+                    }
+                }
+            });
+            
+            // Gráfico de ventas por sucursal
+            const sucursalesCtx = document.getElementById('ventas-sucursales-chart').getContext('2d');
+            window.sucursalesChart = new Chart(sucursalesCtx, {
+                type: 'bar',
+                data: {
+                    labels: [],
+                    datasets: [{
+                        label: 'Ventas',
+                        data: [],
+                        backgroundColor: 'rgba(75, 192, 192, 0.7)',
+                        borderColor: 'rgba(75, 192, 192, 1)',
+                        borderWidth: 1
+                    }]
+                },
+                options: {
+                    responsive: true,
+                    maintainAspectRatio: false,
+                    scales: {
+                        y: {
+                            beginAtZero: true,
+                            ticks: {
+                                callback: function(value) {
+                                    return '$' + value.toLocaleString('es-AR');
+                                }
+                            }
+                        }
+                    },
+                    plugins: {
+                        title: {
+                            display: true,
+                            text: 'Ventas por sucursal',
+                            font: {
+                                size: 16
+                            }
+                        },
+                        tooltip: {
+                            callbacks: {
+                                label: function(context) {
+                                    let label = context.dataset.label || '';
+                                    if (label) {
+                                        label += ': ';
+                                    }
+                                    label += '$' + context.parsed.y.toLocaleString('es-AR');
+                                    return label;
+                                }
+                            }
+                        }
+                    }
+                }
+            });
+            
+            // Inicializar el resto de gráficos (compras, caja, stock)
+            inicializarGraficosCompras();
+            inicializarGraficosCaja();
+            inicializarGraficosStock();
+        }
+        
+        // Inicializar gráficos de compras
+        function inicializarGraficosCompras() {
+            // Gráfico de compras
+            const comprasCtx = document.getElementById('compras-chart').getContext('2d');
+            window.comprasChart = new Chart(comprasCtx, {
+                type: 'line',
+                data: {
+                    labels: [],
+                    datasets: [{
+                        label: 'Compras diarias',
+                        data: [],
+                        backgroundColor: 'rgba(255, 99, 132, 0.2)',
+                        borderColor: 'rgba(255, 99, 132, 1)',
+                        borderWidth: 2,
+                        tension: 0.4
+                    }]
+                },
+                options: {
+                    responsive: true,
+                    maintainAspectRatio: false,
+                    scales: {
+                        y: {
+                            beginAtZero: true,
+                            ticks: {
+                                callback: function(value) {
+                                    return '$' + value.toLocaleString('es-AR');
+                                }
+                            }
+                        }
+                    },
+                    plugins: {
+                        title: {
+                            display: true,
+                            text: 'Compras por día',
+                            font: {
+                                size: 16
+                            }
+                        }
+                    }
+                }
+            });
+            
+            // Gráfico de compras por categoría
+            const categoriasCtx = document.getElementById('compras-categorias-chart').getContext('2d');
+            window.categoriasComprasChart = new Chart(categoriasCtx, {
+                type: 'pie',
+                data: {
+                    labels: [],
+                    datasets: [{
+                        data: [],
+                        backgroundColor: [
+                            'rgba(255, 99, 132, 0.7)',
+                            'rgba(54, 162, 235, 0.7)',
+                            'rgba(255, 206, 86, 0.7)',
+                            'rgba(75, 192, 192, 0.7)',
+                            'rgba(153, 102, 255, 0.7)',
+                            'rgba(255, 159, 64, 0.7)'
+                        ],
+                        borderWidth: 1
+                    }]
+                },
+                options: {
+                    responsive: true,
+                    maintainAspectRatio: false,
+                    plugins: {
+                        title: {
+                            display: true,
+                            text: 'Compras por categoría',
+                            font: {
+                                size: 16
+                            }
+                        }
+                    }
+                }
+            });
+            
+            // Gráfico de compras por proveedor
+            const proveedoresCtx = document.getElementById('compras-proveedores-chart').getContext('2d');
+            window.proveedoresChart = new Chart(proveedoresCtx, {
+                type: 'bar',
+                data: {
+                    labels: [],
+                    datasets: [{
+                        label: 'Compras',
+                        data: [],
+                        backgroundColor: 'rgba(153, 102, 255, 0.7)',
+                        borderColor: 'rgba(153, 102, 255, 1)',
+                        borderWidth: 1
+                    }]
+                },
+                options: {
+                    responsive: true,
+                    maintainAspectRatio: false,
+                    scales: {
+                        y: {
+                            beginAtZero: true,
+                            ticks: {
+                                callback: function(value) {
+                                    return '$' + value.toLocaleString('es-AR');
+                                }
+                            }
+                        }
+                    },
+                    plugins: {
+                        title: {
+                            display: true,
+                            text: 'Compras por proveedor',
+                            font: {
+                                size: 16
+                            }
+                        }
+                    }
+                }
+            });
+        }
+        
+        // Inicializar gráficos de caja
+        function inicializarGraficosCaja() {
+            // Gráfico de caja
+            const cajaCtx = document.getElementById('caja-chart').getContext('2d');
+            window.cajaChart = new Chart(cajaCtx, {
+                type: 'bar',
+                data: {
+                    labels: [],
+                    datasets: [
+                        {
+                            label: 'Ingresos',
+                            data: [],
+                            backgroundColor: 'rgba(75, 192, 192, 0.7)',
+                            borderColor: 'rgba(75, 192, 192, 1)',
+                            borderWidth: 1
+                        },
+                        {
+                            label: 'Egresos',
+                            data: [],
+                            backgroundColor: 'rgba(255, 99, 132, 0.7)',
+                            borderColor: 'rgba(255, 99, 132, 1)',
+                            borderWidth: 1
+                        }
+                    ]
+                },
+                options: {
+                    responsive: true,
+                    maintainAspectRatio: false,
+                    scales: {
+                        y: {
+                            beginAtZero: true,
+                            ticks: {
+                                callback: function(value) {
+                                    return '$' + value.toLocaleString('es-AR');
+                                }
+                            }
+                        }
+                    },
+                    plugins: {
+                        title: {
+                            display: true,
+                            text: 'Movimientos de caja por día',
+                            font: {
+                                size: 16
+                            }
+                        }
+                    }
+                }
+            });
+        }
+        
+        // Inicializar gráficos de stock
+        function inicializarGraficosStock() {
+            // Gráfico de stock
+            const stockCtx = document.getElementById('stock-chart').getContext('2d');
+            window.stockChart = new Chart(stockCtx, {
+                type: 'bar',
+                data: {
+                    labels: [],
+                    datasets: [{
+                        label: 'Valor del inventario',
+                        data: [],
+                        backgroundColor: 'rgba(54, 162, 235, 0.7)',
+                        borderColor: 'rgba(54, 162, 235, 1)',
+                        borderWidth: 1
+                    }]
+                },
+                options: {
+                    responsive: true,
+                    maintainAspectRatio: false,
+                    scales: {
+                        y: {
+                            beginAtZero: true,
+                            ticks: {
+                                callback: function(value) {
+                                    return '$' + value.toLocaleString('es-AR');
+                                }
+                            }
+                        }
+                    },
+                    plugins: {
+                        title: {
+                            display: true,
+                            text: 'Evolución del valor del inventario',
+                            font: {
+                                size: 16
+                            }
+                        }
+                    }
+                }
+            });
+            
+            // Gráfico de stock por categoría
+            const stockCategoriaCtx = document.getElementById('stock-categoria-chart').getContext('2d');
+            window.stockCategoriaChart = new Chart(stockCategoriaCtx, {
+                type: 'pie',
+                data: {
+                    labels: [],
+                    datasets: [{
+                        data: [],
+                        backgroundColor: [
+                            'rgba(255, 99, 132, 0.7)',
+                            'rgba(54, 162, 235, 0.7)',
+                            'rgba(255, 206, 86, 0.7)',
+                            'rgba(75, 192, 192, 0.7)',
+                            'rgba(153, 102, 255, 0.7)',
+                            'rgba(255, 159, 64, 0.7)'
+                        ],
+                        borderWidth: 1
+                    }]
+                },
+                options: {
+                    responsive: true,
+                    maintainAspectRatio: false,
+                    plugins: {
+                        title: {
+                            display: true,
+                            text: 'Stock por categoría',
+                            font: {
+                                size: 16
+                            }
+                        }
+                    }
+                }
+            });
+            
+            // Gráfico de rotación de stock
+            const stockRotacionCtx = document.getElementById('stock-rotacion-chart').getContext('2d');
+            window.stockRotacionChart = new Chart(stockRotacionCtx, {
+                type: 'horizontalBar',
+                type: 'bar',
+                data: {
+                    labels: [],
+                    datasets: [{
+                        label: 'Rotación',
+                        data: [],
+                        backgroundColor: 'rgba(255, 206, 86, 0.7)',
+                        borderColor: 'rgba(255, 206, 86, 1)',
+                        borderWidth: 1
+                    }]
+                },
+                options: {
+                    indexAxis: 'y',
+                    responsive: true,
+                    maintainAspectRatio: false,
+                    plugins: {
+                        title: {
+                            display: true,
+                            text: 'Productos con mayor rotación',
+                            font: {
+                                size: 16
+                            }
+                        }
+                    }
+                }
+            });
+        }
+        
+        // Función para actualizar el reporte de ventas
+        function actualizarReporteVentas(datos) {
+            // Actualizar métricas
+            document.querySelector('#ventas-report .metrics-cards .metric-card:nth-child(1) .metric-value').textContent = `$${datos.totalVentas.toLocaleString('es-AR')}`;
+            document.querySelector('#ventas-report .metrics-cards .metric-card:nth-child(1) .metric-change').textContent = `${datos.cambioTotalVentas > 0 ? '+' : ''}${datos.cambioTotalVentas}% vs período anterior`;
+            document.querySelector('#ventas-report .metrics-cards .metric-card:nth-child(1) .metric-change').className = `metric-change ${datos.cambioTotalVentas >= 0 ? 'positive' : 'negative'}`;
+            
+            document.querySelector('#ventas-report .metrics-cards .metric-card:nth-child(2) .metric-value').textContent = datos.cantidadVentas.toLocaleString('es-AR');
+            document.querySelector('#ventas-report .metrics-cards .metric-card:nth-child(2) .metric-change').textContent = `${datos.cambioCantidadVentas > 0 ? '+' : ''}${datos.cambioCantidadVentas}% vs período anterior`;
+            document.querySelector('#ventas-report .metrics-cards .metric-card:nth-child(2) .metric-change').className = `metric-change ${datos.cambioCantidadVentas >= 0 ? 'positive' : 'negative'}`;
+            
+            document.querySelector('#ventas-report .metrics-cards .metric-card:nth-child(3) .metric-value').textContent = `$${datos.ticketPromedio.toLocaleString('es-AR')}`;
+            document.querySelector('#ventas-report .metrics-cards .metric-card:nth-child(3) .metric-change').textContent = `${datos.cambioTicketPromedio > 0 ? '+' : ''}${datos.cambioTicketPromedio}% vs período anterior`;
+            document.querySelector('#ventas-report .metrics-cards .metric-card:nth-child(3) .metric-change').className = `metric-change ${datos.cambioTicketPromedio >= 0 ? 'positive' : 'negative'}`;
+            
+            document.querySelector('#ventas-report .metrics-cards .metric-card:nth-child(4) .metric-value').textContent = datos.metodoPrincipal || '-';
+            document.querySelector('#ventas-report .metrics-cards .metric-card:nth-child(4) .metric-change').textContent = `${datos.porcentajeMetodoPrincipal || 0}% del total`;
+            
+            // Actualizar gráfico de ventas por día
+            window.ventasChart.data.labels = datos.ventasPorDia.map(item => item.fecha);
+            window.ventasChart.data.datasets[0].data = datos.ventasPorDia.map(item => item.total);
+            window.ventasChart.update();
+            
+            // Actualizar gráfico de métodos de pago
+            window.metodosChart.data.labels = datos.ventasPorMetodo.map(item => item.metodo);
+            window.metodosChart.data.datasets[0].data = datos.ventasPorMetodo.map(item => item.total);
+            window.metodosChart.update();
+            
+            // Actualizar gráfico de ventas por sucursal
+            window.sucursalesChart.data.labels = datos.ventasPorSucursal.map(item => item.sucursal);
+            window.sucursalesChart.data.datasets[0].data = datos.ventasPorSucursal.map(item => item.total);
+            window.sucursalesChart.update();
+            
+            // Actualizar tabla de top productos
+            const topProductosTable = document.getElementById('top-productos').getElementsByTagName('tbody')[0];
+            topProductosTable.innerHTML = '';
+            
+            datos.topProductos.forEach(producto => {
+                const row = topProductosTable.insertRow();
+                
+                const celdaProducto = row.insertCell(0);
+                celdaProducto.textContent = producto.nombre;
+                
+                const celdaCantidad = row.insertCell(1);
+                celdaCantidad.textContent = producto.cantidad.toLocaleString('es-AR');
+                
+                const celdaTotal = row.insertCell(2);
+                celdaTotal.textContent = `$${producto.total.toLocaleString('es-AR')}`;
+                
+                const celdaPorcentaje = row.insertCell(3);
+                celdaPorcentaje.textContent = `${producto.porcentaje}%`;
+            });
+            
+            // Actualizar tabla de ventas
+            const ventasTable = document.getElementById('ventas-table').getElementsByTagName('tbody')[0];
+            ventasTable.innerHTML = '';
+            
+            datos.ventas.forEach(venta => {
+                const row = ventasTable.insertRow();
+                
+                const celdaFecha = row.insertCell(0);
+                celdaFecha.textContent = venta.fecha;
+                
+                const celdaFactura = row.insertCell(1);
+                celdaFactura.textContent = venta.factura;
+                
+                const celdaCliente = row.insertCell(2);
+                celdaCliente.textContent = venta.cliente;
+                
+                const celdaMetodo = row.insertCell(3);
+                celdaMetodo.textContent = venta.metodoPago;
+                
+                const celdaUsuario = row.insertCell(4);
+                celdaUsuario.textContent = venta.usuario;
+                
+                const celdaTotal = row.insertCell(5);
+                celdaTotal.textContent = `$${venta.total.toLocaleString('es-AR')}`;
+                
+                const celdaAcciones = row.insertCell(6);
+                celdaAcciones.innerHTML = `
+                    <button class="action-button" onclick="verDetalle('${venta.id}', 'ventas')">
+                        <i class="fas fa-eye"></i>
+                    </button>
+                    <button class="action-button" onclick="imprimirFactura('${venta.id}')">
+                        <i class="fas fa-print"></i>
+                    </button>
+                    <button class="action-button" onclick="enviarFactura('${venta.id}')">
+                        <i class="fas fa-envelope"></i>
+                    </button>
+                `;
+            });
+        }
+        
+        // Funciones para actualizar otros reportes
+        function actualizarReporteCompras(datos) {
+            // Implementación similar a actualizarReporteVentas
+            // ...
+        }
+        
+        function actualizarReporteCaja(datos) {
+            // Implementación similar a actualizarReporteVentas
+            // ...
+        }
+        
+        function actualizarReporteStock(datos) {
+            // Implementación similar a actualizarReporteVentas
+            // ...
+        }
+        
+        // Función para actualizar tabla fiscal
+        function actualizarTablaFiscal(datos, tipoReporte) {
+            const fiscalTable = document.getElementById('fiscal-table').getElementsByTagName('tbody')[0];
+            fiscalTable.innerHTML = '';
+            
+            datos.items.forEach(item => {
+                const row = fiscalTable.insertRow();
+                
+                const celdaFecha = row.insertCell(0);
+                celdaFecha.textContent = item.fecha;
+                
+                const celdaComprobante = row.insertCell(1);
+                celdaComprobante.textContent = item.comprobante;
+                
+                const celdaTipo = row.insertCell(2);
+                celdaTipo.textContent = item.tipo;
+                
+                const celdaIdentificacion = row.insertCell(3);
+                celdaIdentificacion.textContent = item.identificacion;
+                
+                const celdaNombre = row.insertCell(4);
+                celdaNombre.textContent = item.nombre;
+                
+                const celdaNeto = row.insertCell(5);
+                celdaNeto.textContent = `$${item.neto.toLocaleString('es-AR')}`;
+                
+                const celdaIVA = row.insertCell(6);
+                celdaIVA.textContent = `$${item.iva.toLocaleString('es-AR')}`;
+                
+                const celdaTotal = row.insertCell(7);
+                celdaTotal.textContent = `$${item.total.toLocaleString('es-AR')}`;
+            });
+            
+            // Actualizar totales en el pie de la tabla
+            const tfoot = document.getElementById('fiscal-table').getElementsByTagName('tfoot')[0];
+            if (tfoot) {
+                const totalesRow = tfoot.getElementsByTagName('tr')[0];
+                totalesRow.cells[5].textContent = `$${datos.totales.neto.toLocaleString('es-AR')}`;
+                totalesRow.cells[6].textContent = `$${datos.totales.iva.toLocaleString('es-AR')}`;
+                totalesRow.cells[7].textContent = `$${datos.totales.total.toLocaleString('es-AR')}`;
+            }
+        }
+        
+        // Función para actualizar gráfico fiscal
+        function actualizarGraficoFiscal(datos, tipoReporte) {
+            // Verificar si existe un gráfico previo y destruirlo
+            if (window.fiscalChart) {
+                window.fiscalChart.destroy();
+            }
+            
+            const fiscalCtx = document.getElementById('fiscal-chart').getContext('2d');
+            
+            // Configurar el tipo de gráfico según el reporte fiscal
+            let chartType = 'bar';
+            let chartTitle = '';
+            
+            switch(tipoReporte) {
+                case 'libro-iva-ventas':
+                    chartTitle = 'IVA Ventas por día';
+                    break;
+                case 'libro-iva-compras':
+                    chartTitle = 'IVA Compras por día';
+                    break;
+                case 'ingresos-brutos':
+                    chartTitle = 'Ingresos Brutos por día';
+                    break;
+                case 'resumen-fiscal':
+                    chartTitle = 'Resumen Fiscal';
+                    chartType = 'pie';
+                    break;
+            }
+            
+            // Crear el gráfico fiscal según el tipo
+            if (chartType === 'bar') {
+                window.fiscalChart = new Chart(fiscalCtx, {
+                    type: 'bar',
+                    data: {
+                        labels: datos.grafico.labels,
+                        datasets: [
+                            {
+                                label: 'Neto',
+                                data: datos.grafico.neto,
+                                backgroundColor: 'rgba(75, 192, 192, 0.7)',
+                                borderColor: 'rgba(75, 192, 192, 1)',
+                                borderWidth: 1
+                            },
+                            {
+                                label: 'IVA',
+                                data: datos.grafico.iva,
+                                backgroundColor: 'rgba(54, 162, 235, 0.7)',
+                                borderColor: 'rgba(54, 162, 235, 1)',
+                                borderWidth: 1
+                            }
+                        ]
+                    },
+                    options: {
+                        responsive: true,
+                        maintainAspectRatio: false,
+                        scales: {
+                            y: {
+                                beginAtZero: true,
+                                ticks: {
+                                    callback: function(value) {
+                                        return '$' + value.toLocaleString('es-AR');
+                                    }
+                                }
+                            }
+                        },
+                        plugins: {
+                            title: {
+                                display: true,
+                                text: chartTitle,
+                                font: {
+                                    size: 16
+                                }
+                            },
+                            tooltip: {
+                                callbacks: {
+                                    label: function(context) {
+                                        let label = context.dataset.label || '';
+                                        if (label) {
+                                            label += ': ';
+                                        }
+                                        label += '$' + context.parsed.y.toLocaleString('es-AR');
+                                        return label;
+                                    }
+                                }
+                            }
+                        }
+                    }
+                });
+            } else {
+                // Gráfico tipo pie para resumen fiscal
+                window.fiscalChart = new Chart(fiscalCtx, {
+                    type: 'pie',
+                    data: {
+                        labels: datos.grafico.labels,
+                        datasets: [{
+                            data: datos.grafico.valores,
+                            backgroundColor: [
+                                'rgba(75, 192, 192, 0.7)',
+                                'rgba(54, 162, 235, 0.7)',
+                                'rgba(255, 206, 86, 0.7)',
+                                'rgba(255, 99, 132, 0.7)',
+                                'rgba(153, 102, 255, 0.7)'
+                            ],
+                            borderWidth: 1
+                        }]
+                    },
+                    options: {
+                        responsive: true,
+                        maintainAspectRatio: false,
+                        plugins: {
+                            title: {
+                                display: true,
+                                text: chartTitle,
+                                font: {
+                                    size: 16
+                                }
+                            },
+                            tooltip: {
+                                callbacks: {
+                                    label: function(context) {
+                                        const label = context.label || '';
+                                        const value = context.raw;
+                                        const total = context.dataset.data.reduce((a, b) => a + b, 0);
+                                        const percentage = Math.round((value / total) * 100);
+                                        return `${label}: $${value.toLocaleString('es-AR')} (${percentage}%)`;
+                                    }
+                                }
+                            }
+                        }
+                    }
+                });
+            }
+        }
+        
+        // Función para exportar reportes
+        async function exportarReporte(tipoReporte, formato) {
+            try {
+                // Obtener valores de los filtros
+                const dateRange = $('#date-range').val().split(' - ');
+                const fechaInicio = dateRange[0];
+                const fechaFin = dateRange[1];
+                const sucursal = $('#sucursal').val();
+                const usuario = $('#usuario').val();
+                
+                // Mostrar indicador de carga
+                mostrarCargando(true);
+                
+                // Invocar al proceso principal para exportar reporte
+                await window.api.invoke('exportar-reporte', {
+                    tipo: tipoReporte,
+                    formato: formato,
+                    fechaInicio,
+                    fechaFin,
+                    sucursal,
+                    usuario
+                });
+                
+                // Mostrar notificación de éxito
+                mostrarNotificacion('success', `Reporte de ${tipoReporte} exportado correctamente como ${formato.toUpperCase()}`);
+                
+                // Ocultar indicador de carga
+                mostrarCargando(false);
+                
+            } catch (error) {
+                console.error(`Error al exportar reporte ${tipoReporte} como ${formato}:`, error);
+                mostrarNotificacion('error', `Error al exportar reporte de ${tipoReporte}`);
+                mostrarCargando(false);
+            }
+        }
+        
+        // Función para enviar reportes por email
+        async function enviarReportePorEmail(tipoReporte) {
+            try {
+                // Obtener valores de los filtros
+                const dateRange = $('#date-range').val().split(' - ');
+                const fechaInicio = dateRange[0];
+                const fechaFin = dateRange[1];
+                const sucursal = $('#sucursal').val();
+                const usuario = $('#usuario').val();
+                
+                // Mostrar modal para ingresar correo electrónico
+                const email = await mostrarModalEmail();
+                
+                if (!email) {
+                    return; // El usuario canceló la operación
+                }
+                
+                // Mostrar indicador de carga
+                mostrarCargando(true);
+                
+                // Invocar al proceso principal para enviar reporte por email
+                await window.api.invoke('enviar-reporte-email', {
+                    tipo: tipoReporte,
+                    email: email,
+                    fechaInicio,
+                    fechaFin,
+                    sucursal,
+                    usuario
+                });
+                
+                // Mostrar notificación de éxito
+                mostrarNotificacion('success', `Reporte de ${tipoReporte} enviado correctamente a ${email}`);
+                
+                // Ocultar indicador de carga
+                mostrarCargando(false);
+                
+            } catch (error) {
+                console.error(`Error al enviar reporte ${tipoReporte} por email:`, error);
+                mostrarNotificacion('error', `Error al enviar reporte de ${tipoReporte} por email`);
+                mostrarCargando(false);
+            }
+        }
+        
+        // Función para mostrar modal de email
+        function mostrarModalEmail() {
+            return new Promise((resolve) => {
+                // Crear el modal
+                const modal = document.createElement('div');
+                modal.classList.add('modal');
+                modal.style.display = 'flex';
+                modal.style.position = 'fixed';
+                modal.style.zIndex = '1000';
+                modal.style.left = '0';
+                modal.style.top = '0';
+                modal.style.width = '100%';
+                modal.style.height = '100%';
+                modal.style.backgroundColor = 'rgba(0,0,0,0.4)';
+                modal.style.alignItems = 'center';
+                modal.style.justifyContent = 'center';
+                
+                // Contenido del modal
+                const modalContent = document.createElement('div');
+                modalContent.style.backgroundColor = '#fefefe';
+                modalContent.style.padding = '20px';
+                modalContent.style.borderRadius = '8px';
+                modalContent.style.width = '400px';
+                modalContent.style.maxWidth = '90%';
+                
+                modalContent.innerHTML = `
+                    <h3>Enviar por Email</h3>
+                    <p>Ingrese la dirección de correo electrónico para enviar el reporte:</p>
+                    <input type="email" id="email-input" placeholder="ejemplo@correo.com" style="width: 100%; padding: 8px; margin: 10px 0; border: 1px solid #ddd; border-radius: 4px;">
+                    <div style="display: flex; justify-content: flex-end; margin-top: 15px;">
+                        <button id="cancelar-email" style="padding: 8px 15px; margin-right: 10px; border: none; border-radius: 4px; background-color: #6c757d; color: white; cursor: pointer;">Cancelar</button>
+                        <button id="enviar-email" style="padding: 8px 15px; border: none; border-radius: 4px; background-color: #4a6cf7; color: white; cursor: pointer;">Enviar</button>
+                    </div>
+                `;
+                
+                modal.appendChild(modalContent);
+                document.body.appendChild(modal);
+                
+                // Enfocar el input
+                setTimeout(() => {
+                    document.getElementById('email-input').focus();
+                }, 100);
+                
+                // Manejar eventos
+                document.getElementById('cancelar-email').addEventListener('click', () => {
+                    document.body.removeChild(modal);
+                    resolve(null);
+                });
+                
+                document.getElementById('enviar-email').addEventListener('click', () => {
+                    const email = document.getElementById('email-input').value.trim();
+                    if (email === '') {
+                        alert('Por favor ingrese una dirección de correo válida');
+                        return;
+                    }
+                    
+                    document.body.removeChild(modal);
+                    resolve(email);
+                });
+                
+                // También permitir envío con Enter
+                document.getElementById('email-input').addEventListener('keypress', (event) => {
+                    if (event.key === 'Enter') {
+                        const email = document.getElementById('email-input').value.trim();
+                        if (email === '') {
+                            alert('Por favor ingrese una dirección de correo válida');
+                            return;
+                        }
+                        
+                        document.body.removeChild(modal);
+                        resolve(email);
+                    }
+                });
+            });
+        }
+        
+        // Función para ver detalle de venta/compra
+        async function verDetalle(id, tipo) {
+            try {
+                // Mostrar indicador de carga
+                mostrarCargando(true);
+                
+                // Invocar al proceso principal para obtener detalle
+                const detalle = await window.api.invoke('obtener-detalle-transaccion', {
+                    id: id,
+                    tipo: tipo
+                });
+                
+                // Mostrar modal con detalle
+                mostrarModalDetalle(detalle, tipo);
+                
+                // Ocultar indicador de carga
+                mostrarCargando(false);
+                
+            } catch (error) {
+                console.error(`Error al obtener detalle de ${tipo} ${id}:`, error);
+                mostrarNotificacion('error', `Error al obtener detalle`);
+                mostrarCargando(false);
+            }
+        }
+        
+        // Función para mostrar modal de detalle
+        function mostrarModalDetalle(detalle, tipo) {
+            // Crear el modal
+            const modal = document.createElement('div');
+            modal.classList.add('modal');
+            modal.style.display = 'flex';
+            modal.style.position = 'fixed';
+            modal.style.zIndex = '1000';
+            modal.style.left = '0';
+            modal.style.top = '0';
+            modal.style.width = '100%';
+            modal.style.height = '100%';
+            modal.style.backgroundColor = 'rgba(0,0,0,0.4)';
+            modal.style.alignItems = 'center';
+            modal.style.justifyContent = 'center';
+            
+            // Contenido del modal según el tipo
+            const modalContent = document.createElement('div');
+            modalContent.style.backgroundColor = '#fefefe';
+            modalContent.style.padding = '20px';
+            modalContent.style.borderRadius = '8px';
+            modalContent.style.width = '700px';
+            modalContent.style.maxWidth = '90%';
+            modalContent.style.maxHeight = '90vh';
+            modalContent.style.overflow = 'auto';
+            
+            // Título según tipo
+            const titulo = tipo === 'ventas' ? 'Detalle de Venta' : 'Detalle de Compra';
+            
+            // Generar contenido del modal
+            let itemsHTML = '';
+            detalle.items.forEach(item => {
+                itemsHTML += `
+                    <tr>
+                        <td>${item.codigo || '-'}</td>
+                        <td>${item.descripcion}</td>
+                        <td>${item.cantidad}</td>
+                        <td>$${item.precioUnitario.toLocaleString('es-AR')}</td>
+                        <td>$${item.subtotal.toLocaleString('es-AR')}</td>
+                    </tr>
+                `;
+            });
+            
+            modalContent.innerHTML = `
+                <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 20px;">
+                    <h2>${titulo}</h2>
+                    <button id="cerrar-detalle" style="background: none; border: none; font-size: 20px; cursor: pointer;">&times;</button>
+                </div>
+                
+                <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 15px; margin-bottom: 20px;">
+                    <div>
+                        <p><strong>Número:</strong> ${detalle.numero}</p>
+                        <p><strong>Fecha:</strong> ${detalle.fecha}</p>
+                        <p><strong>${tipo === 'ventas' ? 'Cliente' : 'Proveedor'}:</strong> ${detalle.entidad}</p>
+                    </div>
+                    <div>
+                        <p><strong>Usuario:</strong> ${detalle.usuario}</p>
+                        <p><strong>Método de Pago:</strong> ${detalle.metodoPago}</p>
+                        <p><strong>Sucursal:</strong> ${detalle.sucursal}</p>
+                    </div>
+                </div>
+                
+                <h3>Detalle de Productos</h3>
+                <table class="data-table" style="width: 100%;">
+                    <thead>
+                        <tr>
+                            <th>Código</th>
+                            <th>Descripción</th>
+                            <th>Cantidad</th>
+                            <th>Precio Unit.</th>
+                            <th>Subtotal</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        ${itemsHTML}
+                    </tbody>
+                    <tfoot>
+                        <tr>
+                            <th colspan="4" style="text-align: right;">Subtotal:</th>
+                            <th>$${detalle.subtotal.toLocaleString('es-AR')}</th>
+                        </tr>
+                        <tr>
+                            <th colspan="4" style="text-align: right;">IVA:</th>
+                            <th>$${detalle.iva.toLocaleString('es-AR')}</th>
+                        </tr>
+                        <tr>
+                            <th colspan="4" style="text-align: right;">Total:</th>
+                            <th>$${detalle.total.toLocaleString('es-AR')}</th>
+                        </tr>
+                    </tfoot>
+                </table>
+                
+                <div style="display: flex; justify-content: flex-end; margin-top: 20px;">
+                    <button class="action-button secondary" id="imprimir-detalle" style="margin-right: 10px;">
+                        <i class="fas fa-print"></i> Imprimir
+                    </button>
+                    <button class="action-button primary" id="cerrar-detalle-btn">
+                        Cerrar
+                    </button>
+                </div>
+            `;
+            
+            modal.appendChild(modalContent);
+            document.body.appendChild(modal);
+            
+            // Manejar eventos
+            document.getElementById('cerrar-detalle').addEventListener('click', () => {
+                document.body.removeChild(modal);
+            });
+            
+            document.getElementById('cerrar-detalle-btn').addEventListener('click', () => {
+                document.body.removeChild(modal);
+            });
+            
+            document.getElementById('imprimir-detalle').addEventListener('click', () => {
+                if (tipo === 'ventas') {
+                    imprimirFactura(detalle.id);
+                } else {
+                    imprimirOrdenCompra(detalle.id);
+                }
+            });
+        }
+        
+        // Función para imprimir factura
+        async function imprimirFactura(id) {
+            try {
+                // Mostrar indicador de carga
+                mostrarCargando(true);
+                
+                // Invocar al proceso principal para imprimir factura
+                await window.api.invoke('imprimir-factura', { id });
+                
+                // Mostrar notificación de éxito
+                mostrarNotificacion('success', 'Factura enviada a impresión');
+                
+                // Ocultar indicador de carga
+                mostrarCargando(false);
+                
+            } catch (error) {
+                console.error(`Error al imprimir factura ${id}:`, error);
+                mostrarNotificacion('error', 'Error al imprimir factura');
+                mostrarCargando(false);
+            }
+        }
+        
+        // Función para imprimir orden de compra
+        async function imprimirOrdenCompra(id) {
+            try {
+                // Mostrar indicador de carga
+                mostrarCargando(true);
+                
+                // Invocar al proceso principal para imprimir orden de compra
+                await window.api.invoke('imprimir-orden-compra', { id });
+                
+                // Mostrar notificación de éxito
+                mostrarNotificacion('success', 'Orden de compra enviada a impresión');
+                
+                // Ocultar indicador de carga
+                mostrarCargando(false);
+                
+            } catch (error) {
+                console.error(`Error al imprimir orden de compra ${id}:`, error);
+                mostrarNotificacion('error', 'Error al imprimir orden de compra');
+                mostrarCargando(false);
+            }
+        }
+        
+        // Función para enviar factura por email
+        async function enviarFactura(id) {
+            try {
+                // Mostrar modal para ingresar correo electrónico
+                const email = await mostrarModalEmail();
+                
+                if (!email) {
+                    return; // El usuario canceló la operación
+                }
+                
+                // Mostrar indicador de carga
+                mostrarCargando(true);
+                
+                // Invocar al proceso principal para enviar factura por email
+                await window.api.invoke('enviar-factura-email', {
+                    id: id,
+                    email: email
+                });
+                
+                // Mostrar notificación de éxito
+                mostrarNotificacion('success', `Factura enviada correctamente a ${email}`);
+                
+                // Ocultar indicador de carga
+                mostrarCargando(false);
+                
+            } catch (error) {
+                console.error(`Error al enviar factura ${id} por email:`, error);
+                mostrarNotificacion('error', 'Error al enviar factura por email');
+                mostrarCargando(false);
+            }
+        }
+        
+        // Función para mostrar indicador de carga
+        function mostrarCargando(mostrar) {
+            // Verificar si existe el elemento
+            let loadingOverlay = document.getElementById('loading-overlay');
+            
+            if (mostrar) {
+                // Si no existe, crearlo
+                if (!loadingOverlay) {
+                    loadingOverlay = document.createElement('div');
+                    loadingOverlay.id = 'loading-overlay';
+                    loadingOverlay.style.position = 'fixed';
+                    loadingOverlay.style.top = '0';
+                    loadingOverlay.style.left = '0';
+                    loadingOverlay.style.width = '100%';
+                    loadingOverlay.style.height = '100%';
+                    loadingOverlay.style.backgroundColor = 'rgba(0, 0, 0, 0.5)';
+                    loadingOverlay.style.display = 'flex';
+                    loadingOverlay.style.alignItems = 'center';
+                    loadingOverlay.style.justifyContent = 'center';
+                    loadingOverlay.style.zIndex = '9999';
+                    
+                    const spinner = document.createElement('div');
+                    spinner.style.border = '5px solid #f3f3f3';
+                    spinner.style.borderTop = '5px solid #4a6cf7';
+                    spinner.style.borderRadius = '50%';
+                    spinner.style.width = '50px';
+                    spinner.style.height = '50px';
+                    spinner.style.animation = 'spin 1s linear infinite';
+                    
+                    // Agregar animación CSS
+                    const style = document.createElement('style');
+                    style.innerHTML = `
+                        @keyframes spin {
+                            0% { transform: rotate(0deg); }
+                            100% { transform: rotate(360deg); }
+                        }
+                    `;
+                    document.head.appendChild(style);
+                    
+                    loadingOverlay.appendChild(spinner);
+                    document.body.appendChild(loadingOverlay);
+                } else {
+                    loadingOverlay.style.display = 'flex';
+                }
+            } else if (loadingOverlay) {
+                // Ocultar si existe
+                loadingOverlay.style.display = 'none';
+            }
+        }
+        
+        // Función para mostrar notificaciones
+        function mostrarNotificacion(tipo, mensaje) {
+            // Crear elemento de notificación
+            const notificacion = document.createElement('div');
+            notificacion.classList.add('notificacion');
+            notificacion.style.position = 'fixed';
+            notificacion.style.bottom = '20px';
+            notificacion.style.right = '20px';
+            notificacion.style.padding = '15px 20px';
+            notificacion.style.borderRadius = '5px';
+            notificacion.style.boxShadow = '0 4px 8px rgba(0, 0, 0, 0.2)';
+            notificacion.style.zIndex = '9999';
+            notificacion.style.minWidth = '250px';
+            notificacion.style.display = 'flex';
+            notificacion.style.alignItems = 'center';
+            notificacion.style.justifyContent = 'space-between';
+            
+            // Configurar estilo según tipo
+            if (tipo === 'success') {
+                notificacion.style.backgroundColor = '#4caf50';
+                notificacion.style.color = 'white';
+                notificacion.innerHTML = `
+                    <span><i class="fas fa-check-circle" style="margin-right: 10px;"></i>${mensaje}</span>
+                    <span class="cerrar-notificacion" style="cursor: pointer; margin-left: 15px;">&times;</span>
+                `;
+            } else if (tipo === 'error') {
+                notificacion.style.backgroundColor = '#f44336';
+                notificacion.style.color = 'white';
+                notificacion.innerHTML = `
+                    <span><i class="fas fa-exclamation-circle" style="margin-right: 10px;"></i>${mensaje}</span>
+                    <span class="cerrar-notificacion" style="cursor: pointer; margin-left: 15px;">&times;</span>
+                `;
+            } else {
+                notificacion.style.backgroundColor = '#2196F3';
+                notificacion.style.color = 'white';
+                notificacion.innerHTML = `
+                    <span><i class="fas fa-info-circle" style="margin-right: 10px;"></i>${mensaje}</span>
+                    <span class="cerrar-notificacion" style="cursor: pointer; margin-left: 15px;">&times;</span>
+                `;
+            }
+            
+            // Agregar al DOM
+            document.body.appendChild(notificacion);
+            
+            // Configurar evento para cerrar
+            notificacion.querySelector('.cerrar-notificacion').addEventListener('click', () => {
+                document.body.removeChild(notificacion);
+            });
+            
+            // Auto cerrar después de 4 segundos
+            setTimeout(() => {
+                if (document.body.contains(notificacion)) {
+                    document.body.removeChild(notificacion);
+                }
+            }, 4000);
+        }
+    </script>
+</body>
+</html>

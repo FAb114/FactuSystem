@@ -1,0 +1,2211 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>FactuSystem - Documentos</title>
+    <!-- Estilos CSS -->
+    <link rel="stylesheet" href="../assets/css/main.css">
+    <link rel="stylesheet" href="../assets/css/components/tables.css">
+    <link rel="stylesheet" href="../assets/css/components/modal.css">
+    <!-- Font Awesome para iconos -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.2.1/css/all.min.css">
+    <!-- DataTables CSS -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/datatables/1.10.21/css/jquery.dataTables.min.css">
+    <style>
+        .tab-content {
+            display: none;
+        }
+        .tab-content.active {
+            display: block;
+        }
+        .nav-tabs {
+            display: flex;
+            border-bottom: 1px solid #ddd;
+            margin-bottom: 15px;
+        }
+        .nav-tabs .tab-link {
+            padding: 10px 15px;
+            cursor: pointer;
+            border: 1px solid transparent;
+            border-radius: 4px 4px 0 0;
+            margin-right: 5px;
+            font-weight: 500;
+        }
+        .nav-tabs .tab-link:hover {
+            background-color: #f8f9fa;
+            border-color: #e9ecef #e9ecef #ddd;
+        }
+        .nav-tabs .tab-link.active {
+            color: #495057;
+            background-color: #fff;
+            border-color: #ddd #ddd #fff;
+        }
+        .floating-button {
+            position: fixed;
+            right: 30px;
+            bottom: 30px;
+            width: 60px;
+            height: 60px;
+            background-color: #4CAF50;
+            color: white;
+            border-radius: 50%;
+            text-align: center;
+            box-shadow: 0 4px 8px rgba(0, 0, 0, 0.3);
+            cursor: pointer;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 24px;
+            z-index: 1000;
+            transition: all 0.3s ease;
+        }
+        .floating-button:hover {
+            background-color: #45a049;
+            transform: scale(1.1);
+        }
+        .documento-card {
+            border: 1px solid #ddd;
+            border-radius: 5px;
+            padding: 15px;
+            margin-bottom: 15px;
+            transition: all 0.3s ease;
+        }
+        .documento-card:hover {
+            box-shadow: 0 5px 15px rgba(0,0,0,0.1);
+        }
+        .status-badge {
+            padding: 5px 10px;
+            border-radius: 20px;
+            font-size: 12px;
+            font-weight: bold;
+        }
+        .status-pendiente {
+            background-color: #FFF3CD;
+            color: #856404;
+        }
+        .status-completado {
+            background-color: #D4EDDA;
+            color: #155724;
+        }
+        .status-anulado {
+            background-color: #F8D7DA;
+            color: #721C24;
+        }
+        .filter-section {
+            background-color: #f9f9f9;
+            padding: 15px;
+            border-radius: 5px;
+            margin-bottom: 20px;
+        }
+        .action-buttons button {
+            margin-right: 5px;
+        }
+        .document-preview {
+            max-height: 80vh;
+            overflow-y: auto;
+        }
+        .client-info {
+            margin-bottom: 8px;
+            color: #666;
+            font-size: 14px;
+        }
+    </style>
+</head>
+<body>
+    <!-- Contenedor principal -->
+    <div class="content-container">
+        <h1 class="module-title"><i class="fas fa-file-alt"></i> Gestión de Documentos</h1>
+        
+        <!-- Pestañas de navegación -->
+        <div class="nav-tabs">
+            <div class="tab-link active" data-tab="remitos">Remitos</div>
+            <div class="tab-link" data-tab="notasCredito">Notas de Crédito</div>
+            <div class="tab-link" data-tab="notasDebito">Notas de Débito</div>
+        </div>
+        
+        <!-- Sección de filtros común para todos los documentos -->
+        <div class="filter-section">
+            <div class="row">
+                <div class="col-md-3">
+                    <div class="form-group">
+                        <label for="fechaDesde">Desde:</label>
+                        <input type="date" id="fechaDesde" class="form-control">
+                    </div>
+                </div>
+                <div class="col-md-3">
+                    <div class="form-group">
+                        <label for="fechaHasta">Hasta:</label>
+                        <input type="date" id="fechaHasta" class="form-control">
+                    </div>
+                </div>
+                <div class="col-md-3">
+                    <div class="form-group">
+                        <label for="cliente">Cliente:</label>
+                        <input type="text" id="cliente" class="form-control" placeholder="Nombre o CUIT">
+                    </div>
+                </div>
+                <div class="col-md-3">
+                    <div class="form-group">
+                        <label for="estado">Estado:</label>
+                        <select id="estado" class="form-control">
+                            <option value="">Todos</option>
+                            <option value="pendiente">Pendiente</option>
+                            <option value="completado">Completado</option>
+                            <option value="anulado">Anulado</option>
+                        </select>
+                    </div>
+                </div>
+            </div>
+            <div class="row mt-3">
+                <div class="col-md-3">
+                    <div class="form-group">
+                        <label for="sucursal">Sucursal:</label>
+                        <select id="sucursal" class="form-control">
+                            <option value="">Todas</option>
+                            <!-- Se cargarán dinámicamente -->
+                        </select>
+                    </div>
+                </div>
+                <div class="col-md-3">
+                    <div class="form-group">
+                        <label for="numero">Número:</label>
+                        <input type="text" id="numero" class="form-control" placeholder="Número de documento">
+                    </div>
+                </div>
+                <div class="col-md-3">
+                    <div class="form-group">
+                        <label for="usuario">Usuario:</label>
+                        <select id="usuario" class="form-control">
+                            <option value="">Todos</option>
+                            <!-- Se cargarán dinámicamente -->
+                        </select>
+                    </div>
+                </div>
+                <div class="col-md-3 d-flex align-items-end">
+                    <button id="btnFiltrar" class="btn btn-primary mr-2"><i class="fas fa-search"></i> Filtrar</button>
+                    <button id="btnLimpiar" class="btn btn-secondary"><i class="fas fa-broom"></i> Limpiar</button>
+                </div>
+            </div>
+        </div>
+        
+        <!-- Contenido de las pestañas -->
+        <!-- REMITOS -->
+        <div id="remitos" class="tab-content active">
+            <div class="table-responsive">
+                <table id="tablaRemitos" class="table table-striped table-hover">
+                    <thead>
+                        <tr>
+                            <th>Número</th>
+                            <th>Fecha</th>
+                            <th>Cliente</th>
+                            <th>Total</th>
+                            <th>Estado</th>
+                            <th>Sucursal</th>
+                            <th>Usuario</th>
+                            <th>Acciones</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        <!-- Los datos se cargarán dinámicamente -->
+                    </tbody>
+                </table>
+            </div>
+        </div>
+        
+        <!-- NOTAS DE CRÉDITO -->
+        <div id="notasCredito" class="tab-content">
+            <div class="table-responsive">
+                <table id="tablaNotasCredito" class="table table-striped table-hover">
+                    <thead>
+                        <tr>
+                            <th>Número</th>
+                            <th>Fecha</th>
+                            <th>Cliente</th>
+                            <th>Factura asociada</th>
+                            <th>Total</th>
+                            <th>Estado</th>
+                            <th>Sucursal</th>
+                            <th>Acciones</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        <!-- Los datos se cargarán dinámicamente -->
+                    </tbody>
+                </table>
+            </div>
+        </div>
+        
+        <!-- NOTAS DE DÉBITO -->
+        <div id="notasDebito" class="tab-content">
+            <div class="table-responsive">
+                <table id="tablaNotasDebito" class="table table-striped table-hover">
+                    <thead>
+                        <tr>
+                            <th>Número</th>
+                            <th>Fecha</th>
+                            <th>Cliente</th>
+                            <th>Factura asociada</th>
+                            <th>Total</th>
+                            <th>Estado</th>
+                            <th>Sucursal</th>
+                            <th>Acciones</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        <!-- Los datos se cargarán dinámicamente -->
+                    </tbody>
+                </table>
+            </div>
+        </div>
+        
+        <!-- Botón flotante para crear nuevo documento -->
+        <div class="floating-button" id="btnNuevoDocumento">
+            <i class="fas fa-plus"></i>
+        </div>
+    </div>
+    
+    <!-- MODAL PARA CREAR NUEVO DOCUMENTO -->
+    <div class="modal fade" id="modalNuevoDocumento" tabindex="-1" role="dialog" aria-labelledby="modalNuevoDocumentoLabel" aria-hidden="true">
+        <div class="modal-dialog modal-lg" role="document">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h5 class="modal-title" id="modalNuevoDocumentoLabel">Crear Nuevo Documento</h5>
+                    <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                        <span aria-hidden="true">&times;</span>
+                    </button>
+                </div>
+                <div class="modal-body">
+                    <div class="form-group">
+                        <label for="tipoDocumento">Tipo de Documento:</label>
+                        <select id="tipoDocumento" class="form-control">
+                            <option value="remito">Remito</option>
+                            <option value="notaCredito">Nota de Crédito</option>
+                            <option value="notaDebito">Nota de Débito</option>
+                        </select>
+                    </div>
+                    
+                    <!-- Sección de cliente -->
+                    <div class="card mb-3">
+                        <div class="card-header bg-light">
+                            <h5><i class="fas fa-user"></i> Datos del Cliente</h5>
+                        </div>
+                        <div class="card-body">
+                            <div class="row">
+                                <div class="col-md-9">
+                                    <div class="form-group">
+                                        <label for="clienteNombre">Cliente:</label>
+                                        <input type="text" id="clienteNombre" class="form-control" placeholder="Nombre o CUIT del cliente">
+                                        <small class="form-text text-muted">Presione F1 para buscar cliente</small>
+                                    </div>
+                                </div>
+                                <div class="col-md-3">
+                                    <div class="form-group mt-4">
+                                        <button id="btnBuscarCliente" class="btn btn-outline-primary btn-block">
+                                            <i class="fas fa-search"></i> Buscar
+                                        </button>
+                                    </div>
+                                </div>
+                            </div>
+                            <div id="datosCliente" class="mt-3" style="display: none;">
+                                <div class="row">
+                                    <div class="col-md-6">
+                                        <p><strong>CUIT/DNI:</strong> <span id="clienteCuit"></span></p>
+                                        <p><strong>Dirección:</strong> <span id="clienteDireccion"></span></p>
+                                    </div>
+                                    <div class="col-md-6">
+                                        <p><strong>Condición IVA:</strong> <span id="clienteCondicionIva"></span></p>
+                                        <p><strong>Teléfono:</strong> <span id="clienteTelefono"></span></p>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                    
+                    <!-- Factura asociada (solo para notas) -->
+                    <div id="seccionFacturaAsociada" class="card mb-3" style="display: none;">
+                        <div class="card-header bg-light">
+                            <h5><i class="fas fa-file-invoice"></i> Factura Asociada</h5>
+                        </div>
+                        <div class="card-body">
+                            <div class="row">
+                                <div class="col-md-9">
+                                    <div class="form-group">
+                                        <label for="facturaAsociada">Número de Factura:</label>
+                                        <input type="text" id="facturaAsociada" class="form-control" placeholder="Número de factura">
+                                        <small class="form-text text-muted">Presione F2 para buscar factura</small>
+                                    </div>
+                                </div>
+                                <div class="col-md-3">
+                                    <div class="form-group mt-4">
+                                        <button id="btnBuscarFactura" class="btn btn-outline-primary btn-block">
+                                            <i class="fas fa-search"></i> Buscar
+                                        </button>
+                                    </div>
+                                </div>
+                            </div>
+                            <div id="datosFactura" class="mt-3" style="display: none;">
+                                <div class="row">
+                                    <div class="col-md-6">
+                                        <p><strong>Fecha:</strong> <span id="facturaFecha"></span></p>
+                                        <p><strong>Total:</strong> <span id="facturaTotal"></span></p>
+                                    </div>
+                                    <div class="col-md-6">
+                                        <p><strong>Tipo:</strong> <span id="facturaTipo"></span></p>
+                                        <p><strong>Estado:</strong> <span id="facturaEstado"></span></p>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                    
+                    <!-- Sección de productos -->
+                    <div class="card mb-3">
+                        <div class="card-header bg-light">
+                            <h5><i class="fas fa-shopping-cart"></i> Productos</h5>
+                        </div>
+                        <div class="card-body">
+                            <div class="row">
+                                <div class="col-md-9">
+                                    <div class="form-group">
+                                        <label for="productoInput">Producto:</label>
+                                        <input type="text" id="productoInput" class="form-control" placeholder="Código o nombre del producto">
+                                        <small class="form-text text-muted">Presione F1 para buscar producto</small>
+                                    </div>
+                                </div>
+                                <div class="col-md-3">
+                                    <div class="form-group mt-4">
+                                        <button id="btnBuscarProducto" class="btn btn-outline-primary btn-block">
+                                            <i class="fas fa-search"></i> Buscar
+                                        </button>
+                                    </div>
+                                </div>
+                            </div>
+                            
+                            <div class="table-responsive mt-3">
+                                <table id="tablaProductos" class="table table-sm">
+                                    <thead>
+                                        <tr>
+                                            <th>Código</th>
+                                            <th>Descripción</th>
+                                            <th>Cantidad</th>
+                                            <th>Precio Unit.</th>
+                                            <th>Subtotal</th>
+                                            <th>Acciones</th>
+                                        </tr>
+                                    </thead>
+                                    <tbody>
+                                        <!-- Los productos se agregarán dinámicamente -->
+                                    </tbody>
+                                    <tfoot>
+                                        <tr>
+                                            <th colspan="4" class="text-right">Total:</th>
+                                            <th id="totalDocumento">$0.00</th>
+                                            <th></th>
+                                        </tr>
+                                    </tfoot>
+                                </table>
+                            </div>
+                        </div>
+                    </div>
+                    
+                    <!-- Sección de observaciones -->
+                    <div class="form-group">
+                        <label for="observaciones">Observaciones:</label>
+                        <textarea id="observaciones" class="form-control" rows="3"></textarea>
+                    </div>
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-secondary" data-dismiss="modal">Cancelar</button>
+                    <button type="button" id="btnVistaPrevia" class="btn btn-info">
+                        <i class="fas fa-eye"></i> Vista Previa
+                    </button>
+                    <button type="button" id="btnGuardar" class="btn btn-primary">
+                        <i class="fas fa-save"></i> Guardar
+                    </button>
+                </div>
+            </div>
+        </div>
+    </div>
+    
+    <!-- MODAL PARA BUSCAR CLIENTE -->
+    <div class="modal fade" id="modalBuscarCliente" tabindex="-1" role="dialog" aria-labelledby="modalBuscarClienteLabel" aria-hidden="true">
+        <div class="modal-dialog modal-lg" role="document">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h5 class="modal-title" id="modalBuscarClienteLabel">Buscar Cliente</h5>
+                    <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                        <span aria-hidden="true">&times;</span>
+                    </button>
+                </div>
+                <div class="modal-body">
+                    <div class="row mb-3">
+                        <div class="col-md-10">
+                            <input type="text" id="buscarClienteInput" class="form-control" placeholder="Nombre, CUIT o DNI">
+                        </div>
+                        <div class="col-md-2">
+                            <button id="btnBuscarClienteModal" class="btn btn-primary btn-block">Buscar</button>
+                        </div>
+                    </div>
+                    <div class="table-responsive">
+                        <table id="tablaClientes" class="table table-striped table-hover">
+                            <thead>
+                                <tr>
+                                    <th>CUIT/DNI</th>
+                                    <th>Nombre/Razón Social</th>
+                                    <th>Condición IVA</th>
+                                    <th>Acciones</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                <!-- Los clientes se cargarán dinámicamente -->
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-secondary" data-dismiss="modal">Cancelar</button>
+                    <button type="button" id="btnNuevoCliente" class="btn btn-success">
+                        <i class="fas fa-user-plus"></i> Nuevo Cliente
+                    </button>
+                </div>
+            </div>
+        </div>
+    </div>
+    
+    <!-- MODAL PARA BUSCAR FACTURA -->
+    <div class="modal fade" id="modalBuscarFactura" tabindex="-1" role="dialog" aria-labelledby="modalBuscarFacturaLabel" aria-hidden="true">
+        <div class="modal-dialog modal-lg" role="document">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h5 class="modal-title" id="modalBuscarFacturaLabel">Buscar Factura</h5>
+                    <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                        <span aria-hidden="true">&times;</span>
+                    </button>
+                </div>
+                <div class="modal-body">
+                    <div class="row mb-3">
+                        <div class="col-md-10">
+                            <input type="text" id="buscarFacturaInput" class="form-control" placeholder="Número o Cliente">
+                        </div>
+                        <div class="col-md-2">
+                            <button id="btnBuscarFacturaModal" class="btn btn-primary btn-block">Buscar</button>
+                        </div>
+                    </div>
+                    <div class="table-responsive">
+                        <table id="tablaFacturas" class="table table-striped table-hover">
+                            <thead>
+                                <tr>
+                                    <th>Número</th>
+                                    <th>Fecha</th>
+                                    <th>Cliente</th>
+                                    <th>Total</th>
+                                    <th>Acciones</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                <!-- Las facturas se cargarán dinámicamente -->
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-secondary" data-dismiss="modal">Cancelar</button>
+                </div>
+            </div>
+        </div>
+    </div>
+    
+    <!-- MODAL PARA BUSCAR PRODUCTO -->
+    <div class="modal fade" id="modalBuscarProducto" tabindex="-1" role="dialog" aria-labelledby="modalBuscarProductoLabel" aria-hidden="true">
+        <div class="modal-dialog modal-lg" role="document">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h5 class="modal-title" id="modalBuscarProductoLabel">Buscar Producto</h5>
+                    <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                        <span aria-hidden="true">&times;</span>
+                    </button>
+                </div>
+                <div class="modal-body">
+                    <div class="row mb-3">
+                        <div class="col-md-9">
+                            <input type="text" id="buscarProductoInput" class="form-control" placeholder="Código, nombre o descripción">
+                        </div>
+                        <div class="col-md-3">
+                            <button id="btnBuscarProductoModal" class="btn btn-primary">Buscar</button>
+                        </div>
+                    </div>
+                    <div class="row mb-3">
+                        <div class="col-md-4">
+                            <select id="filtroGrupo" class="form-control">
+                                <option value="">Todos los grupos</option>
+                                <!-- Se cargarán dinámicamente -->
+                            </select>
+                        </div>
+                        <div class="col-md-4">
+                            <select id="filtroFamilia" class="form-control">
+                                <option value="">Todas las familias</option>
+                                <!-- Se cargarán dinámicamente -->
+                            </select>
+                        </div>
+                        <div class="col-md-4">
+                            <select id="filtroStock" class="form-control">
+                                <option value="">Todos</option>
+                                <option value="conStock">Con stock</option>
+                                <option value="sinStock">Sin stock</option>
+                            </select>
+                        </div>
+                    </div>
+                    <div class="table-responsive">
+                        <table id="tablaProductosBusqueda" class="table table-striped table-hover">
+                            <thead>
+                                <tr>
+                                    <th>Código</th>
+                                    <th>Descripción</th>
+                                    <th>Precio</th>
+                                    <th>Stock</th>
+                                    <th>Acciones</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                <!-- Los productos se cargarán dinámicamente -->
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-secondary" data-dismiss="modal">Cancelar</button>
+                    <button type="button" id="btnNuevoProducto" class="btn btn-success">
+                        <i class="fas fa-plus"></i> Nuevo Producto
+                    </button>
+                </div>
+            </div>
+        </div>
+    </div>
+    
+    <!-- MODAL PARA VER DETALLES DEL DOCUMENTO -->
+    <div class="modal fade" id="modalDetalleDocumento" tabindex="-1" role="dialog" aria-labelledby="modalDetalleDocumentoLabel" aria-hidden="true">
+        <div class="modal-dialog modal-lg" role="document">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h5 class="modal-title" id="modalDetalleDocumentoLabel">Detalle del Documento</h5>
+                    <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                        <span aria-hidden="true">&times;</span>
+                    </button>
+                </div>
+                <div class="modal-body">
+                    <div class="row mb-3">
+                        <div class="col-md-6">
+                            <h6>Información General</h6>
+                            <p><strong>Número:</strong> <span id="detalleNumero"></span></p>
+                            <p><strong>Fecha:</strong> <span id="detalleFecha"></span></p>
+                            <p><strong>Estado:</strong> <span id="detalleEstado"></span></p>
+                            <p><strong>Usuario:</strong> <span id="detalleUsuario"></span></p>
+                            <p><strong>Sucursal:</strong> <span id="detalleSucursal"></span></p>
+                        </div>
+                        <div class="col-md-6">
+                            <h6>Cliente</h6>
+                            <p><strong>Nombre:</strong> <span id="detalleCliente"></span></p>
+                            <p><strong>CUIT/DNI:</strong> <span id="detalleCuit"></span></p>
+                            <p><strong>Dirección:</strong> <span id="detalleDireccion"></span></p>
+                            <p><strong>Condición IVA:</strong> <span id="detalleCondicionIva"></span></p>
+                        </div>
+                    </div>
+                    
+                    <div id="seccionDetalleFacturaAsociada" style="display: none;">
+                        <h6>Factura Asociada</h6>
+                        <div class="row mb-3">
+                            <div class="col-md-6">
+                                <p><strong>Número:</strong> <span id="detalleFacturaNumero"></span></p>
+                                <p><strong>Fecha:</strong> <span id="detalleFacturaFecha"></span></p>
+                            </div>
+                            <div class="col-md-6">
+                                <p><strong>Tipo:</strong> <span id="detalleFacturaTipo"></span></p>
+                                <p><strong>Total:</strong> <span id="detalleFacturaTotal"></span></p>
+                            </div>
+                        </div>
+                    </div>
+                    
+                    <h6>Productos</h6>
+                    <div class="table-responsive">
+                        <table id="tablaDetalleProductos" class="table table-sm">
+                            <thead>
+                                <tr>
+                                    <th>Código</th>
+                                    <th>Descripción</th>
+                                    <th>Cantidad</th>
+                                    <th>Precio Unit.</th>
+                                    <th>Subtotal</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                <!-- Los detalles se cargarán dinámicamente -->
+                            </tbody>
+                            <tfoot>
+                                <tr>
+                                    <th colspan="4" class="text-right">Total:</th>
+                                    <th id="detalleTotalDocumento">$0.00</th>
+                                </tr>
+                            </tfoot>
+                        </table>
+                    </div>
+                    
+                    <div class="mt-3">
+                        <h6>Observaciones</h6>
+                        <div class="p-2 border rounded">
+                            <p id="detalleObservaciones" class="mb-0"></p>
+                        </div>
+                    </div>
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-secondary" data-dismiss="modal">Cerrar</button>
+                    <button type="button" id="btnImprimirDocumento" class="btn btn-info">
+                        <i class="fas fa-print"></i> Imprimir
+                    </button>
+                    <div class="dropdown d-inline-block">
+                        <button class="btn btn-primary dropdown-toggle" type="button" id="dropdownEnviar" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
+                            <i class="fas fa-paper-plane"></i> Enviar
+                        </button>
+                        <div class="dropdown-menu" aria-labelledby="dropdownEnviar">
+                            <a class="dropdown-item" href="#" id="btnEnviarEmail">
+                                <i class="fas fa-envelope"></i> Email
+                            </a>
+                            <a class="dropdown-item" href="#" id="btnEnviarWhatsApp">
+                                <i class="fab fa-whatsapp"></i> WhatsApp
+                            </a>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+    
+    <!-- MODAL PARA VISTA PREVIA DEL DOCUMENTO -->
+    <div class="modal fade" id="modalVistaPrevia" tabindex="-1" role="dialog" aria-labelledby="modalVistaPreviaLabel" aria-hidden="true">
+        <div class="modal-dialog modal-lg" role="document">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h5 class="modal-title" id="modalVistaPreviaLabel">Vista Previa del Documento</h5>
+                    <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                        <span aria-hidden="true">&times;</span>
+                    </button>
+                </div>
+                <div class="modal-body">
+                    <div class="document-preview" id="documentPreview">
+                        <!-- Aquí se cargará la vista previa del documento -->
+                    </div>
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-secondary" data-dismiss="modal">Cerrar</button>
+                    <button type="button" id="btnConfirmarGuardar" class="btn btn-primary">
+                        <i class="fas fa-save"></i> Confirmar y Guardar
+                    </button>
+                </div>
+            </div>
+        </div>
+    </div>
+    
+    <!-- MODAL PARA ENVIAR POR EMAIL -->
+    <div class="modal fade" id="modalEnviarEmail" tabindex="-1" role="dialog" aria-labelledby="modalEnviarEmailLabel" aria-hidden="true">
+        <div class="modal-dialog" role="document">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h5 class="modal-title" id="modalEnviarEmailLabel">Enviar por Email</h5>
+                    <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                        <span aria-hidden="true">&times;</span>
+                    </button>
+                </div>
+                <div class="modal-body">
+                    <div class="form-group">
+                        <label for="emailDestino">Email:</label>
+                        <input type="email" id="emailDestino" class="form-control" placeholder="correo@ejemplo.com">
+                    </div>
+                    <div class="form-group">
+                        <label for="emailAsunto">Asunto:</label>
+                        <input type="text" id="emailAsunto" class="form-control" value="">
+                    </div>
+                    <div class="form-group">
+                        <label for="emailMensaje">Mensaje:</label>
+                        <textarea id="emailMensaje" class="form-control" rows="4"></textarea>
+                    </div>
+                    <div class="form-check">
+                        <input type="checkbox" class="form-check-input" id="adjuntarPDF" checked>
+                        <label class="form-check-label" for="adjuntarPDF">Adjuntar documento PDF</label>
+                    </div>
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-secondary" data-dismiss="modal">Cancelar</button>
+                    <button type="button" id="btnConfirmarEnvioEmail" class="btn btn-primary">
+                        <i class="fas fa-paper-plane"></i> Enviar
+                    </button>
+                </div>
+            </div>
+        </div>
+    </div>
+    
+    <!-- MODAL PARA ENVIAR POR WHATSAPP -->
+    <div class="modal fade" id="modalEnviarWhatsApp" tabindex="-1" role="dialog" aria-labelledby="modalEnviarWhatsAppLabel" aria-hidden="true">
+        <div class="modal-dialog" role="document">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h5 class="modal-title" id="modalEnviarWhatsAppLabel">Enviar por WhatsApp</h5>
+                    <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                        <span aria-hidden="true">&times;</span>
+                    </button>
+                </div>
+                <div class="modal-body">
+                    <div class="form-group">
+                        <label for="whatsappNumero">Número de Teléfono:</label>
+                        <div class="input-group">
+                            <div class="input-group-prepend">
+                                <span class="input-group-text">+</span>
+                            </div>
+                            <input type="tel" id="whatsappNumero" class="form-control" placeholder="549XXXXXXXXXX">
+                        </div>
+                        <small class="form-text text-muted">Incluya código de país y área sin espacios ni guiones</small>
+                    </div>
+                    <div class="form-group">
+                        <label for="whatsappMensaje">Mensaje:</label>
+                        <textarea id="whatsappMensaje" class="form-control" rows="4"></textarea>
+                    </div>
+                    <div class="form-check mb-3">
+                        <input type="checkbox" class="form-check-input" id="adjuntarPDFWhatsApp" checked>
+                        <label class="form-check-label" for="adjuntarPDFWhatsApp">Adjuntar documento PDF</label>
+                    </div>
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-secondary" data-dismiss="modal">Cancelar</button>
+                    <button type="button" id="btnConfirmarEnvioWhatsApp" class="btn btn-primary">
+                        <i class="fab fa-whatsapp"></i> Enviar
+                    </button>
+                </div>
+            </div>
+        </div>
+    </div>
+    
+    <!-- MODAL DE CONFIRMACIÓN PARA ANULAR DOCUMENTO -->
+    <div class="modal fade" id="modalConfirmarAnulacion" tabindex="-1" role="dialog" aria-labelledby="modalConfirmarAnulacionLabel" aria-hidden="true">
+        <div class="modal-dialog" role="document">
+            <div class="modal-content">
+                <div class="modal-header bg-warning">
+                    <h5 class="modal-title" id="modalConfirmarAnulacionLabel">Confirmar Anulación</h5>
+                    <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                        <span aria-hidden="true">&times;</span>
+                    </button>
+                </div>
+                <div class="modal-body">
+                    <div class="alert alert-warning" role="alert">
+                        <i class="fas fa-exclamation-triangle"></i> Esta acción no puede deshacerse.
+                    </div>
+                    <p>¿Está seguro que desea anular el documento <strong id="documentoAnularNumero"></strong>?</p>
+                    <div class="form-group">
+                        <label for="motivoAnulacion">Motivo de Anulación:</label>
+                        <textarea id="motivoAnulacion" class="form-control" rows="3" required></textarea>
+                    </div>
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-secondary" data-dismiss="modal">Cancelar</button>
+                    <button type="button" id="btnConfirmarAnulacion" class="btn btn-danger">
+                        <i class="fas fa-ban"></i> Anular Documento
+                    </button>
+                </div>
+            </div>
+        </div>
+    </div>
+    
+    <!-- MODAL DE AGREGAR CANTIDAD DE PRODUCTO -->
+    <div class="modal fade" id="modalCantidadProducto" tabindex="-1" role="dialog" aria-labelledby="modalCantidadProductoLabel" aria-hidden="true">
+        <div class="modal-dialog modal-sm" role="document">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h5 class="modal-title" id="modalCantidadProductoLabel">Cantidad</h5>
+                    <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                        <span aria-hidden="true">&times;</span>
+                    </button>
+                </div>
+                <div class="modal-body">
+                    <p id="productoSeleccionadoNombre" class="font-weight-bold mb-3"></p>
+                    <div class="form-group">
+                        <label for="cantidadProducto">Cantidad:</label>
+                        <input type="number" id="cantidadProducto" class="form-control" value="1" min="1" step="1">
+                    </div>
+                    <div class="form-group">
+                        <label for="precioUnitario">Precio Unitario:</label>
+                        <div class="input-group">
+                            <div class="input-group-prepend">
+                                <span class="input-group-text">$</span>
+                            </div>
+                            <input type="number" id="precioUnitario" class="form-control" step="0.01">
+                        </div>
+                    </div>
+                    <div id="stockDisponibleContainer" class="small text-muted">
+                        Stock disponible: <span id="stockDisponible">0</span>
+                    </div>
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-secondary" data-dismiss="modal">Cancelar</button>
+                    <button type="button" id="btnConfirmarCantidad" class="btn btn-primary">Agregar</button>
+                </div>
+            </div>
+        </div>
+    </div>
+    
+    <!-- MODAL DE NOTIFICACIONES -->
+    <div class="modal fade" id="modalNotificacion" tabindex="-1" role="dialog" aria-labelledby="modalNotificacionLabel" aria-hidden="true">
+        <div class="modal-dialog" role="document">
+            <div class="modal-content">
+                <div class="modal-header" id="notificacionHeader">
+                    <h5 class="modal-title" id="modalNotificacionLabel">Notificación</h5>
+                    <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                        <span aria-hidden="true">&times;</span>
+                    </button>
+                </div>
+                <div class="modal-body">
+                    <div id="notificacionMensaje"></div>
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-primary" data-dismiss="modal">Aceptar</button>
+                </div>
+            </div>
+        </div>
+    </div>
+    
+    <!-- jQuery y Popper.js -->
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/jquery/3.6.0/jquery.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/popper.js/2.9.2/umd/popper.min.js"></script>
+    
+    <!-- Bootstrap JS -->
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/bootstrap/4.6.1/js/bootstrap.min.js"></script>
+    
+    <!-- DataTables JS -->
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/datatables/1.10.21/js/jquery.dataTables.min.js"></script>
+    
+    <!-- Script principal para documentos -->
+    <script>
+        // Comunicación con el proceso principal de Electron
+        const electron = window.electron;
+        
+        // Variables globales
+        let documentoActual = {
+            tipo: "remito",
+            productos: [],
+            cliente: null,
+            facturaAsociada: null,
+            observaciones: "",
+            total: 0
+        };
+        
+        let documentoSeleccionadoId = null;
+        let productoSeleccionado = null;
+        
+        // Inicialización de la página
+        $(document).ready(function() {
+            // Inicializar DataTables
+            initializeTables();
+            
+            // Cargar datos iniciales
+            cargarSucursales();
+            cargarUsuarios();
+            cargarDocumentos("remitos");
+            
+            // Configurar eventos
+            setupTabEvents();
+            setupModalEvents();
+            setupFormEvents();
+            setupTableEvents();
+            
+            // Configurar atajos de teclado
+            setupKeyboardShortcuts();
+        });
+        
+        // Inicializar tablas con DataTables
+        function initializeTables() {
+            $('#tablaRemitos').DataTable({
+                language: {
+                    url: "https://cdn.datatables.net/plug-ins/1.10.25/i18n/Spanish.json"
+                },
+                order: [[1, 'desc']], // Ordenar por fecha descendente
+                responsive: true
+            });
+            
+            $('#tablaNotasCredito').DataTable({
+                language: {
+                    url: "https://cdn.datatables.net/plug-ins/1.10.25/i18n/Spanish.json"
+                },
+                order: [[1, 'desc']], // Ordenar por fecha descendente
+                responsive: true
+            });
+            
+            $('#tablaNotasDebito').DataTable({
+                language: {
+                    url: "https://cdn.datatables.net/plug-ins/1.10.25/i18n/Spanish.json"
+                },
+                order: [[1, 'desc']], // Ordenar por fecha descendente
+                responsive: true
+            });
+        }
+        
+        // Configurar eventos de las pestañas
+        function setupTabEvents() {
+            // Cambio de pestaña
+            $('.tab-link').on('click', function() {
+                const tabId = $(this).data('tab');
+                
+                // Ocultar todas las pestañas y desactivar enlaces
+                $('.tab-content').removeClass('active');
+                $('.tab-link').removeClass('active');
+                
+                // Mostrar pestaña seleccionada y activar enlace
+                $(`#${tabId}`).addClass('active');
+                $(this).addClass('active');
+                
+                // Cargar datos de la pestaña seleccionada
+                cargarDocumentos(tabId);
+            });
+        }
+        
+        // Configurar eventos de modales
+        function setupModalEvents() {
+            // Modal Nuevo Documento
+            $('#btnNuevoDocumento').on('click', function() {
+                resetearFormularioDocumento();
+                $('#modalNuevoDocumento').modal('show');
+            });
+            
+            // Cambio de tipo de documento
+            $('#tipoDocumento').on('change', function() {
+                const tipo = $(this).val();
+                documentoActual.tipo = tipo;
+                
+                // Mostrar u ocultar sección de factura asociada según tipo
+                if (tipo === 'notaCredito' || tipo === 'notaDebito') {
+                    $('#seccionFacturaAsociada').show();
+                } else {
+                    $('#seccionFacturaAsociada').hide();
+                }
+            });
+            
+            // Botón Buscar Cliente
+            $('#btnBuscarCliente').on('click', function() {
+                $('#modalBuscarCliente').modal('show');
+                cargarClientes();
+            });
+            
+            // Botón Buscar Factura
+            $('#btnBuscarFactura').on('click', function() {
+                $('#modalBuscarFactura').modal('show');
+                cargarFacturas();
+            });
+            
+            // Botón Buscar Producto
+            $('#btnBuscarProducto').on('click', function() {
+                $('#modalBuscarProducto').modal('show');
+                cargarProductos();
+            });
+            
+            // Botón Vista Previa
+            $('#btnVistaPrevia').on('click', function() {
+                if (validarFormularioDocumento()) {
+                    generarVistaPrevia();
+                    $('#modalVistaPrevia').modal('show');
+                }
+            });
+            
+            // Botón Confirmar Guardar
+            $('#btnConfirmarGuardar').on('click', function() {
+                guardarDocumento();
+                $('#modalVistaPrevia').modal('hide');
+            });
+            
+            // Botón Guardar directamente
+            $('#btnGuardar').on('click', function() {
+                if (validarFormularioDocumento()) {
+                    guardarDocumento();
+                }
+            });
+            
+            // Modal Confirmar Cantidad de Producto
+            $('#btnConfirmarCantidad').on('click', function() {
+                const cantidad = parseInt($('#cantidadProducto').val());
+                const precio = parseFloat($('#precioUnitario').val());
+                
+                if (isNaN(cantidad) || cantidad <= 0) {
+                    mostrarNotificacion('error', 'La cantidad debe ser mayor a cero');
+                    return;
+                }
+                
+                if (isNaN(precio) || precio <= 0) {
+                    mostrarNotificacion('error', 'El precio debe ser mayor a cero');
+                    return;
+                }
+                
+                agregarProductoALista(productoSeleccionado, cantidad, precio);
+                $('#modalCantidadProducto').modal('hide');
+            });
+            
+            // Modales de envío
+            $('#btnEnviarEmail').on('click', function() {
+                prepararEnvioEmail();
+                $('#modalEnviarEmail').modal('show');
+            });
+            
+            $('#btnEnviarWhatsApp').on('click', function() {
+                prepararEnvioWhatsApp();
+                $('#modalEnviarWhatsApp').modal('show');
+            });
+            
+            // Confirmar envíos
+            $('#btnConfirmarEnvioEmail').on('click', function() {
+                enviarPorEmail();
+            });
+            
+            $('#btnConfirmarEnvioWhatsApp').on('click', function() {
+                enviarPorWhatsApp();
+            });
+            
+            // Confirmar anulación
+            $('#btnConfirmarAnulacion').on('click', function() {
+                anularDocumento();
+            });
+        }
+        
+        // Configurar eventos de formularios
+        function setupFormEvents() {
+            // Buscar cliente al presionar Enter
+            $('#clienteNombre').on('keypress', function(e) {
+                if (e.which === 13) {
+                    buscarClientePorNombre($(this).val());
+                }
+            });
+            
+            // Buscar factura al presionar Enter
+            $('#facturaAsociada').on('keypress', function(e) {
+                if (e.which === 13) {
+                    buscarFacturaPorNumero($(this).val());
+                }
+            });
+            
+            // Buscar producto al presionar Enter
+            $('#productoInput').on('keypress', function(e) {
+                if (e.which === 13) {
+                    buscarProductoPorCodigo($(this).val());
+                }
+            });
+            
+            // Búsqueda en modales
+            $('#btnBuscarClienteModal').on('click', function() {
+                buscarClientesEnModal($('#buscarClienteInput').val());
+            });
+            
+            $('#btnBuscarFacturaModal').on('click', function() {
+                buscarFacturasEnModal($('#buscarFacturaInput').val());
+            });
+            
+            $('#btnBuscarProductoModal').on('click', function() {
+                buscarProductosEnModal($('#buscarProductoInput').val());
+            });
+            
+            // Enter en campos de búsqueda de modales
+            $('#buscarClienteInput').on('keypress', function(e) {
+                if (e.which === 13) {
+                    buscarClientesEnModal($(this).val());
+                }
+            });
+            
+            $('#buscarFacturaInput').on('keypress', function(e) {
+                if (e.which === 13) {
+                    buscarFacturasEnModal($(this).val());
+                }
+            });
+            
+            $('#buscarProductoInput').on('keypress', function(e) {
+                if (e.which === 13) {
+                    buscarProductosEnModal($(this).val());
+                }
+            });
+            
+            // Filtros en modal de productos
+            $('#filtroGrupo, #filtroFamilia, #filtroStock').on('change', function() {
+                aplicarFiltrosProductos();
+            });
+            
+            // Actualizar observaciones
+            $('#observaciones').on('input', function() {
+                documentoActual.observaciones = $(this).val();
+            });
+            
+            // Botón Filtrar en sección principal
+            $('#btnFiltrar').on('click', function() {
+                const tabActiva = $('.tab-link.active').data('tab');
+                aplicarFiltros(tabActiva);
+            });
+            
+            // Botón Limpiar filtros
+            $('#btnLimpiar').on('click', function() {
+                limpiarFiltros();
+                const tabActiva = $('.tab-link.active').data('tab');
+                cargarDocumentos(tabActiva);
+            });
+            
+            // Nuevo cliente desde modal
+            $('#btnNuevoCliente').on('click', function() {
+                // Llamar a módulo de clientes para crear nuevo cliente
+                // Esta función se implementaría con IPC en Electron
+                electron.abrirModuloClientes('nuevo');
+            });
+            
+            // Nuevo producto desde modal
+            $('#btnNuevoProducto').on('click', function() {
+                // Llamar a módulo de productos para crear nuevo producto
+                // Esta función se implementaría con IPC en Electron
+                electron.abrirModuloProductos('nuevo');
+            });
+        }
+        
+        // Configurar eventos de tablas
+        function setupTableEvents() {
+            // Delegación de eventos para botones en tablas dinámicas
+            
+            // Ver detalle de documento
+            $(document).on('click', '.btn-ver-documento', function() {
+                const documentoId = $(this).data('id');
+                documentoSeleccionadoId = documentoId;
+                verDetalleDocumento(documentoId);
+            });
+            
+            // Anular documento
+            $(document).on('click', '.btn-anular-documento', function() {
+                const documentoId = $(this).data('id');
+                const numero = $(this).data('numero');
+                documentoSeleccionadoId = documentoId;
+                $('#documentoAnularNumero').text(numero);
+                $('#motivoAnulacion').val('');
+                $('#modalConfirmarAnulacion').modal('show');
+            });
+            
+            // Imprimir documento
+            $(document).on('click', '.btn-imprimir-documento', function() {
+                const documentoId = $(this).data('id');
+                imprimirDocumento(documentoId);
+            });
+            
+            // Seleccionar cliente de la tabla
+            $(document).on('click', '.btn-seleccionar-cliente', function() {
+                const clienteId = $(this).data('id');
+                seleccionarCliente(clienteId);
+                $('#modalBuscarCliente').modal('hide');
+            });
+            
+            // Seleccionar factura de la tabla
+            $(document).on('click', '.btn-seleccionar-factura', function() {
+                const facturaId = $(this).data('id');
+                seleccionarFactura(facturaId);
+                $('#modalBuscarFactura').modal('hide');
+            });
+            
+            // Seleccionar producto de la tabla
+            $(document).on('click', '.btn-seleccionar-producto', function() {
+                const productoId = $(this).data('id');
+                seleccionarProducto(productoId);
+            });
+            
+            // Eliminar producto de la lista
+            $(document).on('click', '.btn-eliminar-producto', function() {
+                const index = $(this).data('index');
+                eliminarProductoDeLista(index);
+            });
+            
+            // Imprimir documento desde detalle
+            $('#btnImprimirDocumento').on('click', function() {
+                if (documentoSeleccionadoId) {
+                    imprimirDocumento(documentoSeleccionadoId);
+                }
+            });
+        }
+        
+        // Configurar atajos de teclado
+        function setupKeyboardShortcuts() {
+            $(document).on('keydown', function(e) {
+                // F1 en campo de cliente abre búsqueda de clientes
+                if (e.key === 'F1') {
+                    if (document.activeElement.id === 'clienteNombre') {
+                        e.preventDefault();
+                        $('#modalBuscarCliente').modal('show');
+                        cargarClientes();
+                    } else if (document.activeElement.id === 'productoInput') {
+                        e.preventDefault();
+                        $('#modalBuscarProducto').modal('show');
+                        cargarProductos();
+                    }
+                }
+                
+                // F2 en campo de factura abre búsqueda de facturas
+                if (e.key === 'F2' && document.activeElement.id === 'facturaAsociada') {
+                    e.preventDefault();
+                    $('#modalBuscarFactura').modal('show');
+                    cargarFacturas();
+                }
+            });
+        }
+        
+        // FUNCIONES DE CARGA DE DATOS
+        
+        // Cargar sucursales
+        function cargarSucursales() {
+            // Esta función se implementaría con IPC en Electron
+            // Simularemos datos para este ejemplo
+            const sucursales = [
+                { id: 1, nombre: 'Casa Central' },
+                { id: 2, nombre: 'Sucursal Norte' },
+                { id: 3, nombre: 'Sucursal Sur' }
+            ];
+            
+            $('#sucursal').empty().append('<option value="">Todas</option>');
+            sucursales.forEach(suc => {
+                $('#sucursal').append(`<option value="${suc.id}">${suc.nombre}</option>`);
+            });
+        }
+        
+        // Cargar usuarios
+        function cargarUsuarios() {
+            // Esta función se implementaría con IPC en Electron
+            // Simularemos datos para este ejemplo
+            const usuarios = [
+                { id: 1, nombre: 'Admin' },
+                { id: 2, nombre: 'Vendedor1' },
+                { id: 3, nombre: 'Vendedor2' }
+            ];
+            
+            $('#usuario').empty().append('<option value="">Todos</option>');
+            usuarios.forEach(user => {
+                $('#usuario').append(`<option value="${user.id}">${user.nombre}</option>`);
+            });
+        }
+        
+        // Cargar documentos según tipo
+        function cargarDocumentos(tipo) {
+            // Esta función se implementaría con IPC en Electron
+            // Simularemos datos para este ejemplo
+            
+            const documentos = generarDatosEjemplo(tipo);
+            
+            // Limpiar y llenar la tabla correspondiente
+            let tabla;
+            switch (tipo) {
+                case 'remitos':
+                    tabla = $('#tablaRemitos').DataTable();
+                    tabla.clear();
+                    documentos.forEach(doc => {
+                        tabla.row.add([
+                            doc.numero,
+                            doc.fecha,
+                            doc.cliente,
+                            `$${doc.total.toFixed(2)}`,
+                            generarBadgeEstado(doc.estado),
+                            doc.sucursal,
+                            doc.usuario,
+                            generarBotonesAcciones(doc.id, doc.numero, doc.estado)
+                        ]);
+                    });
+                    break;
+                    
+                case 'notasCredito':
+                    tabla = $('#tablaNotasCredito').DataTable();
+                    tabla.clear();
+                    documentos.forEach(doc => {
+                        tabla.row.add([
+                            doc.numero,
+                            doc.fecha,
+                            doc.cliente,
+                            doc.facturaAsociada || 'N/A',
+                            `$${doc.total.toFixed(2)}`,
+                            generarBadgeEstado(doc.estado),
+                            doc.sucursal,
+                            generarBotonesAcciones(doc.id, doc.numero, doc.estado)
+                        ]);
+                    });
+                    break;
+                    
+                case 'notasDebito':
+                    tabla = $('#tablaNotasDebito').DataTable();
+                    tabla.clear();
+                    documentos.forEach(doc => {
+                        tabla.row.add([
+                            doc.numero,
+                            doc.fecha,
+                            doc.cliente,
+                            doc.facturaAsociada || 'N/A',
+                            `$${doc.total.toFixed(2)}`,
+                            generarBadgeEstado(doc.estado),
+                            doc.sucursal,
+                            generarBotonesAcciones(doc.id, doc.numero, doc.estado)
+                        ]);
+                    });
+                    break;
+            }
+            
+            if (tabla) {
+                tabla.draw();
+            }
+        }
+        
+        // Cargar clientes
+        function cargarClientes() {
+            // Esta función se implementaría con IPC en Electron
+            // Simularemos datos para este ejemplo
+            const clientes = [
+                { id: 1, cuit: '20123456789', nombre: 'Juan Pérez', condicionIva: 'Consumidor Final' },
+                { id: 2, cuit: '30987654321', nombre: 'Empresa XYZ SRL', condicionIva: 'Responsable Inscripto' },
+                { id: 3, cuit: '27456789123', nombre: 'María González', condicionIva: 'Monotributista' }
+            ];
+            
+            const tabla = $('#tablaClientes');
+            tabla.find('tbody').empty();
+            
+            clientes.forEach(cliente => {
+                tabla.find('tbody').append(`
+                    <tr>
+                        <td>${cliente.cuit}</td>
+                        <td>${cliente.nombre}</td>
+                        <td>${cliente.condicionIva}</td>
+                        <td>
+                            <button class="btn btn-sm btn-primary btn-seleccionar-cliente" data-id="${cliente.id}">
+                                <i class="fas fa-check"></i> Seleccionar
+                            </button>
+                        </td>
+                    </tr>
+                `);
+            });
+        }
+        
+        // Cargar facturas
+        function cargarFacturas() {
+            // Esta función se implementaría con IPC en Electron
+            // Simularemos datos para este ejemplo
+            const facturas = [
+                { id: 1, numero: 'F-0001-00000123', fecha: '2025-04-10', cliente: 'Juan Pérez', total: 12500.00 },
+                { id: 2, numero: 'F-0001-00000124', fecha: '2025-04-11', cliente: 'Empresa XYZ SRL', total: 45800.00 },
+                { id: 3, numero: 'F-0001-00000125', fecha: '2025-04-15', cliente: 'María González', total: 8750.50 }
+            ];
+            
+            const tabla = $('#tablaFacturas');
+            tabla.find('tbody').empty();
+            
+            facturas.forEach(factura => {
+                tabla.find('tbody').append(`
+                    <tr>
+                        <td>${factura.numero}</td>
+                        <td>${factura.fecha}</td>
+                        <td>${factura.cliente}</td>
+                        <td>$${factura.total.toFixed(2)}</td>
+                        <td>
+                            <button class="btn btn-sm btn-primary btn-seleccionar-factura" data-id="${factura.id}">
+                                <i class="fas fa-check"></i> Seleccionar
+                            </button>
+                        </td>
+                    </tr>
+                `);
+            });
+        }
+        
+        // Cargar productos
+        function cargarProductos() {
+            // Esta función se implementaría con IPC en Electron
+            // Simularemos datos para este ejemplo
+            const productos = [
+                { id: 1, codigo: 'PROD001', descripcion: 'Producto 1', precio: 1250.00, stock: 50 },
+                { id: 2, codigo: 'PROD002', descripcion: 'Producto 2', precio: 780.50, stock: 120 },
+                { id: 3, codigo: 'PROD003', descripcion: 'Producto 3', precio: 3450.75, stock: 25 }
+            ];
+            
+            // Cargar grupos y familias para filtros
+            cargarGruposYFamilias();
+            
+            // Mostrar productos en tabla
+            mostrarProductosEnTabla(productos);
+        }
+        
+        // Cargar grupos y familias
+        function cargarGruposYFamilias() {
+            // Esta función se implementaría con IPC en Electron
+            // Simularemos datos para este ejemplo
+            const grupos = [
+                { id: 1, nombre: 'Electrónica' },
+                { id: 2, nombre: 'Muebles' },
+                { id: 3, nombre: 'Indumentaria' }
+            ];
+            
+            const familias = [
+                { id: 1, nombre: 'Televisores', grupoId: 1 },
+                { id: 2, nombre: 'Smartphones', grupoId: 1 },
+                { id: 3, nombre: 'Sillas', grupoId: 2 },
+                { id: 4, nombre: 'Mesas', grupoId: 2 },
+                { id: 5, nombre: 'Camisas', grupoId: 3 },
+                { id: 6, nombre: 'Pantalones', grupoId: 3 }
+            ];
+            
+            // Llenar selectores
+            $('#filtroGrupo').empty().append('<option value="">Todos los grupos</option>');
+            grupos.forEach(grupo => {
+                $('#filtroGrupo').append(`<option value="${grupo.id}">${grupo.nombre}</option>`);
+            });
+            
+            $('#filtroFamilia').empty().append('<option value="">Todas las familias</option>');
+            familias.forEach(familia => {
+                $('#filtroFamilia').append(`<option value="${familia.id}" data-grupo="${familia.grupoId}">${familia.nombre}</option>`);
+            });
+            
+            // Evento para filtrar familias según grupo seleccionado
+            $('#filtroGrupo').on('change', function() {
+                const grupoId = $(this).val();
+                
+                if (!grupoId) {
+                    // Mostrar todas las familias
+                    $('#filtroFamilia option').show();
+                } else {
+                    // Filtrar familias por grupo
+                    $('#filtroFamilia option').each(function() {
+                        const familiaGrupoId = $(this).data('grupo');
+                        if (!familiaGrupoId || familiaGrupoId == grupoId) {
+                            $(this).show();
+                        } else {
+                            $(this).hide();
+                        }
+                    });
+                }
+                
+                // Resetear selección de familia
+                $('#filtroFamilia').val('');
+            });
+        }
+        
+        // Mostrar productos en tabla
+        function mostrarProductosEnTabla(productos) {
+            const tabla = $('#tablaProductosBusqueda');
+            tabla.find('tbody').empty();
+            
+            productos.forEach(producto => {
+                tabla.find('tbody').append(`
+                    <tr>
+                        <td>${producto.codigo}</td>
+                        <td>${producto.descripcion}</td>
+                        <td>$${producto.precio.toFixed(2)}</td>
+                        <td>${producto.stock}</td>
+                        <td>
+                            <button class="btn btn-sm btn-primary btn-seleccionar-producto" data-id="${producto.id}">
+                                <i class="fas fa-check"></i> Seleccionar
+                            </button>
+                        </td>
+                    </tr>
+                `);
+            });
+        }
+        
+        // FUNCIONES DE ACCIÓN
+        
+        // Buscar cliente por nombre o CUIT
+        function buscarClientePorNombre(texto) {
+            // Esta función se implementaría con IPC en Electron
+            // Simulamos para este ejemplo
+            if (texto.trim() === '') return;
+            
+            const cliente = {
+                id: 1,
+                nombre: 'Juan Pérez',
+                cuit: '20123456789',
+                direccion: 'Av. Ejemplo 1234',
+                condicionIva: 'Consumidor Final',
+                telefono: '011-12345678'
+            };
+            
+            mostrarDatosCliente(cliente);
+        }
+        
+        // Buscar factura por número
+        function buscarFacturaPorNumero(numero) {
+            // Esta función se implementaría con IPC en Electron
+            // Simulamos para este ejemplo
+            if (numero.trim() === '') return;
+            
+            const factura = {
+                id: 1,
+                numero: 'F-0001-00000123',
+                fecha: '2025-04-10',
+                tipo: 'A',
+                total: 12500.00,
+                estado: 'completado'
+            };
+            
+            mostrarDatosFactura(factura);
+        }
+        
+        // Buscar producto por código
+        function buscarProductoPorCodigo(codigo) {
+            // Esta función se implementaría con IPC en Electron
+            // Simulamos para este ejemplo
+            if (codigo.trim() === '') return;
+            
+            const producto = {
+                id: 1,
+                codigo: 'PROD001',
+                descripcion: 'Producto 1',
+                precio: 1250.00,
+                stock: 50
+            };
+            
+            seleccionarProducto(producto.id);
+        }
+        
+        // Búsquedas en modales
+        function buscarClientesEnModal(texto) {
+            // Implementación real con IPC
+            // Para ejemplo, recargamos los datos simulados
+            cargarClientes();
+        }
+        
+        function buscarFacturasEnModal(texto) {
+            // Implementación real con IPC
+            // Para ejemplo, recargamos los datos simulados
+            cargarFacturas();
+        }
+        
+        function buscarProductosEnModal(texto) {
+            // Implementación real con IPC
+            // Para ejemplo, recargamos los datos simulados
+            cargarProductos();
+        }
+        
+        // Aplicar filtros de productos
+        function aplicarFiltrosProductos() {
+            // Esta función se implementaría con IPC en Electron
+            // Para el ejemplo, recargamos los datos simulados
+            cargarProductos();
+        }
+        
+        // Seleccionar cliente
+        function seleccionarCliente(clienteId) {
+            // Buscar cliente por ID - Simulado para el ejemplo
+            const cliente = {
+                id: clienteId,
+                nombre: 'Juan Pérez',
+                cuit: '20123456789',
+                direccion: 'Av. Ejemplo 1234',
+                condicionIva: 'Consumidor Final',
+                telefono: '011-12345678'
+            };
+            
+            mostrarDatosCliente(cliente);
+        }
+        
+        // Mostrar datos del cliente
+        function mostrarDatosCliente(cliente) {
+            documentoActual.cliente = cliente;
+            
+            // Mostrar datos en formulario
+            $('#clienteNombre').val(cliente.nombre);
+            $('#clienteCuit').text(cliente.cuit);
+            $('#clienteDireccion').text(cliente.direccion);
+            $('#clienteCondicionIva').text(cliente.condicionIva);
+            $('#clienteTelefono').text(cliente.telefono);
+            
+            // Mostrar sección de datos
+            $('#datosCliente').show();
+        }
+        
+        // Seleccionar factura
+        function seleccionarFactura(facturaId) {
+            // Buscar factura por ID - Simulado para el ejemplo
+            const factura = {
+                id: facturaId,
+                numero: 'F-0001-00000123',
+                fecha: '2025-04-10',
+                tipo: 'A',
+                total: 12500.00,
+                estado: 'completado'
+            };
+            
+            mostrarDatosFactura(factura);
+        }
+        
+        // Mostrar datos de la factura
+        function mostrarDatosFactura(factura) {
+            documentoActual.facturaAsociada = factura;
+            
+            // Mostrar datos en formulario
+            $('#facturaAsociada').val(factura.numero);
+            $('#facturaFecha').text(factura.fecha);
+            $('#facturaTipo').text(factura.tipo);
+            $('#facturaTotal').text(`$${factura.total.toFixed(2)}`);
+            $('#facturaEstado').text(factura.estado);
+            
+            // Mostrar sección de datos
+            $('#datosFactura').show();
+        }
+        
+        // Seleccionar producto
+        function seleccionarProducto(productoId) {
+            // Buscar producto por ID - Simulado para el ejemplo
+            const producto = {
+                id: productoId,
+                codigo: 'PROD001',
+                descripcion: 'Producto 1',
+                precio: 1250.00,
+                stock: 50
+            };
+            
+            productoSeleccionado = producto;
+            
+            $('#productoSeleccionadoNombre').text(`${producto.codigo} - ${producto.descripcion}`);
+            $('#precioUnitario').val(producto.precio.toFixed(2));
+            $('#stockDisponible').text(producto.stock);
+            $('#cantidadProducto').val(1);
+            
+            $('#modalCantidadProducto').modal('show');
+            $('#modalBuscarProducto').modal('hide');
+        }
+        
+        // Agregar producto a la lista
+        function agregarProductoALista(producto, cantidad, precio) {
+            const subtotal = cantidad * precio;
+            
+            // Agregar a la lista de productos actual
+            documentoActual.productos.push({
+                id: producto.id,
+                codigo: producto.codigo,
+                descripcion: producto.descripcion,
+                cantidad: cantidad,
+                precio: precio,
+                subtotal: subtotal
+            });
+            
+            // Actualizar tabla de productos
+            actualizarTablaProductos();
+            
+            // Actualizar total del documento
+            calcularTotalDocumento();
+        }
+        
+        // Eliminar producto de la lista
+        function eliminarProductoDeLista(index) {
+            documentoActual.productos.splice(index, 1);
+            
+            // Actualizar tabla de productos
+            actualizarTablaProductos();
+            
+            // Actualizar total del documento
+            calcularTotalDocumento();
+        }
+        
+        // Actualizar tabla de productos
+        function actualizarTablaProductos() {
+            const tabla = $('#tablaProductos');
+            tabla.find('tbody').empty();
+            
+            documentoActual.productos.forEach((producto, index) => {
+                tabla.find('tbody').append(`
+                    <tr>
+                        <td>${producto.codigo}</td>
+                        <td>${producto.descripcion}</td>
+                        <td>${producto.cantidad}</td>
+                        <td>$${producto.precio.toFixed(2)}</td>
+                        <td>$${producto.subtotal.toFixed(2)}</td>
+                        <td>
+                            <button class="btn btn-sm btn-danger btn-eliminar-producto" data-index="${index}">
+                                <i class="fas fa-trash"></i>
+                            </button>
+                        </td>
+                    </tr>
+                `);
+            });
+        }
+        
+        // Calcular total del documento
+        function calcularTotalDocumento() {
+            let total = 0;
+            documentoActual.productos.forEach(producto => {
+                total += producto.subtotal;
+            });
+            
+            documentoActual.total = total;
+            $('#totalDocumento').text(`$${total.toFixed(2)}`);
+        }
+        
+        // Resetear formulario de documento
+        function resetearFormularioDocumento() {
+            documentoActual = {
+                tipo: "remito",
+                productos: [],
+                cliente: null,
+                facturaAsociada: null,
+                observaciones: "",
+                total: 0
+            };
+            
+            // Resetear campos
+            $('#tipoDocumento').val('remito');
+            $('#clienteNombre').val('');
+            $('#facturaAsociada').val('');
+            $('#observaciones').val('');
+            
+            // Ocultar secciones
+            $('#datosCliente').hide();
+            $('#datosFactura').hide();
+            $('#seccionFacturaAsociada').hide();
+            
+            // Limpiar tabla de productos
+            $('#tablaProductos tbody').empty();
+            $('#totalDocumento').text('$0.00');
+        }
+        
+        // Validar formulario de documento
+        function validarFormularioDocumento() {
+            // Validar cliente
+            if (!documentoActual.cliente) {
+                mostrarNotificacion('error', 'Debe seleccionar un cliente');
+                return false;
+            }
+            
+            // Validar factura asociada para notas
+            if ((documentoActual.tipo === 'notaCredito' || documentoActual.tipo === 'notaDebito') && !documentoActual.facturaAsociada) {
+                mostrarNotificacion('error', 'Debe seleccionar una factura asociada');
+                return false;
+            }
+            
+            // Validar productos
+            if (documentoActual.productos.length === 0) {
+                mostrarNotificacion('error', 'Debe agregar al menos un producto');
+                return false;
+            }
+            
+            return true;
+        }
+        
+        // Generar vista previa
+        function generarVistaPrevia() {
+            // En una implementación real, esto podría generar un PDF o HTML
+            const preview = $('#documentPreview');
+            
+            // Tipo de documento
+            let tipoDocText;
+            switch (documentoActual.tipo) {
+                case 'remito': tipoDocText = 'REMITO'; break;
+                case 'notaCredito': tipoDocText = 'NOTA DE CRÉDITO'; break;
+                case 'notaDebito': tipoDocText = 'NOTA DE DÉBITO'; break;
+            }
+            
+            // Generar HTML de vista previa
+            const fechaHoy = new Date().toLocaleDateString('es-AR');
+            
+            let html = `
+                <div class="border p-4">
+                    <div class="row mb-4">
+                        <div class="col-6">
+                            <h3>FACTUSYSTEM</h3>
+                            <p>Empresa Ejemplo S.A.</p>
+                            <p>CUIT: 30-12345678-9</p>
+                            <p>Dirección: Av. Siempre Viva 123</p>
+                        </div>
+                        <div class="col-6 text-right">
+                            <h2>${tipoDocText}</h2>
+                            <h4>N° XXXX-XXXXXXXX</h4>
+                            <p>Fecha: ${fechaHoy}</p>
+                        </div>
+                    </div>
+                    
+                    <div class="row border-top border-bottom py-3 mb-3">
+                        <div class="col-6">
+                            <p><strong>Cliente:</strong> ${documentoActual.cliente.nombre}</p>
+                            <p><strong>CUIT/DNI:</strong> ${documentoActual.cliente.cuit}</p>
+                        </div>
+                        <div class="col-6">
+                            <p><strong>Domicilio:</strong> ${documentoActual.cliente.direccion}</p>
+                            <p><strong>Condición IVA:</strong> ${documentoActual.cliente.condicionIva}</p>
+                        </div>
+                    </div>
+            `;
+            
+            // Factura asociada (si corresponde)
+            if (documentoActual.facturaAsociada) {
+                html += `
+                    <div class="row border-bottom py-2 mb-3">
+                        <div class="col-12">
+                            <p><strong>Factura Asociada:</strong> ${documentoActual.facturaAsociada.numero} - Fecha: ${documentoActual.facturaAsociada.fecha}</p>
+                        </div>
+                    </div>
+                `;
+            }
+            
+            // Tabla de productos
+            html += `
+                <table class="table table-sm">
+                    <thead>
+                        <tr>
+                            <th>Código</th>
+                            <th>Descripción</th>
+                            <th class="text-center">Cantidad</th>
+                            <th class="text-right">Precio Unit.</th>
+                            <th class="text-right">Subtotal</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+            `;
+            
+            documentoActual.productos.forEach(producto => {
+                html += `
+                    <tr>
+                        <td>${producto.codigo}</td>
+                        <td>${producto.descripcion}</td>
+                        <td class="text-center">${producto.cantidad}</td>
+                        <td class="text-right">$${producto.precio.toFixed(2)}</td>
+                        <td class="text-right">$${producto.subtotal.toFixed(2)}</td>
+                    </tr>
+                `;
+            });
+            
+            html += `
+                    </tbody>
+                    <tfoot>
+                        <tr>
+                            <th colspan="4" class="text-right">TOTAL:</th>
+                            <th class="text-right">$${documentoActual.total.toFixed(2)}</th>
+                        </tr>
+                    </tfoot>
+                </table>
+            `;
+            
+            // Observaciones
+            if (documentoActual.observaciones) {
+                html += `
+                    <div class="mt-4">
+                        <p><strong>Observaciones:</strong></p>
+                        <p>${documentoActual.observaciones}</p>
+                    </div>
+                `;
+            }
+            
+            html += `</div>`;
+            
+            preview.html(html);
+        }
+        
+        // Guardar documento
+        function guardarDocumento() {
+            // Esta función se implementaría con IPC en Electron
+            
+            // Simulamos para el ejemplo
+            mostrarNotificacion('success', 'Documento guardado correctamente');
+            
+            // Cerrar modal y resetear formulario
+            $('#modalNuevoDocumento').modal('hide');
+            resetearFormularioDocumento();
+            
+            // Recargar lista de documentos
+            const tabActiva = $('.tab-link.active').data('tab');
+            cargarDocumentos(tabActiva);
+        }
+        
+        // Ver detalle de documento
+        function verDetalleDocumento(documentoId) {
+            // Esta función se implementaría con IPC en Electron
+            // Simulamos para este ejemplo
+            
+            const detalle = {
+                id: documentoId,
+                tipo: 'remito',
+                numero: 'R-0001-00000123',
+                fecha: '2025-04-20',
+                estado: 'completado',
+                usuario: 'Admin',
+                sucursal: 'Casa Central',
+                cliente: {
+                    nombre: 'Juan Pérez',
+                    cuit: '20123456789',
+                    direccion: 'Av. Ejemplo 1234',
+                    condicionIva: 'Consumidor Final'
+                },
+                facturaAsociada: null,
+                productos: [
+                    {
+                        codigo: 'PROD001',
+                        descripcion: 'Producto 1',
+                        cantidad: 2,
+                        precio: 1250.00,
+                        subtotal: 2500.00
+                    },
+                    {
+                        codigo: 'PROD002',
+                        descripcion: 'Producto 2',
+                        cantidad: 1,
+                        precio: 780.50,
+                        subtotal: 780.50
+                    }
+                ],
+                total: 3280.50,
+                observaciones: 'Entrega en domicilio del cliente.'
+            };
+            
+            // Llenar modal con datos
+            $('#detalleNumero').text(detalle.numero);
+            $('#detalleFecha').text(detalle.fecha);
+            $('#detalleEstado').text(detalle.estado);
+            $('#detalleUsuario').text(detalle.usuario);
+            $('#detalleSucursal').text(detalle.sucursal);
+            
+            $('#detalleCliente').text(detalle.cliente.nombre);
+            $('#detalleCuit').text(detalle.cliente.cuit);
+            $('#detalleDireccion').text(detalle.cliente.direccion);
+            $('#detalleCondicionIva').text(detalle.cliente.condicionIva);
+            
+            // Factura asociada (si tiene)
+            if (detalle.facturaAsociada) {
+                $('#detalleFacturaNumero').text(detalle.facturaAsociada.numero);
+                $('#detalleFacturaFecha').text(detalle.facturaAsociada.fecha);
+                $('#detalleFacturaTipo').text(detalle.facturaAsociada.tipo);
+                $('#detalleFacturaTotal').text(`$${detalle.facturaAsociada.total.toFixed(2)}`);
+                $('#seccionDetalleFacturaAsociada').show();
+            } else {
+                $('#seccionDetalleFacturaAsociada').hide();
+            }
+            
+            // Productos
+            const tablaDetalleProductos = $('#tablaDetalleProductos');
+            tablaDetalleProductos.find('tbody').empty();
+            
+            detalle.productos.forEach(producto => {
+                tablaDetalleProductos.find('tbody').append(`
+                    <tr>
+                        <td>${producto.codigo}</td>
+                        <td>${producto.descripcion}</td>
+                        <td>${producto.cantidad}</td>
+                        <td>$${producto.precio.toFixed(2)}</td>
+                        <td>$${producto.subtotal.toFixed(2)}</td>
+                    </tr>
+                `);
+            });
+            
+            $('#detalleTotalDocumento').text(`$${detalle.total.toFixed(2)}`);
+            $('#detalleObservaciones').text(detalle.observaciones || 'Sin observaciones');
+            
+            // Mostrar modal
+            $('#modalDetalleDocumento').modal('show');
+        }
+        
+        // Imprimir documento
+        function imprimirDocumento(documentoId) {
+            // Esta función se implementaría con IPC en Electron
+            // Para el ejemplo, mostramos una notificación
+            mostrarNotificacion('info', 'Enviando documento a impresora...');
+        }
+        
+        // Anular documento
+        function anularDocumento() {
+            // Esta función se implementaría con IPC en Electron
+            const motivo = $('#motivoAnulacion').val();
+            
+            if (!motivo.trim()) {
+                mostrarNotificacion('error', 'Debe ingresar el motivo de anulación');
+                return;
+            }
+            
+            // Simulamos para el ejemplo
+            mostrarNotificacion('success', 'Documento anulado correctamente');
+            
+            // Cerrar modal
+            $('#modalConfirmarAnulacion').modal('hide');
+            
+            // Recargar lista de documentos
+            const tabActiva = $('.tab-link.active').data('tab');
+            cargarDocumentos(tabActiva);
+        }
+        
+        // Preparar envío por email
+        function prepararEnvioEmail() {
+            // Esta función se implementaría con IPC en Electron
+            // Simulamos datos para el ejemplo
+            
+            const tipoDoc = $('.tab-link.active').data('tab');
+            const tipoDocText = tipoDoc === 'remitos' ? 'Remito' : tipoDoc === 'notasCredito' ? 'Nota de Crédito' : 'Nota de Débito';
+            
+            $('#emailDestino').val('cliente@ejemplo.com');
+            $('#emailAsunto').val(`${tipoDocText} N° XXXX-XXXXXXXX`);
+            $('#emailMensaje').val(`Estimado cliente,\n\nAdjunto enviamos ${tipoDocText} N° XXXX-XXXXXXXX.\n\nSaludos cordiales,\nFactuSystem`);
+        }
+        
+        // Preparar envío por WhatsApp
+        function prepararEnvioWhatsApp() {
+            // Esta función se implementaría con IPC en Electron
+            // Simulamos datos para el ejemplo
+            
+            const tipoDoc = $('.tab-link.active').data('tab');
+            const tipoDocText = tipoDoc === 'remitos' ? 'Remito' : tipoDoc === 'notasCredito' ? 'Nota de Crédito' : 'Nota de Débito';
+            
+            $('#whatsappNumero').val('5491112345678');
+            $('#whatsappMensaje').val(`Estimado cliente, adjunto enviamos ${tipoDocText} N° XXXX-XXXXXXXX. Saludos cordiales, FactuSystem`);
+        }
+        
+        // Enviar por email
+        function enviarPorEmail() {
+            // Esta función se implementaría con IPC en Electron
+            const email = $('#emailDestino').val();
+            const asunto = $('#emailAsunto').val();
+            const mensaje = $('#emailMensaje').val();
+            const adjuntarPDF = $('#adjuntarPDF').is(':checked');
+            
+            if (!email || !asunto || !mensaje) {
+                mostrarNotificacion('error', 'Debe completar todos los campos');
+                return;
+            }
+            
+            // Simulamos para el ejemplo
+            mostrarNotificacion('success', 'Email enviado correctamente');
+            
+            // Cerrar modal
+            $('#modalEnviarEmail').modal('hide');
+        }
+        
+        // Enviar por WhatsApp
+        function enviarPorWhatsApp() {
+            // Esta función se implementaría con IPC en Electron
+            const numero = $('#whatsappNumero').val();
+            const mensaje = $('#whatsappMensaje').val();
+            const adjuntarPDF = $('#adjuntarPDFWhatsApp').is(':checked');
+            
+            if (!numero || !mensaje) {
+                mostrarNotificacion('error', 'Debe completar todos los campos');
+                return;
+            }
+            
+            // Simulamos para el ejemplo
+            mostrarNotificacion('success', 'Mensaje de WhatsApp enviado correctamente');
+            
+            // Cerrar modal
+            $('#modalEnviarWhatsApp').modal('hide');
+        }
+        
+        // Aplicar filtros
+        function aplicarFiltros(tipo) {
+            // Esta función se implementaría con IPC en Electron
+            // Recargar documentos con filtros
+            cargarDocumentos(tipo);
+        }
+        
+        // Limpiar filtros
+        function limpiarFiltros() {
+            $('#fechaDesde').val('');
+            $('#fechaHasta').val('');
+            $('#cliente').val('');
+            $('#estado').val('');
+            $('#sucursal').val('');
+            $('#numero').val('');
+            $('#usuario').val('');
+        }
+        
+        // Mostrar notificación
+        function mostrarNotificacion(tipo, mensaje) {
+            let header = $('#notificacionHeader');
+            let mensajeDiv = $('#notificacionMensaje');
+            
+            // Configurar colores según tipo
+            switch (tipo) {
+                case 'success':
+                    header.removeClass().addClass('modal-header bg-success text-white');
+                    $('#modalNotificacionLabel').text('Éxito');
+                    break;
+                case 'error':
+                    header.removeClass().addClass('modal-header bg-danger text-white');
+                    $('#modalNotificacionLabel').text('Error');
+                    break;
+                case 'warning':
+                    header.removeClass().addClass('modal-header bg-warning');
+                    $('#modalNotificacionLabel').text('Advertencia');
+                    break;
+                case 'info':
+                    header.removeClass().addClass('modal-header bg-info text-white');
+                    $('#modalNotificacionLabel').text('Información');
+                    break;
+            }
+            
+            mensajeDiv.html(`<p>${mensaje}</p>`);
+            $('#modalNotificacion').modal('show');
+        }
+        
+        // FUNCIONES AUXILIARES
+        
+        // Generar datos de ejemplo
+        function generarDatosEjemplo(tipo) {
+            const documentos = [];
+            
+            // Generar datos según tipo
+            switch (tipo) {
+                case 'remitos':
+                    documentos.push(
+                        { id: 1, numero: 'R-0001-00000123', fecha: '2025-04-20', cliente: 'Juan Pérez', total: 3280.50, estado: 'completado', sucursal: 'Casa Central', usuario: 'Admin' },
+                        { id: 2, numero: 'R-0001-00000124', fecha: '2025-04-19', cliente: 'Empresa XYZ SRL', total: 15400.75, estado: 'pendiente', sucursal: 'Sucursal Norte', usuario: 'Vendedor1' },
+                        { id: 3, numero: 'R-0001-00000125', fecha: '2025-04-18', cliente: 'María González', total: 8720.00, estado: 'completado', sucursal: 'Sucursal Sur', usuario: 'Vendedor2' }
+                    );
+                    break;
+                    
+                case 'notasCredito':
+                    documentos.push(
+                        { id: 4, numero: 'NC-0001-00000054', fecha: '2025-04-20', cliente: 'Juan Pérez', facturaAsociada: 'F-0001-00000123', total: 1250.00, estado: 'completado', sucursal: 'Casa Central', usuario: 'Admin' },
+                        { id: 5, numero: 'NC-0001-00000055', fecha: '2025-04-18', cliente: 'Empresa XYZ SRL', facturaAsociada: 'F-0001-00000124', total: 5400.00, estado: 'completado', sucursal: 'Sucursal Norte', usuario: 'Vendedor1' },
+                        { id: 6, numero: 'NC-0001-00000056', fecha: '2025-04-15', cliente: 'María González', facturaAsociada: 'F-0001-00000125', total: 750.50, estado: 'anulado', sucursal: 'Sucursal Sur', usuario: 'Vendedor2' }
+                    );
+                    break;
+                    
+                case 'notasDebito':
+                    documentos.push(
+                        { id: 7, numero: 'ND-0001-00000032', fecha: '2025-04-19', cliente: 'Juan Pérez', facturaAsociada: 'F-0001-00000123', total: 250.00, estado: 'completado', sucursal: 'Casa Central', usuario: 'Admin' },
+                        { id: 8, numero: 'ND-0001-00000033', fecha: '2025-04-17', cliente: 'Empresa XYZ SRL', facturaAsociada: 'F-0001-00000124', total: 1200.00, estado: 'pendiente', sucursal: 'Sucursal Norte', usuario: 'Vendedor1' },
+                        { id: 9, numero: 'ND-0001-00000034', fecha: '2025-04-14', cliente: 'María González', facturaAsociada: 'F-0001-00000125', total: 350.25, estado: 'completado', sucursal: 'Sucursal Sur', usuario: 'Vendedor2' }
+                    );
+                    break;
+            }
+            
+            return documentos;
+        }
+        
+        // Generar badges para estados
+        function generarBadgeEstado(estado) {
+            let badgeClass = '';
+            
+            switch (estado) {
+                case 'completado':
+                    badgeClass = 'badge-success';
+                    break;
+                case 'pendiente':
+                    badgeClass = 'badge-warning';
+                    break;
+                case 'anulado':
+                    badgeClass = 'badge-danger';
+                    break;
+                default:
+                    badgeClass = 'badge-secondary';
+            }
+            
+            return `<span class="badge ${badgeClass}">${estado}</span>`;
+        }
+        
+        // Generar botones de acciones
+        function generarBotonesAcciones(id, numero, estado) {
+            const botones = `
+                <div class="btn-group btn-group-sm" role="group">
+                    <button class="btn btn-info btn-ver-documento" data-id="${id}" title="Ver detalle">
+                        <i class="fas fa-eye"></i>
+                    </button>
+                    <button class="btn btn-success btn-imprimir-documento" data-id="${id}" title="Imprimir">
+                        <i class="fas fa-print"></i>
+                    </button>
+                    ${estado !== 'anulado' ? 
+                        `<button class="btn btn-danger btn-anular-documento" data-id="${id}" data-numero="${numero}" title="Anular">
+                            <i class="fas fa-ban"></i>
+                        </button>` : 
+                        ''}
+                </div>
+            `;
+            
+            return botones;
+        }
+    </script>
+</body>
+</html>

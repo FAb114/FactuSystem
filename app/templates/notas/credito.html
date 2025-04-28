@@ -1,0 +1,325 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Nota de Crédito - FactuSystem</title>
+    <style>
+        @page {
+            margin: 0;
+        }
+        body {
+            font-family: Arial, Helvetica, sans-serif;
+            margin: 0;
+            padding: 0;
+            color: #333;
+            font-size: 10pt;
+        }
+        .print-container {
+            width: 210mm;
+            min-height: 297mm;
+            padding: 10mm;
+            position: relative;
+        }
+        .header {
+            display: flex;
+            justify-content: space-between;
+            margin-bottom: 20px;
+            border-bottom: 2px solid #ccc;
+            padding-bottom: 10px;
+        }
+        .company-logo {
+            max-width: 200px;
+            max-height: 80px;
+        }
+        .company-info {
+            text-align: right;
+            font-size: 9pt;
+        }
+        .document-title {
+            font-size: 16pt;
+            font-weight: bold;
+            text-align: center;
+            margin: 15px 0;
+            color: #555;
+        }
+        .document-type {
+            font-size: 14pt;
+            text-align: center;
+            border: 2px solid #000;
+            padding: 5px;
+            margin-left: 20px;
+            width: 30px;
+            height: 30px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+        .document-number {
+            font-size: 12pt;
+            margin-bottom: 10px;
+            text-align: right;
+        }
+        .section {
+            margin-bottom: 20px;
+        }
+        .section-title {
+            font-weight: bold;
+            margin-bottom: 5px;
+            border-bottom: 1px solid #eee;
+        }
+        .customer-details, .reference-details {
+            display: flex;
+            flex-wrap: wrap;
+            border: 1px solid #ccc;
+            padding: 10px;
+            margin-bottom: 15px;
+        }
+        .customer-details div, .reference-details div {
+            flex: 1 0 45%;
+            margin-bottom: 5px;
+        }
+        .items-table {
+            width: 100%;
+            border-collapse: collapse;
+            margin-bottom: 20px;
+        }
+        .items-table thead {
+            background-color: #f0f0f0;
+        }
+        .items-table th, .items-table td {
+            border: 1px solid #ccc;
+            padding: 8px;
+            text-align: left;
+        }
+        .items-table th {
+            font-weight: bold;
+        }
+        .totals {
+            width: 60%;
+            margin-left: auto;
+            border-collapse: collapse;
+        }
+        .totals td {
+            padding: 5px;
+        }
+        .totals .label {
+            text-align: right;
+            font-weight: bold;
+        }
+        .totals .value {
+            text-align: right;
+            width: 100px;
+        }
+        .totals .final {
+            font-size: 12pt;
+            font-weight: bold;
+            border-top: 1px solid #000;
+        }
+        .footer {
+            margin-top: 30px;
+            font-size: 8pt;
+            color: #777;
+            text-align: center;
+            position: absolute;
+            bottom: 10mm;
+            width: calc(100% - 20mm);
+        }
+        .qr-code {
+            text-align: center;
+            margin-top: 20px;
+        }
+        .qr-code img {
+            max-width: 100px;
+            max-height: 100px;
+        }
+        .afip-data {
+            font-size: 8pt;
+            margin-top: 10px;
+            border-top: 1px solid #ccc;
+            padding-top: 10px;
+        }
+        .observations {
+            border: 1px solid #ccc;
+            padding: 10px;
+            min-height: 50px;
+            margin-bottom: 15px;
+        }
+        .watermark {
+            position: absolute;
+            top: 50%;
+            left: 50%;
+            transform: translate(-50%, -50%) rotate(-45deg);
+            font-size: 80pt;
+            opacity: 0.07;
+            color: #000;
+            z-index: -1;
+            white-space: nowrap;
+        }
+        @media print {
+            body {
+                -webkit-print-color-adjust: exact;
+                print-color-adjust: exact;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="print-container">
+        <!-- Marca de agua condicional para copias -->
+        <div class="watermark" id="watermarkText">{{watermarkText}}</div>
+        
+        <div class="header">
+            <div>
+                <img src="{{companyLogo}}" alt="Logo de la Empresa" class="company-logo" id="companyLogo">
+            </div>
+            <div class="company-info">
+                <div><strong>{{companyName}}</strong></div>
+                <div>{{companyAddress}}</div>
+                <div>{{companyCity}}, {{companyProvince}} ({{companyZipCode}})</div>
+                <div>CUIT: {{companyCUIT}}</div>
+                <div>Ingresos Brutos: {{companyIIBB}}</div>
+                <div>Inicio de Actividades: {{companyStartDate}}</div>
+                <div>{{companyPhoneNumber}} | {{companyEmail}}</div>
+            </div>
+        </div>
+        
+        <div style="display: flex; justify-content: space-between; align-items: center;">
+            <div>
+                <div class="document-title">NOTA DE CRÉDITO</div>
+            </div>
+            <div style="text-align: right;">
+                <div style="display: flex; align-items: center; justify-content: flex-end;">
+                    <div><strong>TIPO:</strong></div>
+                    <div class="document-type">{{documentType}}</div>
+                </div>
+                <div class="document-number">N°: {{documentPrefix}}-{{documentNumber}}</div>
+                <div><strong>FECHA EMISIÓN:</strong> {{emissionDate}}</div>
+            </div>
+        </div>
+        
+        <div class="section">
+            <div class="section-title">CLIENTE</div>
+            <div class="customer-details">
+                <div><strong>Razón Social / Nombre:</strong> {{customerName}}</div>
+                <div><strong>CUIT/CUIL/DNI:</strong> {{customerTaxId}}</div>
+                <div><strong>Domicilio:</strong> {{customerAddress}}</div>
+                <div><strong>Condición frente al IVA:</strong> {{customerVatStatus}}</div>
+                <div><strong>Teléfono:</strong> {{customerPhone}}</div>
+                <div><strong>Email:</strong> {{customerEmail}}</div>
+            </div>
+        </div>
+        
+        <div class="section">
+            <div class="section-title">COMPROBANTE DE REFERENCIA</div>
+            <div class="reference-details">
+                <div><strong>Tipo:</strong> {{referenceDocumentType}}</div>
+                <div><strong>N°:</strong> {{referenceDocumentNumber}}</div>
+                <div><strong>Fecha:</strong> {{referenceDocumentDate}}</div>
+                <div><strong>Motivo:</strong> {{creditNoteReason}}</div>
+            </div>
+        </div>
+        
+        <div class="section">
+            <div class="section-title">DETALLE</div>
+            <table class="items-table">
+                <thead>
+                    <tr>
+                        <th>Código</th>
+                        <th>Descripción</th>
+                        <th>Cantidad</th>
+                        <th>Precio Unit.</th>
+                        <th>% Dto.</th>
+                        <th>Subtotal</th>
+                    </tr>
+                </thead>
+                <tbody id="itemsTableBody">
+                    {{#each items}}
+                    <tr>
+                        <td>{{code}}</td>
+                        <td>{{description}}</td>
+                        <td>{{quantity}}</td>
+                        <td>{{unitPrice}}</td>
+                        <td>{{discountPercentage}}</td>
+                        <td>{{subtotal}}</td>
+                    </tr>
+                    {{/each}}
+                </tbody>
+            </table>
+        </div>
+        
+        <div style="display: flex; justify-content: space-between;">
+            <div style="width: 40%;">
+                <div class="section">
+                    <div class="section-title">OBSERVACIONES</div>
+                    <div class="observations">{{observations}}</div>
+                </div>
+                
+                <div class="qr-code">
+                    <img src="{{afipQRCode}}" alt="Código QR AFIP" id="afipQRCode">
+                    <div class="afip-data">
+                        <div>CAE N°: {{caeNumber}}</div>
+                        <div>Fecha Vto. CAE: {{caeExpirationDate}}</div>
+                    </div>
+                </div>
+            </div>
+            
+            <div style="width: 55%;">
+                <table class="totals">
+                    <tr>
+                        <td class="label">Subtotal:</td>
+                        <td class="value">{{subtotal}}</td>
+                    </tr>
+                    {{#if hasDiscount}}
+                    <tr>
+                        <td class="label">Descuento ({{discountPercentage}}%):</td>
+                        <td class="value">{{discountAmount}}</td>
+                    </tr>
+                    {{/if}}
+                    <tr>
+                        <td class="label">Subtotal Neto:</td>
+                        <td class="value">{{netSubtotal}}</td>
+                    </tr>
+                    {{#each taxDetails}}
+                    <tr>
+                        <td class="label">{{name}} ({{rate}}%):</td>
+                        <td class="value">{{amount}}</td>
+                    </tr>
+                    {{/each}}
+                    <tr>
+                        <td class="label final">TOTAL:</td>
+                        <td class="value final">{{total}}</td>
+                    </tr>
+                </table>
+            </div>
+        </div>
+        
+        <div class="footer">
+            <div>Documento generado mediante FactuSystem - Sistema de Facturación y Gestión Comercial</div>
+            <div>CAE y datos fiscales verificables en www.afip.gob.ar - Comprobante autorizado</div>
+            <div>Este documento es una representación gráfica de un comprobante electrónico autorizado</div>
+        </div>
+    </div>
+
+    <script>
+        // Script para integración con el sistema
+        document.addEventListener('DOMContentLoaded', function() {
+            // Permite la carga dinámica de datos desde la aplicación
+            if (window.electron) {
+                // Eventos para comunicación con el proceso principal de Electron
+                window.electron.receive('populate-credit-note', function(data) {
+                    // Esta función sería llamada por el proceso principal de Electron
+                    // para llenar los datos del documento desde la base de datos
+                    populateTemplate(data);
+                });
+            }
+            
+            // Función para aplicar datos al template
+            function populateTemplate(data) {
+                // Implementación opcional para pruebas o vista previa en navegador
+                console.log('Datos recibidos para la nota de crédito:', data);
+            }
+        });
+    </script>
+</body>
+</html>

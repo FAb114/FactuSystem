@@ -1,0 +1,373 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Remito - FactuSystem</title>
+    <style>
+        @page {
+            margin: 15mm;
+            size: A4;
+        }
+        body {
+            font-family: 'Helvetica', 'Arial', sans-serif;
+            margin: 0;
+            padding: 0;
+            color: #333;
+            font-size: 12px;
+        }
+        .container {
+            max-width: 800px;
+            margin: 0 auto;
+            padding: 20px;
+        }
+        .header {
+            display: flex;
+            justify-content: space-between;
+            border-bottom: 2px solid #333;
+            padding-bottom: 10px;
+            margin-bottom: 20px;
+        }
+        .logo-container {
+            flex: 1;
+        }
+        .logo {
+            max-height: 100px;
+            max-width: 200px;
+        }
+        .company-info {
+            flex: 2;
+            text-align: right;
+        }
+        .document-title {
+            font-size: 24px;
+            font-weight: bold;
+            margin-bottom: 10px;
+            text-align: center;
+        }
+        .document-subtitle {
+            font-size: 16px;
+            margin-bottom: 20px;
+            text-align: center;
+        }
+        .document-number {
+            font-size: 18px;
+            font-weight: bold;
+            margin-bottom: 10px;
+        }
+        .info-section {
+            display: flex;
+            justify-content: space-between;
+            margin-bottom: 20px;
+        }
+        .customer-info, .document-info {
+            flex: 1;
+        }
+        .info-title {
+            font-weight: bold;
+            margin-bottom: 5px;
+            border-bottom: 1px solid #ccc;
+            padding-bottom: 3px;
+        }
+        .info-content {
+            margin-bottom: 15px;
+        }
+        .info-row {
+            display: flex;
+            margin-bottom: 5px;
+        }
+        .info-label {
+            flex: 1;
+            font-weight: bold;
+        }
+        .info-value {
+            flex: 2;
+        }
+        table {
+            width: 100%;
+            border-collapse: collapse;
+            margin-bottom: 20px;
+        }
+        th, td {
+            border: 1px solid #ddd;
+            padding: 8px;
+            text-align: left;
+        }
+        th {
+            background-color: #f2f2f2;
+            font-weight: bold;
+        }
+        .items-table th {
+            text-align: center;
+        }
+        .items-table .code {
+            width: 15%;
+        }
+        .items-table .description {
+            width: 40%;
+        }
+        .items-table .quantity {
+            width: 15%;
+            text-align: center;
+        }
+        .items-table .unit {
+            width: 15%;
+            text-align: center;
+        }
+        .items-table .notes {
+            width: 15%;
+        }
+        .totals-section {
+            text-align: right;
+            margin-top: 20px;
+        }
+        .total-row {
+            display: flex;
+            justify-content: flex-end;
+            margin-bottom: 5px;
+        }
+        .total-label {
+            width: 150px;
+            font-weight: bold;
+            text-align: right;
+            padding-right: 20px;
+        }
+        .total-value {
+            width: 100px;
+            text-align: right;
+        }
+        .signatures {
+            display: flex;
+            justify-content: space-between;
+            margin-top: 60px;
+        }
+        .signature-box {
+            flex: 1;
+            text-align: center;
+            margin: 0 20px;
+            padding-top: 40px;
+            border-top: 1px solid #333;
+        }
+        .qr-section {
+            text-align: right;
+            margin-top: 20px;
+        }
+        .qr-code {
+            width: 100px;
+            height: 100px;
+        }
+        .footer {
+            margin-top: 30px;
+            font-size: 10px;
+            text-align: center;
+            color: #666;
+            border-top: 1px solid #ccc;
+            padding-top: 10px;
+        }
+        .barcode {
+            text-align: center;
+            margin: 20px 0;
+        }
+        .barcode img {
+            max-width: 80%;
+            height: 60px;
+        }
+        .observations {
+            margin: 20px 0;
+            border: 1px solid #ddd;
+            padding: 10px;
+            min-height: 60px;
+        }
+        .observations-title {
+            font-weight: bold;
+            margin-bottom: 5px;
+        }
+        @media print {
+            .no-print {
+                display: none;
+            }
+            body {
+                margin: 0;
+                padding: 0;
+            }
+            .page-break {
+                page-break-before: always;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <!-- Encabezado con logo e información de la empresa -->
+        <div class="header">
+            <div class="logo-container">
+                <img class="logo" src="{{logoUrl}}" alt="Logo de la empresa">
+            </div>
+            <div class="company-info">
+                <h2>{{companyName}}</h2>
+                <p>{{companyAddress}}</p>
+                <p>Tel: {{companyPhone}}</p>
+                <p>CUIT: {{companyCUIT}}</p>
+                <p>Condición IVA: {{companyIvaCondition}}</p>
+            </div>
+        </div>
+
+        <!-- Título del documento -->
+        <div class="document-title">REMITO</div>
+        <div class="document-subtitle">Documento no válido como factura</div>
+        <div class="document-number">REMITO N°: {{remitNumber}}</div>
+
+        <!-- Información del cliente y documento -->
+        <div class="info-section">
+            <div class="customer-info">
+                <div class="info-title">DATOS DEL CLIENTE</div>
+                <div class="info-content">
+                    <div class="info-row">
+                        <div class="info-label">Nombre/Razón Social:</div>
+                        <div class="info-value">{{customerName}}</div>
+                    </div>
+                    <div class="info-row">
+                        <div class="info-label">CUIT/DNI:</div>
+                        <div class="info-value">{{customerIdNumber}}</div>
+                    </div>
+                    <div class="info-row">
+                        <div class="info-label">Domicilio:</div>
+                        <div class="info-value">{{customerAddress}}</div>
+                    </div>
+                    <div class="info-row">
+                        <div class="info-label">Condición IVA:</div>
+                        <div class="info-value">{{customerIvaCondition}}</div>
+                    </div>
+                </div>
+            </div>
+            <div class="document-info">
+                <div class="info-title">DATOS DEL REMITO</div>
+                <div class="info-content">
+                    <div class="info-row">
+                        <div class="info-label">Fecha:</div>
+                        <div class="info-value">{{documentDate}}</div>
+                    </div>
+                    <div class="info-row">
+                        <div class="info-label">Sucursal:</div>
+                        <div class="info-value">{{branchName}}</div>
+                    </div>
+                    <div class="info-row">
+                        <div class="info-label">Usuario:</div>
+                        <div class="info-value">{{userName}}</div>
+                    </div>
+                    <div class="info-row">
+                        <div class="info-label">Factura asociada:</div>
+                        <div class="info-value">{{associatedInvoice}}</div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Tabla de productos -->
+        <table class="items-table">
+            <thead>
+                <tr>
+                    <th class="code">Código</th>
+                    <th class="description">Descripción</th>
+                    <th class="quantity">Cantidad</th>
+                    <th class="unit">Unidad</th>
+                    <th class="notes">Observaciones</th>
+                </tr>
+            </thead>
+            <tbody>
+                {{#each items}}
+                <tr>
+                    <td>{{code}}</td>
+                    <td>{{description}}</td>
+                    <td class="quantity">{{quantity}}</td>
+                    <td class="unit">{{unit}}</td>
+                    <td>{{notes}}</td>
+                </tr>
+                {{/each}}
+            </tbody>
+        </table>
+
+        <!-- Sección de observaciones -->
+        <div class="observations">
+            <div class="observations-title">OBSERVACIONES:</div>
+            <div>{{observations}}</div>
+        </div>
+
+        <!-- Código de barras -->
+        <div class="barcode">
+            <img src="{{barcodeUrl}}" alt="Código de barras">
+        </div>
+
+        <!-- Firmas -->
+        <div class="signatures">
+            <div class="signature-box">
+                <div>FIRMA RECEPTOR</div>
+                <div>Aclaración: _________________________</div>
+                <div>DNI: _________________________</div>
+            </div>
+            <div class="signature-box">
+                <div>FIRMA AUTORIZADA</div>
+                <div>Aclaración: _________________________</div>
+            </div>
+        </div>
+
+        <!-- Código QR (opcional para verificación electrónica) -->
+        <div class="qr-section">
+            <img class="qr-code" src="{{qrUrl}}" alt="Código QR">
+        </div>
+
+        <!-- Pie de página -->
+        <div class="footer">
+            <p>Documento generado por FactuSystem - {{currentDateTime}}</p>
+            <p>Este remito es válido para el transporte de mercaderías - No válido como factura</p>
+            <p>{{companyLegalNotice}}</p>
+        </div>
+    </div>
+
+    <!-- Botones solo visibles en pantalla, no al imprimir -->
+    <div class="no-print" style="text-align: center; margin-top: 20px;">
+        <button id="print-button" onclick="window.print();">Imprimir Remito</button>
+        <button id="download-pdf" onclick="downloadPDF();">Descargar PDF</button>
+        <button id="send-email" onclick="sendByEmail();">Enviar por Email</button>
+        <button id="send-whatsapp" onclick="sendByWhatsApp();">Enviar por WhatsApp</button>
+    </div>
+
+    <script>
+        // Función para descargar el PDF
+        function downloadPDF() {
+            const remitId = '{{remitId}}';
+            // Usar la API de Electron a través del puente de comunicación establecido en preload.js
+            window.electronAPI.downloadPDF(remitId, 'remit');
+        }
+
+        // Función para enviar por email
+        function sendByEmail() {
+            const remitId = '{{remitId}}';
+            const customerEmail = '{{customerEmail}}';
+            // Abrir modal para confirmar/modificar correo
+            window.electronAPI.showEmailModal(remitId, 'remit', customerEmail);
+        }
+
+        // Función para enviar por WhatsApp
+        function sendByWhatsApp() {
+            const remitId = '{{remitId}}';
+            const customerPhone = '{{customerPhone}}';
+            // Abrir modal para confirmar/modificar número
+            window.electronAPI.showWhatsAppModal(remitId, 'remit', customerPhone);
+        }
+
+        // Función para manejar eventos después de que el documento esté listo
+        document.addEventListener('DOMContentLoaded', function() {
+            // Registrar visualización del remito para auditoría
+            const remitId = '{{remitId}}';
+            window.electronAPI.logDocumentView(remitId, 'remit');
+            
+            // Comprobar si hay una factura asociada y actualizar la UI
+            const associatedInvoice = '{{associatedInvoice}}';
+            if (!associatedInvoice) {
+                document.querySelector('.info-row:contains("Factura asociada")').style.display = 'none';
+            }
+        });
+    </script>
+</body>
+</html>

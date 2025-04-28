@@ -1,0 +1,60 @@
+{
+    "appId": "com.factusystem.app",
+    "productName": "FactuSystem",
+    "copyright": "Copyright © 2025",
+    "directories": {
+      "output": "dist",
+      "buildResources": "app/assets"
+    },
+    "files": [
+      "app/**/*",
+      "db/**/*",
+      "services/**/*",
+      "integrations/**/*",
+      "server/**/*",
+      "preload.js",
+      "main.js",
+      "package.json"
+    ],
+    "extraResources": [
+      {
+        "from": "db/migrations/",
+        "to": "resources/migrations",
+        "filter": ["**/*"]
+      },
+      {
+        "from": "db/seeds/",
+        "to": "resources/seeds",
+        "filter": ["**/*"]
+      },
+      {
+        "from": "app/templates/",
+        "to": "resources/templates",
+        "filter": ["**/*"]
+      }
+    ],
+    "asar": true,
+    "win": {
+      "target": "nsis",
+      "icon": "app/assets/img/icon.png"
+    },
+    "nsis": {
+      "oneClick": false,
+      "perMachine": true,
+      "allowToChangeInstallationDirectory": true,
+      "createDesktopShortcut": true,
+      "createStartMenuShortcut": true,
+      "shortcutName": "FactuSystem"
+    },
+    "publish": [
+      {
+        "provider": "generic",
+        "url": "https://factusystem.com/updates/"
+      }
+    ],
+    "protocols": {
+      "name": "FactuSystem Protocol",
+      "schemes": ["factusystem"]
+    }
+  }
+

@@ -1,0 +1,342 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Reporte de Stock - FactuSystem</title>
+    <style>
+        @page {
+            size: A4;
+            margin: 1cm;
+        }
+        
+        body {
+            font-family: Arial, Helvetica, sans-serif;
+            margin: 0;
+            padding: 0;
+            color: #333;
+            font-size: 12px;
+        }
+        
+        .container {
+            width: 100%;
+            max-width: 21cm;
+            margin: 0 auto;
+            padding: 20px;
+        }
+        
+        header {
+            display: flex;
+            justify-content: space-between;
+            margin-bottom: 20px;
+            border-bottom: 2px solid #2a3f54;
+            padding-bottom: 10px;
+        }
+        
+        .logo {
+            max-width: 200px;
+            max-height: 100px;
+        }
+        
+        .company-info {
+            text-align: right;
+        }
+        
+        .company-info h2 {
+            margin: 0;
+            color: #2a3f54;
+        }
+        
+        .report-title {
+            text-align: center;
+            margin: 20px 0;
+            color: #2a3f54;
+        }
+        
+        .report-info {
+            display: flex;
+            justify-content: space-between;
+            margin-bottom: 20px;
+            padding: 10px;
+            background-color: #f9f9f9;
+            border-radius: 5px;
+        }
+        
+        .filters-applied {
+            margin-bottom: 15px;
+            padding: 10px;
+            background-color: #f0f0f0;
+            border-radius: 5px;
+            font-size: 11px;
+        }
+        
+        table {
+            width: 100%;
+            border-collapse: collapse;
+            margin-bottom: 20px;
+        }
+        
+        table thead {
+            background-color: #2a3f54;
+            color: white;
+        }
+        
+        table th, table td {
+            border: 1px solid #ddd;
+            padding: 8px;
+            text-align: left;
+        }
+        
+        table tr:nth-child(even) {
+            background-color: #f2f2f2;
+        }
+        
+        .critical-stock {
+            background-color: #ffdddd !important;
+            color: #cc0000;
+        }
+        
+        .low-stock {
+            background-color: #fff3cd !important;
+            color: #856404;
+        }
+        
+        .group-header {
+            background-color: #e9ecef;
+            font-weight: bold;
+        }
+        
+        .summary {
+            margin-top: 20px;
+            border-top: 1px solid #ddd;
+            padding-top: 15px;
+        }
+        
+        .summary h3 {
+            color: #2a3f54;
+            margin-bottom: 10px;
+        }
+        
+        .summary-cards {
+            display: flex;
+            justify-content: space-between;
+            flex-wrap: wrap;
+            gap: 10px;
+            margin-bottom: 20px;
+        }
+        
+        .summary-card {
+            flex: 1;
+            min-width: 150px;
+            padding: 15px;
+            border-radius: 5px;
+            text-align: center;
+            box-shadow: 0 2px 5px rgba(0,0,0,0.1);
+        }
+        
+        .summary-card.total {
+            background-color: #dff0d8;
+        }
+        
+        .summary-card.critical {
+            background-color: #f2dede;
+        }
+        
+        .summary-card.low {
+            background-color: #fcf8e3;
+        }
+        
+        .summary-card h4 {
+            margin: 0 0 10px 0;
+            font-size: 14px;
+        }
+        
+        .summary-card .value {
+            font-size: 22px;
+            font-weight: bold;
+        }
+        
+        .chart-container {
+            display: flex;
+            justify-content: space-between;
+            margin-top: 20px;
+            gap: 20px;
+        }
+        
+        .chart-box {
+            flex: 1;
+            border: 1px solid #ddd;
+            border-radius: 5px;
+            padding: 15px;
+            text-align: center;
+        }
+        
+        .chart-placeholder {
+            background-color: #f9f9f9;
+            height: 200px;
+            border-radius: 5px;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            color: #999;
+        }
+        
+        footer {
+            margin-top: 30px;
+            text-align: center;
+            font-size: 10px;
+            color: #777;
+            border-top: 1px solid #ddd;
+            padding-top: 10px;
+        }
+        
+        .page-number:after {
+            content: counter(page);
+        }
+        
+        @media print {
+            .no-print {
+                display: none;
+            }
+            
+            body {
+                -webkit-print-color-adjust: exact;
+                print-color-adjust: exact;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <header>
+            <div>
+                <img class="logo" src="{{logoUrl}}" alt="Logo de la Empresa">
+            </div>
+            <div class="company-info">
+                <h2>{{companyName}}</h2>
+                <p>{{companyAddress}}</p>
+                <p>CUIT: {{companyCuit}}</p>
+                <p>Tel: {{companyPhone}}</p>
+            </div>
+        </header>
+
+        <div class="report-title">
+            <h1>REPORTE DE STOCK</h1>
+        </div>
+
+        <div class="report-info">
+            <div>
+                <p><strong>Sucursal:</strong> {{sucursal}}</p>
+                <p><strong>Fecha del reporte:</strong> {{reportDate}}</p>
+            </div>
+            <div>
+                <p><strong>Generado por:</strong> {{userName}}</p>
+                <p><strong>ID del reporte:</strong> {{reportId}}</p>
+            </div>
+        </div>
+
+        <div class="filters-applied">
+            <p><strong>Filtros aplicados:</strong> {{filters}}</p>
+        </div>
+
+        <!-- Tabla de Productos -->
+        <table>
+            <thead>
+                <tr>
+                    <th>Código</th>
+                    <th>Producto</th>
+                    <th>Categoría</th>
+                    <th>Stock Actual</th>
+                    <th>Stock Mínimo</th>
+                    <th>Valor de Stock</th>
+                    <th>Última Actualización</th>
+                </tr>
+            </thead>
+            <tbody>
+                {{#each groupedProducts}}
+                <tr class="group-header">
+                    <td colspan="7">{{groupName}}</td>
+                </tr>
+                {{#each products}}
+                <tr class="{{stockStatus}}">
+                    <td>{{code}}</td>
+                    <td>{{name}}</td>
+                    <td>{{category}}</td>
+                    <td>{{currentStock}}</td>
+                    <td>{{minStock}}</td>
+                    <td>${{stockValue}}</td>
+                    <td>{{lastUpdate}}</td>
+                </tr>
+                {{/each}}
+                {{/each}}
+            </tbody>
+        </table>
+
+        <!-- Resumen y estadísticas -->
+        <div class="summary">
+            <h3>Resumen de Stock</h3>
+            
+            <div class="summary-cards">
+                <div class="summary-card total">
+                    <h4>Total de Productos</h4>
+                    <div class="value">{{totalProducts}}</div>
+                </div>
+                <div class="summary-card critical">
+                    <h4>Stock Crítico</h4>
+                    <div class="value">{{criticalStock}}</div>
+                </div>
+                <div class="summary-card low">
+                    <h4>Stock Bajo</h4>
+                    <div class="value">{{lowStock}}</div>
+                </div>
+                <div class="summary-card total">
+                    <h4>Valor Total de Inventario</h4>
+                    <div class="value">${{totalStockValue}}</div>
+                </div>
+            </div>
+
+            <div class="chart-container">
+                <div class="chart-box">
+                    <h4>Distribución de Stock por Categoría</h4>
+                    <div class="chart-placeholder" id="categoryChart">
+                        <!-- El gráfico se generará dinámicamente al renderizar -->
+                        {{categoryChartSvg}}
+                    </div>
+                </div>
+                <div class="chart-box">
+                    <h4>Productos con Stock Crítico</h4>
+                    <div class="chart-placeholder" id="criticalStockChart">
+                        <!-- El gráfico se generará dinámicamente al renderizar -->
+                        {{criticalStockChartSvg}}
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Observaciones -->
+        <div class="observation-box">
+            <h3>Observaciones</h3>
+            <p>{{observations}}</p>
+        </div>
+
+        <footer>
+            <p>Reporte generado con FactuSystem - {{currentDateTime}}</p>
+            <p class="page-number">Página </p>
+        </footer>
+    </div>
+
+    <script>
+        // Este script se ejecutará cuando el documento se cargue como parte del proceso de renderizado
+        document.addEventListener('DOMContentLoaded', function() {
+            // Si estamos en el contexto de impresión, podemos aplicar alguna lógica específica
+            if (window.electronPrintMode) {
+                console.log("Preparando documento para impresión");
+            }
+            
+            // Función para renderizar los gráficos como SVG estáticos
+            // Esto es opcional, ya que los gráficos se pueden generar en el servidor
+            // y ser insertados directamente como SVG en las variables categoryChartSvg y criticalStockChartSvg
+        });
+    </script>
+</body>
+</html>

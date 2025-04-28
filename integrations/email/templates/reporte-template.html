@@ -1,0 +1,131 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>{{reporteTitulo}} - {{companyInfo.nombre}}</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            line-height: 1.6;
+            color: #333333;
+            margin: 0;
+            padding: 0;
+            background-color: #f6f6f6;
+        }
+        .container {
+            max-width: 600px;
+            margin: 0 auto;
+            padding: 20px;
+            background-color: #ffffff;
+        }
+        .header {
+            text-align: center;
+            padding: 20px 0;
+            border-bottom: 2px solid #f2f2f2;
+        }
+        .logo {
+            max-height: 70px;
+            width: auto;
+        }
+        .content {
+            padding: 30px 20px;
+        }
+        .footer {
+            background-color: #f8f9fa;
+            padding: 15px;
+            text-align: center;
+            font-size: 12px;
+            color: #6c757d;
+            border-top: 1px solid #e9ecef;
+        }
+        .report-details {
+            background-color: #f8f9fa;
+            border-radius: 5px;
+            padding: 15px;
+            margin: 20px 0;
+        }
+        .report-details table {
+            width: 100%;
+            border-collapse: collapse;
+        }
+        .report-details th {
+            text-align: left;
+            padding: 8px;
+        }
+        .report-details td {
+            padding: 8px;
+        }
+        .button {
+            display: inline-block;
+            padding: 10px 20px;
+            margin: 20px 0;
+            background-color: #6c757d;
+            color: white;
+            text-decoration: none;
+            border-radius: 5px;
+        }
+        @media only screen and (max-width: 600px) {
+            .container {
+                width: 100%;
+                padding: 10px;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <div class="header">
+            {{#if companyInfo.logoUrl}}
+            <img src="{{companyInfo.logoUrl}}" alt="{{companyInfo.nombre}}" class="logo">
+            {{else}}
+            <h2>{{companyInfo.nombre}}</h2>
+            {{/if}}
+        </div>
+        
+        <div class="content">
+            <h2>{{reporteTitulo}}</h2>
+            
+            <p>Estimado usuario:</p>
+            
+            <p>Adjunto encontrará el {{reporteTitulo}} solicitado.</p>
+            
+            <div class="report-details">
+                <table>
+                    <tr>
+                        <th>Tipo de reporte:</th>
+                        <td>{{reporteTitulo}}</td>
+                    </tr>
+                    <tr>
+                        <th>Período:</th>
+                        <td>{{reportePeriodo}}</td>
+                    </tr>
+                    <tr>
+                        <th>Fecha de generación:</th>
+                        <td>{{reporteFecha}}</td>
+                    </tr>
+                </table>
+            </div>
+            
+            <p>El reporte completo se encuentra adjunto en formato PDF. Si necesita información adicional o tiene alguna consulta, no dude en contactarnos.</p>
+            
+            <p>Atentamente,</p>
+            <p>
+                <strong>{{companyInfo.nombre}}</strong><br>
+                {{#if companyInfo.telefono}}Tel: {{companyInfo.telefono}}<br>{{/if}}
+                {{#if companyInfo.email}}Email: {{companyInfo.email}}<br>{{/if}}
+                {{#if companyInfo.sitioWeb}}Web: {{companyInfo.sitioWeb}}{{/if}}
+            </p>
+        </div>
+        
+        <div class="footer">
+            <p>© {{companyInfo.nombre}} {{currentYear}}. Todos los derechos reservados.</p>
+            <p>{{#if companyInfo.direccion}}{{companyInfo.direccion}} - {{/if}}
+               {{#if companyInfo.localidad}}{{companyInfo.localidad}}{{/if}}
+               {{#if companyInfo.provincia}}, {{companyInfo.provincia}}{{/if}}
+            </p>
+            <p>CUIT: {{companyInfo.cuit}}</p>
+        </div>
+    </div>
+</body>
+</html>

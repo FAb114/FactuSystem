@@ -1,0 +1,409 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Reporte de Caja - FactuSystem</title>
+    <style>
+        @page {
+            size: A4;
+            margin: 1cm;
+        }
+        body {
+            font-family: Arial, Helvetica, sans-serif;
+            margin: 0;
+            padding: 0;
+            color: #333;
+            font-size: 12px;
+        }
+        .container {
+            width: 100%;
+            max-width: 800px;
+            margin: 0 auto;
+            padding: 20px;
+        }
+        .header {
+            border-bottom: 2px solid #333;
+            padding-bottom: 15px;
+            margin-bottom: 20px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+        .logo {
+            max-width: 150px;
+            max-height: 80px;
+        }
+        .report-title {
+            font-size: 22px;
+            font-weight: bold;
+            margin-bottom: 5px;
+            color: #1a5276;
+        }
+        .company-info {
+            text-align: right;
+            font-size: 12px;
+        }
+        .company-name {
+            font-weight: bold;
+            font-size: 14px;
+            margin-bottom: 3px;
+        }
+        .report-info {
+            background-color: #f7f7f7;
+            padding: 12px;
+            border-radius: 5px;
+            margin-bottom: 20px;
+            display: flex;
+            justify-content: space-between;
+        }
+        .report-info-section {
+            flex: 1;
+        }
+        .report-info h2 {
+            font-size: 14px;
+            margin-top: 0;
+            margin-bottom: 10px;
+            color: #1a5276;
+        }
+        .summary-box {
+            background-color: #e8f4f8;
+            padding: 12px;
+            border-radius: 5px;
+            margin-bottom: 20px;
+            display: flex;
+            justify-content: space-between;
+            flex-wrap: wrap;
+        }
+        .summary-item {
+            flex: 1;
+            min-width: 150px;
+            margin-bottom: 10px;
+        }
+        .summary-label {
+            font-size: 12px;
+            color: #555;
+        }
+        .summary-value {
+            font-size: 16px;
+            font-weight: bold;
+            color: #1a5276;
+        }
+        .summary-value.positive {
+            color: #27ae60;
+        }
+        .summary-value.negative {
+            color: #c0392b;
+        }
+        table {
+            width: 100%;
+            border-collapse: collapse;
+            margin-bottom: 20px;
+        }
+        th {
+            background-color: #1a5276;
+            color: white;
+            font-weight: normal;
+            text-align: left;
+            padding: 8px;
+        }
+        td {
+            padding: 8px;
+            border-bottom: 1px solid #ddd;
+        }
+        tr:nth-child(even) {
+            background-color: #f9f9f9;
+        }
+        .transaction-type {
+            display: inline-block;
+            padding: 3px 6px;
+            border-radius: 3px;
+            font-size: 11px;
+            font-weight: bold;
+        }
+        .transaction-type.ingreso {
+            background-color: #d4efdf;
+            color: #27ae60;
+        }
+        .transaction-type.egreso {
+            background-color: #f5b7b1;
+            color: #c0392b;
+        }
+        .transaction-type.apertura {
+            background-color: #d6eaf8;
+            color: #2980b9;
+        }
+        .transaction-type.cierre {
+            background-color: #ebdef0;
+            color: #8e44ad;
+        }
+        .payment-method {
+            font-size: 11px;
+            color: #666;
+        }
+        .footer {
+            margin-top: 30px;
+            border-top: 1px solid #ddd;
+            padding-top: 15px;
+            display: flex;
+            justify-content: space-between;
+            color: #777;
+            font-size: 11px;
+        }
+        .signatures {
+            margin-top: 50px;
+            display: flex;
+            justify-content: space-between;
+        }
+        .signature-box {
+            width: 45%;
+            text-align: center;
+        }
+        .signature-line {
+            border-top: 1px solid #333;
+            padding-top: 5px;
+            margin-top: 40px;
+        }
+        .divider {
+            height: 1px;
+            background-color: #ddd;
+            margin: 15px 0;
+        }
+        .cash-summary h3,
+        .payment-summary h3 {
+            font-size: 14px;
+            color: #1a5276;
+            margin-bottom: 10px;
+        }
+        .section-title {
+            font-size: 16px;
+            font-weight: bold;
+            margin-top: 20px;
+            margin-bottom: 10px;
+            color: #1a5276;
+        }
+        .barcode {
+            text-align: right;
+            margin-top: 20px;
+        }
+        @media print {
+            body {
+                -webkit-print-color-adjust: exact;
+                print-color-adjust: exact;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <!-- Encabezado del reporte -->
+        <div class="header">
+            <div>
+                <img src="{{logoUrl}}" alt="Logo de la empresa" class="logo">
+            </div>
+            <div class="company-info">
+                <div class="company-name">{{companyName}}</div>
+                <div>{{companyAddress}}</div>
+                <div>CUIT: {{companyCuit}}</div>
+                <div>Tel: {{companyPhone}}</div>
+                <div>Email: {{companyEmail}}</div>
+            </div>
+        </div>
+
+        <!-- Título del reporte -->
+        <div class="report-title">REPORTE DE CAJA</div>
+
+        <!-- Información general del reporte -->
+        <div class="report-info">
+            <div class="report-info-section">
+                <h2>INFORMACIÓN GENERAL</h2>
+                <div><strong>Sucursal:</strong> {{branchName}}</div>
+                <div><strong>Caja:</strong> {{cashierNumber}}</div>
+                <div><strong>Período:</strong> {{reportPeriod}}</div>
+                <div><strong>Generado el:</strong> {{generationDate}}</div>
+                <div><strong>ID de Reporte:</strong> {{reportId}}</div>
+            </div>
+            <div class="report-info-section">
+                <h2>RESPONSABLES</h2>
+                <div><strong>Apertura:</strong> {{openingUser}}</div>
+                <div><strong>Fecha apertura:</strong> {{openingDate}}</div>
+                <div><strong>Cierre:</strong> {{closingUser}}</div>
+                <div><strong>Fecha cierre:</strong> {{closingDate}}</div>
+            </div>
+        </div>
+
+        <!-- Resumen de caja -->
+        <div class="section-title">RESUMEN DE CAJA</div>
+        <div class="summary-box">
+            <div class="summary-item">
+                <div class="summary-label">Saldo inicial</div>
+                <div class="summary-value">$ {{initialAmount}}</div>
+            </div>
+            <div class="summary-item">
+                <div class="summary-label">Total ingresos</div>
+                <div class="summary-value positive">$ {{totalIncome}}</div>
+            </div>
+            <div class="summary-item">
+                <div class="summary-label">Total egresos</div>
+                <div class="summary-value negative">$ {{totalExpenses}}</div>
+            </div>
+            <div class="summary-item">
+                <div class="summary-label">Saldo final</div>
+                <div class="summary-value">$ {{finalAmount}}</div>
+            </div>
+            <div class="summary-item">
+                <div class="summary-label">Saldo esperado</div>
+                <div class="summary-value">$ {{expectedAmount}}</div>
+            </div>
+            <div class="summary-item">
+                <div class="summary-label">Diferencia</div>
+                <div class="summary-value {{differenceClass}}">$ {{difference}}</div>
+            </div>
+        </div>
+
+        <!-- Desglose por método de pago -->
+        <div class="section-title">DESGLOSE POR MÉTODO DE PAGO</div>
+        <div class="payment-summary">
+            <table>
+                <thead>
+                    <tr>
+                        <th>Método de Pago</th>
+                        <th>Ingresos</th>
+                        <th>Egresos</th>
+                        <th>Total</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    {{#each paymentMethods}}
+                    <tr>
+                        <td>{{name}}</td>
+                        <td>$ {{income}}</td>
+                        <td>$ {{expense}}</td>
+                        <td>$ {{total}}</td>
+                    </tr>
+                    {{/each}}
+                </tbody>
+                <tfoot>
+                    <tr>
+                        <td><strong>TOTAL</strong></td>
+                        <td><strong>$ {{totalPaymentsIncome}}</strong></td>
+                        <td><strong>$ {{totalPaymentsExpense}}</strong></td>
+                        <td><strong>$ {{totalPayments}}</strong></td>
+                    </tr>
+                </tfoot>
+            </table>
+        </div>
+
+        <!-- Arqueo de caja (efectivo) -->
+        <div class="section-title">ARQUEO DE CAJA (EFECTIVO)</div>
+        <div class="cash-summary">
+            <table>
+                <thead>
+                    <tr>
+                        <th>Denominación</th>
+                        <th>Cantidad</th>
+                        <th>Subtotal</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    {{#each cashCount}}
+                    <tr>
+                        <td>$ {{denomination}}</td>
+                        <td>{{quantity}}</td>
+                        <td>$ {{subtotal}}</td>
+                    </tr>
+                    {{/each}}
+                </tbody>
+                <tfoot>
+                    <tr>
+                        <td colspan="2"><strong>TOTAL EFECTIVO CONTADO</strong></td>
+                        <td><strong>$ {{totalCounted}}</strong></td>
+                    </tr>
+                </tfoot>
+            </table>
+        </div>
+
+        <!-- Detalle de movimientos -->
+        <div class="section-title">DETALLE DE MOVIMIENTOS</div>
+        <table>
+            <thead>
+                <tr>
+                    <th>Hora</th>
+                    <th>Tipo</th>
+                    <th>Concepto</th>
+                    <th>Método</th>
+                    <th>Monto</th>
+                    <th>Usuario</th>
+                </tr>
+            </thead>
+            <tbody>
+                {{#each transactions}}
+                <tr>
+                    <td>{{time}}</td>
+                    <td>
+                        <span class="transaction-type {{type}}">{{typeText}}</span>
+                    </td>
+                    <td>{{concept}}</td>
+                    <td>
+                        <span class="payment-method">{{paymentMethod}}</span>
+                    </td>
+                    <td>$ {{amount}}</td>
+                    <td>{{user}}</td>
+                </tr>
+                {{/each}}
+            </tbody>
+        </table>
+
+        <!-- Observaciones -->
+        <div class="section-title">OBSERVACIONES</div>
+        <div style="padding: 10px; border: 1px solid #ddd; min-height: 60px; border-radius: 5px;">
+            {{observations}}
+        </div>
+
+        <!-- Área de firmas -->
+        <div class="signatures">
+            <div class="signature-box">
+                <div class="signature-line">{{openingUser}}</div>
+                <div>Responsable de Apertura</div>
+            </div>
+            <div class="signature-box">
+                <div class="signature-line">{{closingUser}}</div>
+                <div>Responsable de Cierre</div>
+            </div>
+        </div>
+
+        <!-- Pie de página -->
+        <div class="footer">
+            <div>Reporte generado por FactuSystem v{{appVersion}}</div>
+            <div>{{generationDateTime}}</div>
+        </div>
+
+        <!-- Código de barras o QR para validación -->
+        <div class="barcode">
+            <img src="{{barcodeUrl}}" alt="Código de validación">
+        </div>
+    </div>
+
+    <script>
+        // Este script se ejecutará cuando se renderice el PDF
+        document.addEventListener('DOMContentLoaded', function() {
+            // Formatear valores monetarios
+            const formatCurrency = (value) => {
+                return parseFloat(value).toFixed(2).replace(/\d(?=(\d{3})+\.)/g, '$&,');
+            };
+            
+            // Aplicar formato a todos los valores monetarios
+            document.querySelectorAll('.summary-value, td:contains("$")').forEach(el => {
+                const value = el.textContent.replace('$', '').trim();
+                if (!isNaN(parseFloat(value))) {
+                    el.textContent = '$ ' + formatCurrency(value);
+                }
+            });
+            
+            // Calcular totales si fuera necesario
+            // Este código sería útil si la plantilla se usa directamente en un navegador
+            // Para PDF generados por el servidor, los cálculos ya estarían hechos
+        });
+    </script>
+</body>
+</html>

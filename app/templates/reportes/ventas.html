@@ -1,0 +1,558 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Reporte de Ventas - FactuSystem</title>
+    <style>
+        :root {
+            --primary-color: #3498db;
+            --secondary-color: #2c3e50;
+            --accent-color: #e74c3c;
+            --light-color: #ecf0f1;
+            --dark-color: #34495e;
+            --success-color: #2ecc71;
+            --warning-color: #f39c12;
+            --danger-color: #e74c3c;
+            --gray-color: #95a5a6;
+            --border-color: #dfe6e9;
+        }
+
+        * {
+            box-sizing: border-box;
+            margin: 0;
+            padding: 0;
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+        }
+
+        body {
+            font-size: 14px;
+            line-height: 1.5;
+            color: #333;
+            background-color: white;
+            padding: 15px;
+        }
+
+        .hidden {
+            display: none;
+        }
+
+        .reporte-container {
+            max-width: 100%;
+            margin: 0 auto;
+        }
+
+        .report-header {
+            text-align: center;
+            margin-bottom: 20px;
+            padding-bottom: 15px;
+            border-bottom: 2px solid var(--border-color);
+            position: relative;
+        }
+
+        .logo-container {
+            position: absolute;
+            top: 0;
+            left: 15px;
+            width: 100px;
+            height: auto;
+        }
+
+        .logo-container img {
+            max-width: 100%;
+            height: auto;
+        }
+
+        .report-title {
+            color: var(--secondary-color);
+            font-size: 22px;
+            font-weight: bold;
+            margin-bottom: 5px;
+        }
+
+        .report-subtitle {
+            color: var(--dark-color);
+            font-size: 16px;
+            margin-bottom: 15px;
+        }
+
+        .company-info {
+            font-size: 14px;
+            color: var(--dark-color);
+        }
+
+        .report-meta {
+            display: flex;
+            justify-content: space-between;
+            margin: 15px 0;
+            padding: 10px;
+            background-color: var(--light-color);
+            border-radius: 5px;
+        }
+
+        .meta-item {
+            font-size: 12px;
+        }
+
+        .meta-item strong {
+            color: var(--dark-color);
+        }
+
+        .report-summary {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 10px;
+            margin-bottom: 20px;
+        }
+
+        .summary-card {
+            flex: 1;
+            min-width: 200px;
+            padding: 15px;
+            background-color: #fff;
+            border-radius: 5px;
+            box-shadow: 0 2px 5px rgba(0, 0, 0, 0.1);
+        }
+
+        .summary-card.total {
+            background-color: var(--primary-color);
+            color: white;
+        }
+
+        .summary-card.efectivo {
+            background-color: var(--success-color);
+            color: white;
+        }
+
+        .summary-card.tarjeta {
+            background-color: var(--secondary-color);
+            color: white;
+        }
+
+        .summary-card.transferencia {
+            background-color: var(--warning-color);
+            color: white;
+        }
+
+        .summary-card.mercadopago {
+            background-color: var(--accent-color);
+            color: white;
+        }
+
+        .summary-title {
+            font-size: 12px;
+            margin-bottom: 5px;
+        }
+
+        .summary-value {
+            font-size: 18px;
+            font-weight: bold;
+        }
+
+        table {
+            width: 100%;
+            border-collapse: collapse;
+            margin-bottom: 20px;
+            font-size: 12px;
+        }
+
+        thead {
+            background-color: var(--secondary-color);
+            color: white;
+        }
+
+        th, td {
+            padding: 8px 10px;
+            text-align: left;
+            border-bottom: 1px solid var(--border-color);
+        }
+
+        tbody tr:nth-child(even) {
+            background-color: var(--light-color);
+        }
+
+        .tabla-footer {
+            font-weight: bold;
+            background-color: #f8f9fa;
+        }
+
+        .charts-container {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 20px;
+            margin-bottom: 20px;
+        }
+
+        .chart-container {
+            flex: 1;
+            min-width: 300px;
+            height: 250px;
+            background-color: white;
+            padding: 15px;
+            border-radius: 5px;
+            box-shadow: 0 2px 5px rgba(0, 0, 0, 0.1);
+        }
+
+        .chart-title {
+            font-size: 14px;
+            font-weight: bold;
+            color: var(--secondary-color);
+            margin-bottom: 10px;
+            text-align: center;
+        }
+
+        .chart {
+            width: 100%;
+            height: 200px;
+        }
+
+        .top-products {
+            background-color: white;
+            padding: 15px;
+            border-radius: 5px;
+            box-shadow: 0 2px 5px rgba(0, 0, 0, 0.1);
+            margin-bottom: 20px;
+        }
+
+        .top-products-title {
+            font-size: 16px;
+            font-weight: bold;
+            color: var(--secondary-color);
+            margin-bottom: 10px;
+        }
+
+        .product-bar {
+            display: flex;
+            align-items: center;
+            margin-bottom: 10px;
+        }
+
+        .product-name {
+            flex: 2;
+            white-space: nowrap;
+            overflow: hidden;
+            text-overflow: ellipsis;
+        }
+
+        .product-bar-container {
+            flex: 3;
+            height: 20px;
+            background-color: var(--light-color);
+            position: relative;
+            border-radius: 10px;
+            overflow: hidden;
+        }
+
+        .product-bar-fill {
+            height: 100%;
+            background-color: var(--primary-color);
+            border-radius: 10px;
+        }
+
+        .product-value {
+            flex: 1;
+            text-align: right;
+            font-weight: bold;
+        }
+
+        .comparativa-sucursales {
+            background-color: white;
+            padding: 15px;
+            border-radius: 5px;
+            box-shadow: 0 2px 5px rgba(0, 0, 0, 0.1);
+            margin-bottom: 20px;
+        }
+
+        .comparativa-title {
+            font-size: 16px;
+            font-weight: bold;
+            color: var(--secondary-color);
+            margin-bottom: 10px;
+        }
+
+        .sucursal-bar {
+            display: flex;
+            align-items: center;
+            margin-bottom: 10px;
+        }
+
+        .sucursal-name {
+            flex: 1;
+            white-space: nowrap;
+            overflow: hidden;
+            text-overflow: ellipsis;
+        }
+
+        .sucursal-bar-container {
+            flex: 3;
+            height: 20px;
+            background-color: var(--light-color);
+            position: relative;
+            border-radius: 10px;
+            overflow: hidden;
+        }
+
+        .sucursal-bar-fill {
+            height: 100%;
+            background-color: var(--accent-color);
+            border-radius: 10px;
+        }
+
+        .sucursal-value {
+            flex: 1;
+            text-align: right;
+            font-weight: bold;
+        }
+
+        .footer {
+            text-align: center;
+            padding-top: 15px;
+            border-top: 1px solid var(--border-color);
+            font-size: 12px;
+            color: var(--gray-color);
+        }
+
+        .page-number:after {
+            content: counter(page);
+        }
+
+        @media print {
+            body {
+                padding: 0;
+                margin: 15mm 10mm;
+            }
+
+            .report-header {
+                position: fixed;
+                top: 0;
+                left: 0;
+                right: 0;
+            }
+
+            .footer {
+                position: fixed;
+                bottom: 0;
+                left: 0;
+                right: 0;
+            }
+
+            .page-break {
+                page-break-after: always;
+            }
+
+            @page {
+                size: A4;
+                margin: 10mm;
+            }
+        }
+
+        /* Clases para método de pago */
+        .metodo-efectivo {
+            color: var(--success-color);
+        }
+
+        .metodo-tarjeta {
+            color: var(--secondary-color);
+        }
+
+        .metodo-transferencia {
+            color: var(--warning-color);
+        }
+
+        .metodo-mercadopago {
+            color: var(--accent-color);
+        }
+
+        /* Estado de factura */
+        .estado-pagada {
+            color: var(--success-color);
+            font-weight: bold;
+        }
+
+        .estado-pendiente {
+            color: var(--warning-color);
+            font-weight: bold;
+        }
+
+        .estado-anulada {
+            color: var(--danger-color);
+            font-weight: bold;
+        }
+    </style>
+</head>
+<body>
+    <div class="reporte-container">
+        <!-- Encabezado del reporte -->
+        <div class="report-header">
+            <div class="logo-container">
+                <img src="{{logo}}" alt="Logo de la empresa">
+            </div>
+            <div class="report-title">REPORTE DE VENTAS</div>
+            <div class="report-subtitle">{{subtitulo}}</div>
+            <div class="company-info">
+                <div>{{nombreEmpresa}}</div>
+                <div>CUIT: {{cuitEmpresa}}</div>
+                <div>{{direccionEmpresa}}</div>
+            </div>
+        </div>
+
+        <!-- Información del reporte -->
+        <div class="report-meta">
+            <div class="meta-item">
+                <strong>Período:</strong> {{fechaDesde}} - {{fechaHasta}}
+            </div>
+            <div class="meta-item">
+                <strong>Sucursal:</strong> {{nombreSucursal}}
+            </div>
+            <div class="meta-item">
+                <strong>Usuario:</strong> {{nombreUsuario}}
+            </div>
+            <div class="meta-item">
+                <strong>Generado:</strong> {{fechaGeneracion}}
+            </div>
+        </div>
+
+        <!-- Tarjetas de resumen -->
+        <div class="report-summary">
+            <div class="summary-card total">
+                <div class="summary-title">TOTAL VENTAS</div>
+                <div class="summary-value">${{totalVentas}}</div>
+            </div>
+            <div class="summary-card efectivo">
+                <div class="summary-title">EFECTIVO</div>
+                <div class="summary-value">${{totalEfectivo}}</div>
+            </div>
+            <div class="summary-card tarjeta">
+                <div class="summary-title">TARJETAS</div>
+                <div class="summary-value">${{totalTarjetas}}</div>
+            </div>
+            <div class="summary-card transferencia">
+                <div class="summary-title">TRANSFERENCIAS</div>
+                <div class="summary-value">${{totalTransferencias}}</div>
+            </div>
+            <div class="summary-card mercadopago">
+                <div class="summary-title">MERCADO PAGO</div>
+                <div class="summary-value">${{totalMercadoPago}}</div>
+            </div>
+        </div>
+
+        <!-- Tabla de ventas -->
+        <table>
+            <thead>
+                <tr>
+                    <th>N° Factura</th>
+                    <th>Fecha</th>
+                    <th>Cliente</th>
+                    <th>Tipo</th>
+                    <th>Método de Pago</th>
+                    <th>Estado</th>
+                    <th>Subtotal</th>
+                    <th>IVA</th>
+                    <th>Total</th>
+                </tr>
+            </thead>
+            <tbody>
+                {{#each ventas}}
+                <tr>
+                    <td>{{numero}}</td>
+                    <td>{{fecha}}</td>
+                    <td>{{cliente}}</td>
+                    <td>{{tipo}}</td>
+                    <td class="metodo-{{metodoPagoClase}}">{{metodoPago}}</td>
+                    <td class="estado-{{estadoClase}}">{{estado}}</td>
+                    <td>${{subtotal}}</td>
+                    <td>${{iva}}</td>
+                    <td>${{total}}</td>
+                </tr>
+                {{/each}}
+            </tbody>
+            <tfoot>
+                <tr class="tabla-footer">
+                    <td colspan="6">TOTALES</td>
+                    <td>${{totalSubtotal}}</td>
+                    <td>${{totalIVA}}</td>
+                    <td>${{totalVentas}}</td>
+                </tr>
+            </tfoot>
+        </table>
+
+        <!-- Gráficos de ventas -->
+        <div class="charts-container">
+            <div class="chart-container">
+                <div class="chart-title">Ventas por Día</div>
+                <div class="chart" id="ventasPorDia">
+                    <!-- Aquí se insertará el gráfico generado por la aplicación -->
+                    <img src="{{chartVentasPorDia}}" alt="Gráfico de ventas por día" width="100%" height="100%">
+                </div>
+            </div>
+            <div class="chart-container">
+                <div class="chart-title">Ventas por Método de Pago</div>
+                <div class="chart" id="ventasPorMetodo">
+                    <!-- Aquí se insertará el gráfico generado por la aplicación -->
+                    <img src="{{chartVentasPorMetodo}}" alt="Gráfico de ventas por método de pago" width="100%" height="100%">
+                </div>
+            </div>
+        </div>
+
+        <!-- Productos más vendidos -->
+        <div class="top-products">
+            <div class="top-products-title">Top 10 Productos Más Vendidos</div>
+            {{#each topProductos}}
+            <div class="product-bar">
+                <div class="product-name">{{nombre}}</div>
+                <div class="product-bar-container">
+                    <div class="product-bar-fill" style="width: {{porcentaje || 0}}%"></div>
+                </div>
+                <div class="product-value">${{total}} ({{cantidad}} u.)</div>
+            </div>
+            {{/each}}
+        </div>
+
+        <!-- Comparativa entre sucursales (si hay más de una) -->
+        <div class="comparativa-sucursales {{#if mostrarComparativa}}{{else}}hidden{{/if}}">
+            <div class="comparativa-title">Comparativa entre Sucursales</div>
+            {{#each comparativaSucursales}}
+            <div class="sucursal-bar">
+                <div class="sucursal-name">{{nombre}}</div>
+                <div class="sucursal-bar-container">
+                    <div class="sucursal-bar-fill" style="width: {{porcentaje}}%"></div>
+                </div>
+                <div class="sucursal-value">${{total}} ({{porcentaje}}%)</div>
+            </div>
+            {{/each}}
+        </div>
+
+        <!-- Ventas por tipo de factura -->
+        <div class="chart-container" style="width: 100%;">
+            <div class="chart-title">Ventas por Tipo de Documento</div>
+            <div class="chart" id="ventasPorTipo">
+                <!-- Aquí se insertará el gráfico generado por la aplicación -->
+                <img src="{{chartVentasPorTipo}}" alt="Gráfico de ventas por tipo de documento" width="100%" height="100%">
+            </div>
+        </div>
+
+        <!-- Observaciones adicionales -->
+        <div class="observaciones" style="margin-top: 20px; margin-bottom: 30px;">
+            <p><strong>Observaciones:</strong></p>
+            <p>{{observaciones}}</p>
+        </div>
+
+        <!-- Pie de página -->
+        <div class="footer">
+            <p>Generado por FactuSystem v2.0 | {{fechaGeneracion}} | Página <span class="page-number"></span></p>
+            <p>Este reporte es una versión oficial de {{nombreEmpresa}} y puede ser usado para fines administrativos y contables.</p>
+        </div>
+    </div>
+
+    <!-- Scripts para renderizar gráficos dinámicos (se ejecutan al generar PDF) -->
+    <script>
+        // Los scripts no se ejecutarán en el PDF final, 
+        // pero son usados por la aplicación antes de generar el PDF
+        // para crear los gráficos y formatear los datos
+        document.addEventListener('DOMContentLoaded', function() {
+            // Esta función será ejecutada por el generador de PDF
+            console.log('Plantilla de reporte de ventas cargada');
+        });
+    </script>
+</body>
+</html>

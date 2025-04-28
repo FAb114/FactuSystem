@@ -1,0 +1,766 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Ayuda y Soporte - FactuSystem</title>
+    <link rel="stylesheet" href="../assets/css/main.css">
+    <link rel="stylesheet" href="../assets/css/components/sidebar.css">
+    <link rel="stylesheet" href="../assets/css/components/dashboard.css">
+    <link rel="stylesheet" href="../assets/css/components/modal.css">
+    <link rel="stylesheet" href="../assets/css/components/tables.css">
+    <script src="../assets/js/app.js" defer></script>
+    <script src="../assets/js/renderer.js" defer></script>
+    <script src="../assets/js/modules/ayuda/index.js" defer></script>
+    <script src="../assets/js/modules/ayuda/manual.js" defer></script>
+    <script src="../assets/js/modules/ayuda/tutoriales.js" defer></script>
+    <script src="../assets/js/modules/ayuda/soporte.js" defer></script>
+</head>
+<body class="app-container">
+    <!-- Sidebar incluido mediante JavaScript -->
+    <div id="sidebar-container"></div>
+
+    <main class="main-content">
+        <div class="breadcrumb">
+            <span>Inicio</span> / <span class="current">Ayuda y Soporte</span>
+        </div>
+
+        <header class="content-header">
+            <h1><i class="fa fa-question-circle"></i> Ayuda y Soporte</h1>
+            <div class="header-actions">
+                <select id="sucursal-selector" class="form-control">
+                    <!-- Se carga dinámicamente si hay múltiples sucursales -->
+                </select>
+            </div>
+        </header>
+
+        <div class="tabs-container">
+            <div class="tabs">
+                <button class="tab-btn active" data-target="manual">Manual de Uso</button>
+                <button class="tab-btn" data-target="tutoriales">Tutoriales</button>
+                <button class="tab-btn" data-target="faq">Preguntas Frecuentes</button>
+                <button class="tab-btn" data-target="soporte">Soporte Técnico</button>
+            </div>
+
+            <!-- Tab de Manual de Uso -->
+            <div id="manual" class="tab-content active">
+                <div class="search-container">
+                    <input type="text" id="manual-search" class="form-control" placeholder="Buscar en el manual...">
+                    <button id="print-manual" class="btn btn-secondary">
+                        <i class="fa fa-print"></i> Imprimir Manual
+                    </button>
+                </div>
+
+                <div class="manual-sidebar">
+                    <h3>Contenidos</h3>
+                    <ul id="toc-list">
+                        <li class="toc-item active" data-section="intro">Introducción a FactuSystem</li>
+                        <li class="toc-item" data-section="primeros-pasos">Primeros Pasos</li>
+                        <li class="toc-item" data-section="facturador">Facturador</li>
+                        <li class="toc-item" data-section="ventas">Ventas</li>
+                        <li class="toc-item" data-section="compras">Compras</li>
+                        <li class="toc-item" data-section="productos">Productos</li>
+                        <li class="toc-item" data-section="caja">Caja</li>
+                        <li class="toc-item" data-section="clientes">Clientes</li>
+                        <li class="toc-item" data-section="proveedores">Proveedores</li>
+                        <li class="toc-item" data-section="usuarios">Usuarios</li>
+                        <li class="toc-item" data-section="cuotificador">Cuotificador</li>
+                        <li class="toc-item" data-section="reportes">Reportes</li>
+                        <li class="toc-item" data-section="documentos">Documentos</li>
+                        <li class="toc-item" data-section="sucursales">Sucursales</li>
+                        <li class="toc-item" data-section="configuraciones">Configuraciones</li>
+                        <li class="toc-item" data-section="integraciones">Integraciones</li>
+                        <li class="toc-item" data-section="backup">Respaldos</li>
+                        <li class="toc-item" data-section="shortcuts">Atajos de Teclado</li>
+                    </ul>
+                </div>
+
+                <div class="manual-content">
+                    <!-- Introducción -->
+                    <section id="intro" class="manual-section active">
+                        <h2>Introducción a FactuSystem</h2>
+                        <p>Bienvenido a <strong>FactuSystem</strong>, su solución integral para la facturación y gestión comercial multisucursal. Este manual le guiará a través de todas las funcionalidades del sistema para optimizar la gestión de su negocio.</p>
+                        
+                        <h3>Características Principales</h3>
+                        <ul>
+                            <li>Facturación electrónica integrada con AFIP (ARCA)</li>
+                            <li>Gestión de ventas, compras e inventario</li>
+                            <li>Control de caja y flujo de efectivo</li>
+                            <li>Soporte para múltiples sucursales con sincronización</li>
+                            <li>Modo offline/online con sincronización automática</li>
+                            <li>Integración con métodos de pago digitales (Mercado Pago, bancos)</li>
+                            <li>Sistema de cuotificación para pagos con tarjeta</li>
+                            <li>Reportes detallados y exportables</li>
+                        </ul>
+                        
+                        <p>Este manual está diseñado para guiarlo paso a paso en la utilización de todas las funciones disponibles en FactuSystem.</p>
+                        
+                        <div class="manual-image">
+                            <img src="../assets/img/manual/dashboard.png" alt="Dashboard de FactuSystem">
+                            <p class="caption">Vista general del Dashboard de FactuSystem</p>
+                        </div>
+                    </section>
+
+                    <!-- Primeros Pasos -->
+                    <section id="primeros-pasos" class="manual-section">
+                        <h2>Primeros Pasos</h2>
+                        
+                        <h3>Inicio de Sesión</h3>
+                        <p>Para acceder al sistema, debe ingresar sus credenciales en la pantalla de inicio:</p>
+                        <ol>
+                            <li>Ingrese su nombre de usuario</li>
+                            <li>Ingrese su contraseña</li>
+                            <li>Si tiene habilitada la autenticación de dos factores, ingrese el código de verificación</li>
+                            <li>Haga clic en "Iniciar Sesión"</li>
+                        </ol>
+                        
+                        <div class="manual-image">
+                            <img src="../assets/img/manual/login.png" alt="Pantalla de inicio de sesión">
+                            <p class="caption">Pantalla de inicio de sesión</p>
+                        </div>
+                        
+                        <h3>Selección de Sucursal</h3>
+                        <p>Si su cuenta tiene acceso a múltiples sucursales, se le solicitará seleccionar la sucursal en la que desea trabajar:</p>
+                        <ol>
+                            <li>Seleccione la sucursal del menú desplegable</li>
+                            <li>Haga clic en "Continuar"</li>
+                        </ol>
+                        
+                        <h3>Apertura de Caja</h3>
+                        <p>Antes de comenzar a operar, debe registrar la apertura de caja:</p>
+                        <ol>
+                            <li>Ingrese el monto inicial en efectivo</li>
+                            <li>Opcionalmente, añada una nota o comentario</li>
+                            <li>Haga clic en "Abrir Caja"</li>
+                        </ol>
+                        
+                        <div class="manual-image">
+                            <img src="../assets/img/manual/apertura-caja.png" alt="Apertura de caja">
+                            <p class="caption">Formulario de apertura de caja</p>
+                        </div>
+                        
+                        <h3>Navegación por el Dashboard</h3>
+                        <p>El Dashboard está compuesto por:</p>
+                        <ul>
+                            <li><strong>Sidebar izquierdo:</strong> Menú con acceso a todos los módulos</li>
+                            <li><strong>Área central:</strong> Espacio donde se muestran las pestañas con los módulos abiertos</li>
+                            <li><strong>Barra superior:</strong> Información de usuario, sucursal y botones de acción rápida</li>
+                        </ul>
+                    </section>
+
+                    <!-- Facturador -->
+                    <section id="facturador" class="manual-section">
+                        <h2>Facturador</h2>
+                        
+                        <p>El módulo de facturación está diseñado para permitir la emisión de facturas de manera rápida y eficiente.</p>
+                        
+                        <h3>Creación de una Nueva Factura</h3>
+                        
+                        <h4>Selección del Cliente</h4>
+                        <p>En el campo "Nombre del Cliente" puede:</p>
+                        <ul>
+                            <li>Presionar Enter sin datos para seleccionar "Consumidor Final"</li>
+                            <li>Presionar F1 para abrir el formulario de datos completos del cliente</li>
+                            <li>Comenzar a escribir para buscar clientes existentes</li>
+                        </ul>
+                        
+                        <h4>Tipo de Comprobante</h4>
+                        <p>Seleccione el tipo de comprobante a emitir:</p>
+                        <ul>
+                            <li>Factura A (Responsable Inscripto)</li>
+                            <li>Factura B (Consumidor Final)</li>
+                            <li>Factura C (Monotributista)</li>
+                            <li>Factura X (Sin validez fiscal)</li>
+                            <li>Presupuesto</li>
+                        </ul>
+                        
+                        <h4>Ingreso de Productos</h4>
+                        <p>En el campo "Código de Barras / Nombre" puede:</p>
+                        <ul>
+                            <li>Escanear un código de barras con un lector</li>
+                            <li>Escribir el código manualmente</li>
+                            <li>Comenzar a escribir el nombre del producto para usar autocompletado</li>
+                            <li>Presionar F1 para abrir el buscador avanzado de productos</li>
+                        </ul>
+                        
+                        <h4>Modificación de Productos</h4>
+                        <ul>
+                            <li>Presione F2 sobre un producto ya agregado para modificar su cantidad o precio</li>
+                            <li>Haga clic en el ícono de eliminar para quitar un producto de la lista</li>
+                        </ul>
+                        
+                        <h4>Descuentos y Recargos</h4>
+                        <p>Para aplicar descuentos o recargos:</p>
+                        <ul>
+                            <li>Ingrese "-10" para un 10% de descuento</li>
+                            <li>Ingrese "+5" para un 5% de recargo</li>
+                        </ul>
+                        
+                        <h4>Métodos de Pago</h4>
+                        <p>Seleccione uno o varios métodos de pago:</p>
+                        <ul>
+                            <li><strong>Efectivo:</strong> Ingrese el monto recibido y el sistema calculará el cambio</li>
+                            <li><strong>Tarjeta:</strong> Especifique tipo (débito/crédito), banco y número de cuotas</li>
+                            <li><strong>Transferencia:</strong> Confirme la recepción y el monto</li>
+                            <li><strong>QR (Mercado Pago):</strong> El sistema detectará automáticamente cuando el pago sea exitoso</li>
+                        </ul>
+                        
+                        <h4>Facturación Electrónica</h4>
+                        <p>Para emitir la factura electrónica:</p>
+                        <ol>
+                            <li>Complete todos los datos requeridos</li>
+                            <li>Haga clic en "Facturar con ARCA (AFIP)"</li>
+                            <li>Espere la confirmación del sistema</li>
+                        </ol>
+                        
+                        <h4>Finalización</h4>
+                        <p>Una vez generada la factura, puede:</p>
+                        <ul>
+                            <li>Imprimir ticket (58mm)</li>
+                            <li>Imprimir factura (A4)</li>
+                            <li>Enviar por email</li>
+                            <li>Enviar por WhatsApp</li>
+                        </ul>
+                        
+                        <div class="manual-image">
+                            <img src="../assets/img/manual/facturador.png" alt="Pantalla de facturación">
+                            <p class="caption">Pantalla principal del facturador</p>
+                        </div>
+                    </section>
+
+                    <!-- Resto de secciones del manual se cargarán dinámicamente -->
+                    <div id="manual-loading">Cargando contenido del manual...</div>
+                </div>
+            </div>
+
+            <!-- Tab de Tutoriales -->
+            <div id="tutoriales" class="tab-content">
+                <div class="tutorials-container">
+                    <div class="filters">
+                        <select id="tutorial-category" class="form-control">
+                            <option value="all">Todas las categorías</option>
+                            <option value="facturacion">Facturación</option>
+                            <option value="caja">Caja</option>
+                            <option value="productos">Productos</option>
+                            <option value="reportes">Reportes</option>
+                            <option value="integraciones">Integraciones</option>
+                            <option value="configuracion">Configuración</option>
+                        </select>
+                        <input type="text" id="tutorial-search" class="form-control" placeholder="Buscar tutoriales...">
+                    </div>
+
+                    <div class="tutorials-grid">
+                        <!-- Tutorial 1 -->
+                        <div class="tutorial-card" data-category="facturacion">
+                            <div class="tutorial-thumbnail">
+                                <img src="../assets/img/tutorials/facturacion-basica.jpg" alt="Facturación Básica">
+                                <span class="duration"><i class="fa fa-clock-o"></i> 3:45</span>
+                            </div>
+                            <div class="tutorial-info">
+                                <h3>Facturación Básica</h3>
+                                <p>Aprenda a crear facturas rápidamente para ventas diarias.</p>
+                                <button class="btn btn-primary btn-sm watch-tutorial" data-video="facturacion-basica">
+                                    <i class="fa fa-play-circle"></i> Ver Tutorial
+                                </button>
+                            </div>
+                        </div>
+
+                        <!-- Tutorial 2 -->
+                        <div class="tutorial-card" data-category="caja">
+                            <div class="tutorial-thumbnail">
+                                <img src="../assets/img/tutorials/apertura-cierre-caja.jpg" alt="Apertura y Cierre de Caja">
+                                <span class="duration"><i class="fa fa-clock-o"></i> 2:30</span>
+                            </div>
+                            <div class="tutorial-info">
+                                <h3>Apertura y Cierre de Caja</h3>
+                                <p>Procedimiento correcto para iniciar y cerrar operaciones diarias.</p>
+                                <button class="btn btn-primary btn-sm watch-tutorial" data-video="apertura-cierre-caja">
+                                    <i class="fa fa-play-circle"></i> Ver Tutorial
+                                </button>
+                            </div>
+                        </div>
+
+                        <!-- Tutorial 3 -->
+                        <div class="tutorial-card" data-category="productos">
+                            <div class="tutorial-thumbnail">
+                                <img src="../assets/img/tutorials/gestion-productos.jpg" alt="Gestión de Productos">
+                                <span class="duration"><i class="fa fa-clock-o"></i> 4:15</span>
+                            </div>
+                            <div class="tutorial-info">
+                                <h3>Gestión de Productos</h3>
+                                <p>Cómo agregar, editar y gestionar su inventario de productos.</p>
+                                <button class="btn btn-primary btn-sm watch-tutorial" data-video="gestion-productos">
+                                    <i class="fa fa-play-circle"></i> Ver Tutorial
+                                </button>
+                            </div>
+                        </div>
+
+                        <!-- Tutorial 4 -->
+                        <div class="tutorial-card" data-category="integraciones">
+                            <div class="tutorial-thumbnail">
+                                <img src="../assets/img/tutorials/mercadopago-qr.jpg" alt="Configuración QR MercadoPago">
+                                <span class="duration"><i class="fa fa-clock-o"></i> 5:20</span>
+                            </div>
+                            <div class="tutorial-info">
+                                <h3>Configuración QR MercadoPago</h3>
+                                <p>Configuración del cobro con QR estático de Mercado Pago.</p>
+                                <button class="btn btn-primary btn-sm watch-tutorial" data-video="mercadopago-qr">
+                                    <i class="fa fa-play-circle"></i> Ver Tutorial
+                                </button>
+                            </div>
+                        </div>
+
+                        <!-- Tutorial 5 -->
+                        <div class="tutorial-card" data-category="facturacion">
+                            <div class="tutorial-thumbnail">
+                                <img src="../assets/img/tutorials/facturacion-electronica.jpg" alt="Facturación Electrónica AFIP">
+                                <span class="duration"><i class="fa fa-clock-o"></i> 6:10</span>
+                            </div>
+                            <div class="tutorial-info">
+                                <h3>Facturación Electrónica AFIP</h3>
+                                <p>Configuración y uso de la integración con ARCA para facturación AFIP.</p>
+                                <button class="btn btn-primary btn-sm watch-tutorial" data-video="facturacion-electronica">
+                                    <i class="fa fa-play-circle"></i> Ver Tutorial
+                                </button>
+                            </div>
+                        </div>
+
+                        <!-- Tutorial 6 -->
+                        <div class="tutorial-card" data-category="reportes">
+                            <div class="tutorial-thumbnail">
+                                <img src="../assets/img/tutorials/reportes-ventas.jpg" alt="Reportes de Ventas">
+                                <span class="duration"><i class="fa fa-clock-o"></i> 3:55</span>
+                            </div>
+                            <div class="tutorial-info">
+                                <h3>Reportes de Ventas</h3>
+                                <p>Generación y análisis de reportes de ventas por período.</p>
+                                <button class="btn btn-primary btn-sm watch-tutorial" data-video="reportes-ventas">
+                                    <i class="fa fa-play-circle"></i> Ver Tutorial
+                                </button>
+                            </div>
+                        </div>
+
+                        <!-- Más tutoriales se cargarán dinámicamente -->
+                        <div id="load-more-tutorials" class="load-more">
+                            <button class="btn btn-outline-primary">
+                                <i class="fa fa-refresh"></i> Cargar más tutoriales
+                            </button>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Modal para reproducir videos -->
+                <div id="tutorial-modal" class="modal">
+                    <div class="modal-content">
+                        <div class="modal-header">
+                            <h2 id="tutorial-title">Título del Tutorial</h2>
+                            <span class="close">&times;</span>
+                        </div>
+                        <div class="modal-body">
+                            <div id="tutorial-video-container"></div>
+                            <div class="tutorial-description">
+                                <h3>Descripción</h3>
+                                <p id="tutorial-description-text"></p>
+                            </div>
+                            <div class="tutorial-steps">
+                                <h3>Pasos</h3>
+                                <ol id="tutorial-steps-list"></ol>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Tab de Preguntas Frecuentes -->
+            <div id="faq" class="tab-content">
+                <div class="faq-container">
+                    <div class="faq-search">
+                        <input type="text" id="faq-search" class="form-control" placeholder="Buscar preguntas frecuentes...">
+                    </div>
+
+                    <div class="faq-categories">
+                        <div class="faq-category active" data-category="general">General</div>
+                        <div class="faq-category" data-category="facturacion">Facturación</div>
+                        <div class="faq-category" data-category="caja">Caja</div>
+                        <div class="faq-category" data-category="productos">Productos</div>
+                        <div class="faq-category" data-category="integraciones">Integraciones</div>
+                        <div class="faq-category" data-category="sincronizacion">Sincronización</div>
+                        <div class="faq-category" data-category="reportes">Reportes</div>
+                    </div>
+
+                    <div class="faq-list">
+                        <!-- FAQs Generales -->
+                        <div class="faq-section active" data-category="general">
+                            <div class="faq-item">
+                                <div class="faq-question">
+                                    <i class="fa fa-question-circle"></i>
+                                    <span>¿Puedo usar FactuSystem en múltiples equipos?</span>
+                                    <i class="fa fa-chevron-down toggle-faq"></i>
+                                </div>
+                                <div class="faq-answer">
+                                    <p>Sí, FactuSystem está diseñado para funcionar en múltiples equipos conectados a la misma base de datos. Puede configurar tantas terminales como requiera su negocio, todas sincronizadas con un servidor central.</p>
+                                    <p>Para una correcta configuración multiterminal, debe asegurarse de que todas las computadoras estén en la misma red local y tengan acceso al servidor donde se aloja la base de datos principal.</p>
+                                </div>
+                            </div>
+
+                            <div class="faq-item">
+                                <div class="faq-question">
+                                    <i class="fa fa-question-circle"></i>
+                                    <span>¿Qué hago si se corta internet durante la operación?</span>
+                                    <i class="fa fa-chevron-down toggle-faq"></i>
+                                </div>
+                                <div class="faq-answer">
+                                    <p>FactuSystem está diseñado para funcionar en modo offline. Si se corta la conexión a internet, puede seguir operando normalmente. El sistema almacenará temporalmente los datos en la base local y los sincronizará automáticamente cuando se restablezca la conexión.</p>
+                                    <p>La única limitación durante el modo offline es que no podrá emitir facturas electrónicas AFIP, pero el sistema guardará todos los datos necesarios para emitirlas posteriormente cuando se recupere la conexión.</p>
+                                </div>
+                            </div>
+
+                            <div class="faq-item">
+                                <div class="faq-question">
+                                    <i class="fa fa-question-circle"></i>
+                                    <span>¿Con qué frecuencia debo hacer respaldos?</span>
+                                    <i class="fa fa-chevron-down toggle-faq"></i>
+                                </div>
+                                <div class="faq-answer">
+                                    <p>FactuSystem cuenta con un sistema de respaldo automático que puede configurarse desde la sección Configuraciones > Backups. Recomendamos:</p>
+                                    <ul>
+                                        <li>Respaldo diario automático (configurado por defecto)</li>
+                                        <li>Respaldo manual semanal adicional</li>
+                                        <li>Respaldo mensual completo que incluya configuraciones del sistema</li>
+                                    </ul>
+                                    <p>También es recomendable almacenar copias de los respaldos en ubicaciones externas (nube o dispositivos externos).</p>
+                                </div>
+                            </div>
+                        </div>
+
+                        <!-- FAQs Facturación -->
+                        <div class="faq-section" data-category="facturacion">
+                            <div class="faq-item">
+                                <div class="faq-question">
+                                    <i class="fa fa-question-circle"></i>
+                                    <span>¿Cómo emito una factura electrónica?</span>
+                                    <i class="fa fa-chevron-down toggle-faq"></i>
+                                </div>
+                                <div class="faq-answer">
+                                    <p>Para emitir una factura electrónica, debe:</p>
+                                    <ol>
+                                        <li>Crear una nueva factura desde el módulo Facturador</li>
+                                        <li>Completar todos los datos requeridos (cliente, productos, forma de pago)</li>
+                                        <li>Hacer clic en el botón "Facturar con ARCA (AFIP)"</li>
+                                        <li>Esperar la confirmación del sistema</li>
+                                    </ol>
+                                    <p>Es importante haber configurado previamente la integración con ARCA en la sección Configuraciones > Integraciones > ARCA.</p>
+                                </div>
+                            </div>
+
+                            <div class="faq-item">
+                                <div class="faq-question">
+                                    <i class="fa fa-question-circle"></i>
+                                    <span>¿Qué hago si la factura electrónica fue rechazada?</span>
+                                    <i class="fa fa-chevron-down toggle-faq"></i>
+                                </div>
+                                <div class="faq-answer">
+                                    <p>Si la factura fue rechazada por AFIP, el sistema mostrará un mensaje con el motivo del rechazo. Los casos más comunes son:</p>
+                                    <ul>
+                                        <li>CUIT inválido o inexistente: Verifique los datos del cliente</li>
+                                        <li>Error de conexión: Verifique su conexión a internet</li>
+                                        <li>Certificado vencido: Actualice su certificado en Configuraciones > Integraciones > ARCA</li>
+                                    </ul>
+                                    <p>Una vez solucionado el problema, puede intentar emitir la factura nuevamente.</p>
+                                </div>
+                            </div>
+
+                            <div class="faq-item">
+                                <div class="faq-question">
+                                    <i class="fa fa-question-circle"></i>
+                                    <span>¿Cómo emito una nota de crédito?</span>
+                                    <i class="fa fa-chevron-down toggle-faq"></i>
+                                </div>
+                                <div class="faq-answer">
+                                    <p>Para emitir una nota de crédito:</p>
+                                    <ol>
+                                        <li>Vaya a la sección Documentos > Notas de Crédito</li>
+                                        <li>Haga clic en "Nueva Nota de Crédito"</li>
+                                        <li>Seleccione la factura asociada (opcional)</li>
+                                        <li>Complete los datos requeridos y el motivo</li>
+                                        <li>Haga clic en "Emitir Nota de Crédito"</li>
+                                    </ol>
+                                    <p>Si la nota está asociada a una factura electrónica, también debe emitirse electrónicamente.</p>
+                                </div>
+                            </div>
+                        </div>
+
+                        <!-- Más categorías de FAQ se cargan dinámicamente -->
+                        <div id="faq-loading">Cargando más preguntas frecuentes...</div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Tab de Soporte Técnico -->
+            <div id="soporte" class="tab-content">
+                <div class="support-container">
+                    <div class="support-info">
+                        <h2>Contacto de Soporte Técnico</h2>
+                        <p>Si necesita asistencia técnica, puede utilizar cualquiera de los siguientes canales:</p>
+                        
+                        <div class="contact-methods">
+                            <div class="contact-method">
+                                <i class="fa fa-envelope"></i>
+                                <h3>Correo Electrónico</h3>
+                                <p>soporte@factusystem.com</p>
+                                <p>Tiempo de respuesta: 24-48 horas</p>
+                            </div>
+                            
+                            <div class="contact-method">
+                                <i class="fa fa-whatsapp"></i>
+                                <h3>WhatsApp</h3>
+                                <p>+54 9 11 5555-5555</p>
+                                <p>Lunes a Viernes: 9:00 - 18:00</p>
+                            </div>
+                            
+                            <div class="contact-method">
+                                <i class="fa fa-phone"></i>
+                                <h3>Teléfono</h3>
+                                <p>+54 11 4444-4444</p>
+                                <p>Lunes a Viernes: 9:00 - 18:00</p>
+                            </div>
+                            
+                            <div class="contact-method">
+                                <i class="fa fa-comments"></i>
+                                <h3>Chat en Vivo</h3>
+                                <p>Disponible en nuestro sitio web</p>
+                                <p>Lunes a Viernes: 9:00 - 20:00</p>
+                                <button class="btn btn-primary" id="iniciar-chat">Iniciar Chat</button>
+                            </div>
+                        </div>
+                    </div>
+                    
+                    <div class="support-form">
+                        <h2>Enviar Solicitud de Soporte</h2>
+                        <p>Complete el siguiente formulario para reportar un problema o solicitar asistencia técnica:</p>
+                        
+                        <form id="support-ticket-form">
+                            <div class="form-group">
+                                <label for="ticket-tipo">Tipo de Solicitud:</label>
+                                <select id="ticket-tipo" class="form-control" required>
+                                    <option value="">Seleccione una opción</option>
+                                    <option value="error">Error del Sistema</option>
+                                    <option value="consulta">Consulta Técnica</option>
+                                    <option value="mejora">Sugerencia de Mejora</option>
+                                    <option value="configuracion">Problema de Configuración</option>
+                                    <option value="capacitacion">Solicitud de Capacitación</option>
+                                </select>
+                            </div>
+                            
+                            <div class="form-group">
+                                <label for="ticket-asunto">Asunto:</label>
+                                <input type="text" id="ticket-asunto" class="form-control" required placeholder="Describa brevemente el problema">
+                            </div>
+                            
+                            <div class="form-group">
+                                <label for="ticket-descripcion">Descripción:</label>
+                                <textarea id="ticket-descripcion" class="form-control" rows="5" required placeholder="Detalle su consulta o problema..."></textarea>
+                            </div>
+                            
+                            <div class="form-group">
+                                <label for="ticket-prioridad">Prioridad:</label>
+                                <select id="ticket-prioridad" class="form-control" required>
+                                    <option value="baja">Baja - No urgente</option>
+                                    <option value="media" selected>Media - Requiere atención</option>
+                                    <option value="alta">Alta - Afecta operación</option>
+                                    <option value="critica">Crítica - Sistema caído</option>
+                                </select>
+                            </div>
+                            
+                            <div class="form-group">
+                                <label for="ticket-adjunto">Adjuntar Captura de Pantalla (opcional):</label>
+                                <input type="file" id="ticket-adjunto" class="form-control-file" accept="image/*">
+                                <small class="form-text text-muted">Formatos aceptados: JPG, PNG. Tamaño máximo: 5MB</small>
+                            </div>
+                            
+                            <div class="form-group">
+                                <div class="form-check">
+                                    <input type="checkbox" class="form-check-input" id="ticket-captureData">
+                                    <label class="form-check-label" for="ticket-captureData">Incluir información del sistema (recomendado)</label>
+                                    <small class="form-text text-muted">Esto adjuntará automáticamente datos técnicos que ayudarán a resolver su problema más rápido.</small>
+                                </div>
+                            </div>
+                            
+                            <div class="form-buttons">
+                                <button type="submit" class="btn btn-primary">Enviar Solicitud</button>
+                                <button type="reset" class="btn btn-secondary">Limpiar Formulario</button>
+                            </div>
+                        </form>
+                    </div>
+                    
+                    <div class="support-status">
+                        <h2>Estado de sus Solicitudes</h2>
+                        <p>Consulte el estado de sus solicitudes de soporte previas:</p>
+                        
+                        <div class="ticket-list-container">
+                            <table class="data-table" id="tickets-table">
+                                <thead>
+                                    <tr>
+                                        <th>#Ticket</th>
+                                        <th>Asunto</th>
+                                        <th>Fecha</th>
+                                        <th>Estado</th>
+                                        <th>Acciones</th>
+                                    </tr>
+                                </thead>
+                                <tbody>
+                                    <!-- Se carga dinámicamente con JavaScript -->
+                                </tbody>
+                            </table>
+                            
+                            <div id="no-tickets-message" class="empty-state">
+                                <i class="fa fa-ticket fa-3x"></i>
+                                <p>No hay solicitudes de soporte recientes</p>
+                            </div>
+                        </div>
+                    </div>
+                    
+                    <div class="support-faq">
+                        <h2>Soluciones Rápidas</h2>
+                        <p>Problemas comunes y sus soluciones:</p>
+                        
+                        <div class="quick-solutions">
+                            <div class="solution-card">
+                                <h3><i class="fa fa-sync"></i> Problemas de Sincronización</h3>
+                                <p>Si experimenta problemas de sincronización entre sucursales:</p>
+                                <ol>
+                                    <li>Verifique su conexión a internet</li>
+                                    <li>Reinicie la aplicación</li>
+                                    <li>Vaya a Configuraciones > Sincronización y haga clic en "Forzar Sincronización"</li>
+                                </ol>
+                                <a href="#" class="btn btn-sm btn-outline-primary solution-details" data-solution="sync">Más detalles</a>
+                            </div>
+                            
+                            <div class="solution-card">
+                                <h3><i class="fa fa-print"></i> Problemas de Impresión</h3>
+                                <p>Si no puede imprimir facturas o tickets:</p>
+                                <ol>
+                                    <li>Verifique que la impresora esté conectada y encendida</li>
+                                    <li>Vaya a Configuraciones > Impresión para revisar la configuración</li>
+                                    <li>Pruebe con el botón "Imprimir Página de Prueba"</li>
+                                </ol>
+                                <a href="#" class="btn btn-sm btn-outline-primary solution-details" data-solution="print">Más detalles</a>
+                            </div>
+                            
+                            <div class="solution-card">
+                                <h3><i class="fa fa-file-invoice"></i> Errores en Facturación AFIP</h3>
+                                <p>Si tiene problemas con la facturación electrónica:</p>
+                                <ol>
+                                    <li>Verifique su conexión a internet</li>
+                                    <li>Confirme la validez de su certificado digital</li>
+                                    <li>Revise los datos fiscales del cliente</li>
+                                </ol>
+                                <a href="#" class="btn btn-sm btn-outline-primary solution-details" data-solution="afip">Más detalles</a>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </main>
+
+    <!-- Modal para detalles de soluciones -->
+    <div id="solution-detail-modal" class="modal">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h2 id="solution-detail-title">Título de la Solución</h2>
+                <span class="close">&times;</span>
+            </div>
+            <div class="modal-body">
+                <div id="solution-detail-content"></div>
+            </div>
+            <div class="modal-footer">
+                <button class="btn btn-primary" id="solution-close-btn">Entendido</button>
+                <button class="btn btn-secondary" id="solution-support-btn">Solicitar Soporte</button>
+            </div>
+        </div>
+    </div>
+
+    <!-- Modal para visualizar ticket -->
+    <div id="ticket-detail-modal" class="modal">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h2>Detalles de la Solicitud <span id="ticket-number"></span></h2>
+                <span class="close">&times;</span>
+            </div>
+            <div class="modal-body">
+                <div id="ticket-detail-content">
+                    <div class="ticket-info">
+                        <div class="ticket-field">
+                            <span class="field-label">Asunto:</span>
+                            <span id="ticket-detail-asunto"></span>
+                        </div>
+                        <div class="ticket-field">
+                            <span class="field-label">Estado:</span>
+                            <span id="ticket-detail-estado" class="badge"></span>
+                        </div>
+                        <div class="ticket-field">
+                            <span class="field-label">Fecha de Creación:</span>
+                            <span id="ticket-detail-fecha"></span>
+                        </div>
+                        <div class="ticket-field">
+                            <span class="field-label">Descripción:</span>
+                            <p id="ticket-detail-descripcion"></p>
+                        </div>
+                        <div class="ticket-field">
+                            <span class="field-label">Última Actualización:</span>
+                            <span id="ticket-detail-actualizacion"></span>
+                        </div>
+                    </div>
+                    <div class="ticket-responses">
+                        <h3>Respuestas</h3>
+                        <div id="ticket-responses-container">
+                            <!-- Se carga dinámicamente con JavaScript -->
+                        </div>
+                    </div>
+                    <div class="ticket-reply">
+                        <h3>Añadir Respuesta</h3>
+                        <div class="form-group">
+                            <textarea id="ticket-reply-text" class="form-control" rows="4" placeholder="Escriba su respuesta..."></textarea>
+                        </div>
+                        <div class="form-group">
+                            <label for="ticket-reply-adjunto">Adjuntar archivo (opcional):</label>
+                            <input type="file" id="ticket-reply-adjunto" class="form-control-file">
+                        </div>
+                        <button id="send-ticket-reply" class="btn btn-primary">Enviar Respuesta</button>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Modal para el chat en vivo -->
+    <div id="live-chat-modal" class="modal">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h2>Chat en Vivo con Soporte</h2>
+                <span class="close">&times;</span>
+            </div>
+            <div class="modal-body">
+                <div class="chat-container">
+                    <div class="chat-messages" id="chat-messages">
+                        <!-- Se carga dinámicamente con JavaScript -->
+                        <div class="chat-message system">
+                            <p>Conectando con un agente de soporte...</p>
+                        </div>
+                        <div class="chat-message system">
+                            <p>Por favor espere un momento mientras asignamos un técnico.</p>
+                        </div>
+                    </div>
+                    <div class="chat-input">
+                        <input type="text" id="chat-message-input" class="form-control" placeholder="Escriba su mensaje...">
+                        <button id="send-chat-message" class="btn btn-primary">
+                            <i class="fa fa-paper-plane"></i>
+                        </button>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</body>
+</html>

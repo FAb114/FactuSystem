@@ -1,0 +1,853 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Proveedores - FactuSystem</title>
+    <!-- Estilos base compartidos -->
+    <link rel="stylesheet" href="../assets/css/main.css">
+    <!-- Estilos de componentes -->
+    <link rel="stylesheet" href="../assets/css/components/tables.css">
+    <link rel="stylesheet" href="../assets/css/components/modal.css">
+    <!-- Bootstrap Icons -->
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.2/font/bootstrap-icons.css">
+    <!-- DataTables CSS -->
+    <link rel="stylesheet" href="https://cdn.datatables.net/1.13.6/css/dataTables.bootstrap5.min.css">
+    <!-- Flatpickr para manejo de fechas -->
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/flatpickr/dist/flatpickr.min.css">
+</head>
+<body class="proveedores-module">
+    <!-- Contenedor principal -->
+    <div class="module-container">
+        <!-- Cabecera del módulo -->
+        <div class="module-header">
+            <div class="title-section">
+                <h1><i class="bi bi-truck"></i> Gestión de Proveedores</h1>
+                <p class="subtitle">Administre sus proveedores, visualice compras y facturas</p>
+            </div>
+            <div class="actions-section">
+                <button id="btn-nuevo-proveedor" class="btn btn-primary">
+                    <i class="bi bi-plus-circle"></i> Nuevo Proveedor
+                </button>
+                <button id="btn-exportar-proveedores" class="btn btn-outline-secondary">
+                    <i class="bi bi-file-earmark-excel"></i> Exportar
+                </button>
+                <div class="dropdown">
+                    <button class="btn btn-outline-secondary dropdown-toggle" type="button" id="dropdownMenuButton" data-bs-toggle="dropdown" aria-expanded="false">
+                        <i class="bi bi-gear"></i>
+                    </button>
+                    <ul class="dropdown-menu" aria-labelledby="dropdownMenuButton">
+                        <li><a class="dropdown-item" href="#" id="btn-importar-proveedores"><i class="bi bi-upload"></i> Importar proveedores</a></li>
+                        <li><a class="dropdown-item" href="#" id="btn-configurar-categorias"><i class="bi bi-tags"></i> Configurar categorías</a></li>
+                        <li><hr class="dropdown-divider"></li>
+                        <li><a class="dropdown-item" href="#" id="btn-ayuda"><i class="bi bi-question-circle"></i> Ayuda</a></li>
+                    </ul>
+                </div>
+            </div>
+        </div>
+
+        <!-- Filtros y búsqueda -->
+        <div class="filter-section">
+            <div class="row g-3">
+                <div class="col-md-3">
+                    <div class="input-group">
+                        <span class="input-group-text"><i class="bi bi-search"></i></span>
+                        <input type="text" id="buscar-proveedor" class="form-control" placeholder="Buscar proveedor...">
+                    </div>
+                </div>
+                <div class="col-md-2">
+                    <select id="filtro-categoria" class="form-select">
+                        <option value="">Todas las categorías</option>
+                        <!-- Se cargará dinámicamente desde JS -->
+                    </select>
+                </div>
+                <div class="col-md-2">
+                    <select id="filtro-estado" class="form-select">
+                        <option value="">Todos los estados</option>
+                        <option value="active">Activos</option>
+                        <option value="inactive">Inactivos</option>
+                        <option value="pending">Pendientes</option>
+                    </select>
+                </div>
+                <div class="col-md-2">
+                    <div class="input-group">
+                        <input type="text" id="fecha-desde" class="form-control date-picker" placeholder="Desde">
+                        <span class="input-group-text"><i class="bi bi-calendar"></i></span>
+                    </div>
+                </div>
+                <div class="col-md-2">
+                    <div class="input-group">
+                        <input type="text" id="fecha-hasta" class="form-control date-picker" placeholder="Hasta">
+                        <span class="input-group-text"><i class="bi bi-calendar"></i></span>
+                    </div>
+                </div>
+                <div class="col-md-1">
+                    <button id="btn-aplicar-filtros" class="btn btn-secondary w-100">
+                        <i class="bi bi-funnel"></i>
+                    </button>
+                </div>
+            </div>
+        </div>
+
+        <!-- Contenido principal con pestañas -->
+        <div class="module-content">
+            <ul class="nav nav-tabs" id="proveedoresTab" role="tablist">
+                <li class="nav-item" role="presentation">
+                    <button class="nav-link active" id="lista-tab" data-bs-toggle="tab" data-bs-target="#lista" type="button" role="tab" aria-controls="lista" aria-selected="true">
+                        <i class="bi bi-list"></i> Listado
+                    </button>
+                </li>
+                <li class="nav-item" role="presentation">
+                    <button class="nav-link" id="compras-tab" data-bs-toggle="tab" data-bs-target="#compras" type="button" role="tab" aria-controls="compras" aria-selected="false">
+                        <i class="bi bi-bag"></i> Historial de Compras
+                    </button>
+                </li>
+                <li class="nav-item" role="presentation">
+                    <button class="nav-link" id="facturas-tab" data-bs-toggle="tab" data-bs-target="#facturas" type="button" role="tab" aria-controls="facturas" aria-selected="false">
+                        <i class="bi bi-receipt"></i> Facturas Recibidas
+                    </button>
+                </li>
+                <li class="nav-item" role="presentation">
+                    <button class="nav-link" id="contactos-tab" data-bs-toggle="tab" data-bs-target="#contactos" type="button" role="tab" aria-controls="contactos" aria-selected="false">
+                        <i class="bi bi-person-rolodex"></i> Contactos
+                    </button>
+                </li>
+                <li class="nav-item" role="presentation">
+                    <button class="nav-link" id="estadisticas-tab" data-bs-toggle="tab" data-bs-target="#estadisticas" type="button" role="tab" aria-controls="estadisticas" aria-selected="false">
+                        <i class="bi bi-bar-chart"></i> Estadísticas
+                    </button>
+                </li>
+            </ul>
+            
+            <div class="tab-content" id="proveedoresTabContent">
+                <!-- Pestaña de Listado de Proveedores -->
+                <div class="tab-pane fade show active" id="lista" role="tabpanel" aria-labelledby="lista-tab">
+                    <div class="table-responsive">
+                        <table id="tabla-proveedores" class="table table-hover table-striped">
+                            <thead>
+                                <tr>
+                                    <th>CUIT/NIF</th>
+                                    <th>Razón Social</th>
+                                    <th>Categoría</th>
+                                    <th>Teléfono</th>
+                                    <th>Email</th>
+                                    <th>Saldo</th>
+                                    <th>Estado</th>
+                                    <th>Última Compra</th>
+                                    <th>Acciones</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                <!-- Se cargará dinámicamente desde JS -->
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
+                
+                <!-- Pestaña de Historial de Compras -->
+                <div class="tab-pane fade" id="compras" role="tabpanel" aria-labelledby="compras-tab">
+                    <div class="selector-proveedor mb-3">
+                        <select id="select-proveedor-compras" class="form-select">
+                            <option value="">Seleccione un proveedor</option>
+                            <!-- Se cargará dinámicamente desde JS -->
+                        </select>
+                    </div>
+                    <div class="table-responsive">
+                        <table id="tabla-compras" class="table table-hover">
+                            <thead>
+                                <tr>
+                                    <th>Fecha</th>
+                                    <th>N° Factura</th>
+                                    <th>Total</th>
+                                    <th>Método Pago</th>
+                                    <th>Estado</th>
+                                    <th>Sucursal</th>
+                                    <th>Usuario</th>
+                                    <th>Acciones</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                <!-- Se cargará dinámicamente desde JS -->
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
+                
+                <!-- Pestaña de Facturas Recibidas -->
+                <div class="tab-pane fade" id="facturas" role="tabpanel" aria-labelledby="facturas-tab">
+                    <div class="selector-proveedor mb-3">
+                        <select id="select-proveedor-facturas" class="form-select">
+                            <option value="">Seleccione un proveedor</option>
+                            <!-- Se cargará dinámicamente desde JS -->
+                        </select>
+                    </div>
+                    <div class="documentos-container">
+                        <div class="row" id="facturas-container">
+                            <!-- Se cargará dinámicamente desde JS -->
+                            <div class="col-12 text-center py-5 empty-state">
+                                <i class="bi bi-file-earmark-text display-4 text-muted"></i>
+                                <p class="mt-3">Seleccione un proveedor para ver sus facturas</p>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                
+                <!-- Pestaña de Contactos -->
+                <div class="tab-pane fade" id="contactos" role="tabpanel" aria-labelledby="contactos-tab">
+                    <div class="selector-proveedor mb-3">
+                        <select id="select-proveedor-contactos" class="form-select">
+                            <option value="">Seleccione un proveedor</option>
+                            <!-- Se cargará dinámicamente desde JS -->
+                        </select>
+                    </div>
+                    <div class="card">
+                        <div class="card-header d-flex justify-content-between align-items-center">
+                            <h5 class="mb-0">Contactos</h5>
+                            <button id="btn-agregar-contacto" class="btn btn-sm btn-primary" disabled>
+                                <i class="bi bi-plus-circle"></i> Agregar Contacto
+                            </button>
+                        </div>
+                        <div class="card-body">
+                            <div class="table-responsive">
+                                <table id="tabla-contactos" class="table table-hover">
+                                    <thead>
+                                        <tr>
+                                            <th>Nombre</th>
+                                            <th>Cargo</th>
+                                            <th>Teléfono</th>
+                                            <th>Email</th>
+                                            <th>Departamento</th>
+                                            <th>Acciones</th>
+                                        </tr>
+                                    </thead>
+                                    <tbody>
+                                        <!-- Se cargará dinámicamente desde JS -->
+                                    </tbody>
+                                </table>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                
+                <!-- Pestaña de Estadísticas -->
+                <div class="tab-pane fade" id="estadisticas" role="tabpanel" aria-labelledby="estadisticas-tab">
+                    <div class="row">
+                        <!-- Tarjetas de resumen -->
+                        <div class="col-md-3">
+                            <div class="card stat-card">
+                                <div class="card-body">
+                                    <h6 class="text-muted">Total Proveedores</h6>
+                                    <h3 id="stat-total-proveedores">0</h3>
+                                    <div class="progress" style="height: 5px;">
+                                        <div class="progress-bar bg-primary" style="width: 100%"></div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="col-md-3">
+                            <div class="card stat-card">
+                                <div class="card-body">
+                                    <h6 class="text-muted">Compras del Mes</h6>
+                                    <h3 id="stat-compras-mes">$0.00</h3>
+                                    <div class="progress" style="height: 5px;">
+                                        <div class="progress-bar bg-success" id="progress-compras-mes" style="width: 0%"></div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="col-md-3">
+                            <div class="card stat-card">
+                                <div class="card-body">
+                                    <h6 class="text-muted">Saldo Pendiente</h6>
+                                    <h3 id="stat-saldo-pendiente">$0.00</h3>
+                                    <div class="progress" style="height: 5px;">
+                                        <div class="progress-bar bg-warning" id="progress-saldo-pendiente" style="width: 0%"></div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="col-md-3">
+                            <div class="card stat-card">
+                                <div class="card-body">
+                                    <h6 class="text-muted">Proveedores Activos</h6>
+                                    <h3 id="stat-proveedores-activos">0</h3>
+                                    <div class="progress" style="height: 5px;">
+                                        <div class="progress-bar bg-info" id="progress-activos" style="width: 0%"></div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                        
+                        <!-- Gráficos -->
+                        <div class="col-md-8 mt-4">
+                            <div class="card">
+                                <div class="card-header d-flex justify-content-between align-items-center">
+                                    <h5 class="mb-0">Compras por Mes</h5>
+                                    <div class="btn-group btn-group-sm">
+                                        <button class="btn btn-outline-secondary active" data-period="month">Mes</button>
+                                        <button class="btn btn-outline-secondary" data-period="quarter">Trimestre</button>
+                                        <button class="btn btn-outline-secondary" data-period="year">Año</button>
+                                    </div>
+                                </div>
+                                <div class="card-body">
+                                    <canvas id="grafico-compras-mes" height="300"></canvas>
+                                </div>
+                            </div>
+                        </div>
+                        
+                        <div class="col-md-4 mt-4">
+                            <div class="card">
+                                <div class="card-header">
+                                    <h5 class="mb-0">Distribución por Categoría</h5>
+                                </div>
+                                <div class="card-body">
+                                    <canvas id="grafico-categorias" height="300"></canvas>
+                                </div>
+                            </div>
+                        </div>
+                        
+                        <div class="col-md-6 mt-4">
+                            <div class="card">
+                                <div class="card-header">
+                                    <h5 class="mb-0">Top 5 Proveedores</h5>
+                                </div>
+                                <div class="card-body">
+                                    <table class="table table-sm">
+                                        <thead>
+                                            <tr>
+                                                <th>Proveedor</th>
+                                                <th>Compras Total</th>
+                                                <th>% del Total</th>
+                                            </tr>
+                                        </thead>
+                                        <tbody id="tabla-top-proveedores">
+                                            <!-- Se cargará dinámicamente desde JS -->
+                                        </tbody>
+                                    </table>
+                                </div>
+                            </div>
+                        </div>
+                        
+                        <div class="col-md-6 mt-4">
+                            <div class="card">
+                                <div class="card-header">
+                                    <h5 class="mb-0">Métodos de Pago</h5>
+                                </div>
+                                <div class="card-body">
+                                    <canvas id="grafico-metodos-pago" height="300"></canvas>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Modal para Nuevo/Editar Proveedor -->
+    <div class="modal fade" id="modalProveedor" tabindex="-1" aria-labelledby="modalProveedorLabel" aria-hidden="true">
+        <div class="modal-dialog modal-lg">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h5 class="modal-title" id="modalProveedorLabel">Nuevo Proveedor</h5>
+                    <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                </div>
+                <div class="modal-body">
+                    <form id="form-proveedor">
+                        <input type="hidden" id="proveedor-id">
+                        
+                        <div class="row mb-3">
+                            <div class="col-md-6">
+                                <label for="proveedor-cuit" class="form-label">CUIT/NIF <span class="text-danger">*</span></label>
+                                <input type="text" class="form-control" id="proveedor-cuit" required>
+                                <div class="invalid-feedback">Este campo es obligatorio</div>
+                            </div>
+                            <div class="col-md-6">
+                                <label for="proveedor-condicion-iva" class="form-label">Condición frente al IVA</label>
+                                <select class="form-select" id="proveedor-condicion-iva">
+                                    <option value="responsable_inscripto">Responsable Inscripto</option>
+                                    <option value="monotributo">Monotributo</option>
+                                    <option value="exento">Exento</option>
+                                    <option value="consumidor_final">Consumidor Final</option>
+                                    <option value="exterior">Exterior</option>
+                                </select>
+                            </div>
+                        </div>
+                        
+                        <div class="row mb-3">
+                            <div class="col-md-8">
+                                <label for="proveedor-razon-social" class="form-label">Razón Social <span class="text-danger">*</span></label>
+                                <input type="text" class="form-control" id="proveedor-razon-social" required>
+                                <div class="invalid-feedback">Este campo es obligatorio</div>
+                            </div>
+                            <div class="col-md-4">
+                                <label for="proveedor-categoria" class="form-label">Categoría</label>
+                                <select class="form-select" id="proveedor-categoria">
+                                    <option value="">Seleccione categoría</option>
+                                    <!-- Se cargará dinámicamente desde JS -->
+                                </select>
+                            </div>
+                        </div>
+                        
+                        <div class="row mb-3">
+                            <div class="col-md-6">
+                                <label for="proveedor-telefono" class="form-label">Teléfono</label>
+                                <input type="tel" class="form-control" id="proveedor-telefono">
+                            </div>
+                            <div class="col-md-6">
+                                <label for="proveedor-email" class="form-label">Email</label>
+                                <input type="email" class="form-control" id="proveedor-email">
+                            </div>
+                        </div>
+                        
+                        <div class="row mb-3">
+                            <div class="col-12">
+                                <label for="proveedor-direccion" class="form-label">Dirección</label>
+                                <input type="text" class="form-control" id="proveedor-direccion">
+                            </div>
+                        </div>
+                        
+                        <div class="row mb-3">
+                            <div class="col-md-4">
+                                <label for="proveedor-ciudad" class="form-label">Ciudad</label>
+                                <input type="text" class="form-control" id="proveedor-ciudad">
+                            </div>
+                            <div class="col-md-4">
+                                <label for="proveedor-provincia" class="form-label">Provincia</label>
+                                <input type="text" class="form-control" id="proveedor-provincia">
+                            </div>
+                            <div class="col-md-4">
+                                <label for="proveedor-codigo-postal" class="form-label">Código Postal</label>
+                                <input type="text" class="form-control" id="proveedor-codigo-postal">
+                            </div>
+                        </div>
+                        
+                        <div class="row mb-3">
+                            <div class="col-md-6">
+                                <label for="proveedor-web" class="form-label">Sitio Web</label>
+                                <input type="url" class="form-control" id="proveedor-web">
+                            </div>
+                            <div class="col-md-6">
+                                <label for="proveedor-estado" class="form-label">Estado</label>
+                                <select class="form-select" id="proveedor-estado">
+                                    <option value="active">Activo</option>
+                                    <option value="inactive">Inactivo</option>
+                                    <option value="pending">Pendiente</option>
+                                </select>
+                            </div>
+                        </div>
+                        
+                        <div class="mb-3">
+                            <label for="proveedor-observaciones" class="form-label">Observaciones</label>
+                            <textarea class="form-control" id="proveedor-observaciones" rows="3"></textarea>
+                        </div>
+                        
+                        <div class="form-check mb-3">
+                            <input class="form-check-input" type="checkbox" id="proveedor-credito">
+                            <label class="form-check-label" for="proveedor-credito">
+                                Habilitado para compras a crédito
+                            </label>
+                        </div>
+                        
+                        <div class="row mb-3" id="limite-credito-container" style="display: none;">
+                            <div class="col-md-6">
+                                <label for="proveedor-limite-credito" class="form-label">Límite de Crédito</label>
+                                <div class="input-group">
+                                    <span class="input-group-text">$</span>
+                                    <input type="number" class="form-control" id="proveedor-limite-credito" step="0.01" min="0">
+                                </div>
+                            </div>
+                            <div class="col-md-6">
+                                <label for="proveedor-dias-credito" class="form-label">Días de Crédito</label>
+                                <input type="number" class="form-control" id="proveedor-dias-credito" min="0">
+                            </div>
+                        </div>
+                        
+                        <div class="mb-3">
+                            <label class="form-label">Sucursales que pueden comprar</label>
+                            <div id="sucursales-container" class="row">
+                                <!-- Se cargará dinámicamente desde JS -->
+                            </div>
+                        </div>
+                    </form>
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cancelar</button>
+                    <button type="button" class="btn btn-primary" id="btn-guardar-proveedor">Guardar</button>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Modal para Agregar/Editar Contacto -->
+    <div class="modal fade" id="modalContacto" tabindex="-1" aria-labelledby="modalContactoLabel" aria-hidden="true">
+        <div class="modal-dialog">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h5 class="modal-title" id="modalContactoLabel">Nuevo Contacto</h5>
+                    <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                </div>
+                <div class="modal-body">
+                    <form id="form-contacto">
+                        <input type="hidden" id="contacto-id">
+                        <input type="hidden" id="contacto-proveedor-id">
+                        
+                        <div class="mb-3">
+                            <label for="contacto-nombre" class="form-label">Nombre <span class="text-danger">*</span></label>
+                            <input type="text" class="form-control" id="contacto-nombre" required>
+                            <div class="invalid-feedback">Este campo es obligatorio</div>
+                        </div>
+                        
+                        <div class="mb-3">
+                            <label for="contacto-cargo" class="form-label">Cargo</label>
+                            <input type="text" class="form-control" id="contacto-cargo">
+                        </div>
+                        
+                        <div class="mb-3">
+                            <label for="contacto-telefono" class="form-label">Teléfono</label>
+                            <input type="tel" class="form-control" id="contacto-telefono">
+                        </div>
+                        
+                        <div class="mb-3">
+                            <label for="contacto-email" class="form-label">Email</label>
+                            <input type="email" class="form-control" id="contacto-email">
+                        </div>
+                        
+                        <div class="mb-3">
+                            <label for="contacto-departamento" class="form-label">Departamento</label>
+                            <input type="text" class="form-control" id="contacto-departamento">
+                        </div>
+                        
+                        <div class="mb-3">
+                            <label for="contacto-observaciones" class="form-label">Observaciones</label>
+                            <textarea class="form-control" id="contacto-observaciones" rows="2"></textarea>
+                        </div>
+                        
+                        <div class="form-check mb-3">
+                            <input class="form-check-input" type="checkbox" id="contacto-principal">
+                            <label class="form-check-label" for="contacto-principal">
+                                Contacto principal
+                            </label>
+                        </div>
+                    </form>
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cancelar</button>
+                    <button type="button" class="btn btn-primary" id="btn-guardar-contacto">Guardar</button>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Modal para Subir Factura -->
+    <div class="modal fade" id="modalSubirFactura" tabindex="-1" aria-labelledby="modalSubirFacturaLabel" aria-hidden="true">
+        <div class="modal-dialog">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h5 class="modal-title" id="modalSubirFacturaLabel">Subir Factura</h5>
+                    <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                </div>
+                <div class="modal-body">
+                    <form id="form-subir-factura">
+                        <input type="hidden" id="factura-proveedor-id">
+                        
+                        <div class="mb-3">
+                            <label for="factura-numero" class="form-label">Número de Factura <span class="text-danger">*</span></label>
+                            <input type="text" class="form-control" id="factura-numero" required>
+                            <div class="invalid-feedback">Este campo es obligatorio</div>
+                        </div>
+                        
+                        <div class="mb-3">
+                            <label for="factura-fecha" class="form-label">Fecha de Emisión <span class="text-danger">*</span></label>
+                            <input type="text" class="form-control date-picker" id="factura-fecha" required>
+                            <div class="invalid-feedback">Este campo es obligatorio</div>
+                        </div>
+                        
+                        <div class="mb-3">
+                            <label for="factura-total" class="form-label">Monto Total <span class="text-danger">*</span></label>
+                            <div class="input-group">
+                                <span class="input-group-text">$</span>
+                                <input type="number" class="form-control" id="factura-total" step="0.01" min="0" required>
+                                <div class="invalid-feedback">Este campo es obligatorio</div>
+                            </div>
+                        </div>
+                        
+                        <div class="mb-3">
+                            <label for="factura-tipo" class="form-label">Tipo de Factura</label>
+                            <select class="form-select" id="factura-tipo">
+                                <option value="A">Factura A</option>
+                                <option value="B">Factura B</option>
+                                <option value="C">Factura C</option>
+                                <option value="M">Factura M</option>
+                                <option value="E">Factura E</option>
+                            </select>
+                        </div>
+                        
+                        <div class="mb-3">
+                            <label for="factura-archivo" class="form-label">Archivo de Factura (PDF)</label>
+                            <input type="file" class="form-control" id="factura-archivo" accept=".pdf,.jpg,.jpeg,.png">
+                            <small class="text-muted">Tamaño máximo: 5MB. Formatos permitidos: PDF, JPG, PNG.</small>
+                        </div>
+                        
+                        <div class="mb-3">
+                            <label for="factura-observaciones" class="form-label">Observaciones</label>
+                            <textarea class="form-control" id="factura-observaciones" rows="2"></textarea>
+                        </div>
+                    </form>
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cancelar</button>
+                    <button type="button" class="btn btn-primary" id="btn-guardar-factura">Subir Factura</button>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Modal para Configurar Categorías -->
+    <div class="modal fade" id="modalCategorias" tabindex="-1" aria-labelledby="modalCategoriasLabel" aria-hidden="true">
+        <div class="modal-dialog">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h5 class="modal-title" id="modalCategoriasLabel">Configurar Categorías de Proveedores</h5>
+                    <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                </div>
+                <div class="modal-body">
+                    <div class="mb-3">
+                        <div class="input-group">
+                            <input type="text" class="form-control" id="nueva-categoria" placeholder="Nueva categoría">
+                            <button class="btn btn-primary" id="btn-agregar-categoria">Agregar</button>
+                        </div>
+                    </div>
+                    
+                    <div class="list-group" id="lista-categorias">
+                        <!-- Se cargará dinámicamente desde JS -->
+                    </div>
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cerrar</button>
+                </div>
+            </div>
+        </div>
+    </div>
+    
+    <!-- Modal para Importar Proveedores -->
+    <div class="modal fade" id="modalImportarProveedores" tabindex="-1" aria-labelledby="modalImportarProveedoresLabel" aria-hidden="true">
+        <div class="modal-dialog">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h5 class="modal-title" id="modalImportarProveedoresLabel">Importar Proveedores</h5>
+                    <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                </div>
+                <div class="modal-body">
+                    <div class="mb-3">
+                        <label for="archivo-importacion" class="form-label">Seleccione archivo Excel (.xlsx, .xls)</label>
+                        <input type="file" class="form-control" id="archivo-importacion" accept=".xlsx,.xls">
+                        <small class="text-muted">Descargue la <a href="#" id="link-plantilla">plantilla de ejemplo</a> para ver el formato requerido.</small>
+                    </div>
+                    
+                    <div class="alert alert-info">
+                        <i class="bi bi-info-circle"></i> La importación procesará los proveedores en segundo plano. Recibirá una notificación cuando finalice.
+                    </div>
+                    
+                    <div id="preview-importacion" class="mt-3" style="display: none;">
+                        <h6>Vista previa:</h6>
+                        <div class="table-responsive">
+                            <table class="table table-sm table-hover">
+                                <thead>
+                                    <tr>
+                                        <th>CUIT/NIF</th>
+                                        <th>Razón Social</th>
+                                        <th>Categoría</th>
+                                        <th>Teléfono</th>
+                                        <th>Email</th>
+                                    </tr>
+                                </thead>
+                                <tbody id="preview-importacion-body">
+                                    <!-- Se cargará dinámicamente desde JS -->
+                                </tbody>
+                            </table>
+                        </div>
+                    </div>
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cancelar</button>
+                    <button type="button" class="btn btn-primary" id="btn-importar">Importar</button>
+                </div>
+            </div>
+        </div>
+    </div>
+    
+    <!-- Modal de confirmación para eliminar proveedor -->
+    <div class="modal fade" id="modalConfirmarEliminar" tabindex="-1" aria-labelledby="modalConfirmarEliminarLabel" aria-hidden="true">
+        <div class="modal-dialog modal-sm">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h5 class="modal-title" id="modalConfirmarEliminarLabel">Confirmar Eliminación</h5>
+                    <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                </div>
+                <div class="modal-body">
+                    <p>¿Está seguro que desea eliminar este proveedor?</p>
+                    <p><strong id="proveedor-a-eliminar"></strong></p>
+                    <p class="text-danger">Esta acción no se puede deshacer.</p>
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cancelar</button>
+                    <button type="button" class="btn btn-danger" id="btn-confirmar-eliminar">Eliminar</button>
+                </div>
+            </div>
+        </div>
+    </div>
+    
+    <!-- Modal para ver detalles de una factura -->
+    <div class="modal fade" id="modalVerFactura" tabindex="-1" aria-labelledby="modalVerFacturaLabel" aria-hidden="true">
+        <div class="modal-dialog modal-lg">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h5 class="modal-title" id="modalVerFacturaLabel">Detalle de Factura</h5>
+                    <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                </div>
+                <div class="modal-body">
+                    <div class="row">
+                        <div class="col-md-6">
+                            <p><strong>N° Factura:</strong> <span id="detalle-factura-numero"></span></p>
+                            <p><strong>Fecha:</strong> <span id="detalle-factura-fecha"></span></p>
+                            <p><strong>Tipo:</strong> <span id="detalle-factura-tipo"></span></p>
+                            <p><strong>Total:</strong> <span id="detalle-factura-total"></span></p>
+                        </div>
+                        <div class="col-md-6">
+                            <p><strong>Proveedor:</strong> <span id="detalle-factura-proveedor"></span></p>
+                            <p><strong>CUIT:</strong> <span id="detalle-factura-cuit"></span></p>
+                            <p><strong>Subida por:</strong> <span id="detalle-factura-usuario"></span></p>
+                            <p><strong>Observaciones:</strong> <span id="detalle-factura-observaciones"></span></p>
+                        </div>
+                    </div>
+                    
+                    <div class="mt-4" id="detalle-factura-visualizador">
+                        <!-- Visualizador de PDF o imagen -->
+                    </div>
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cerrar</button>
+                    <button type="button" class="btn btn-primary" id="btn-descargar-factura">
+                        <i class="bi bi-download"></i> Descargar
+                    </button>
+                    <button type="button" class="btn btn-outline-secondary" id="btn-imprimir-factura">
+                        <i class="bi bi-printer"></i> Imprimir
+                    </button>
+                </div>
+            </div>
+        </div>
+    </div>
+    
+    <!-- Modal de ayuda -->
+    <div class="modal fade" id="modalAyuda" tabindex="-1" aria-labelledby="modalAyudaLabel" aria-hidden="true">
+        <div class="modal-dialog modal-lg">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h5 class="modal-title" id="modalAyudaLabel">Ayuda - Gestión de Proveedores</h5>
+                    <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                </div>
+                <div class="modal-body">
+                    <div class="accordion" id="ayudaProveedoresAccordion">
+                        <div class="accordion-item">
+                            <h2 class="accordion-header" id="headingOne">
+                                <button class="accordion-button" type="button" data-bs-toggle="collapse" data-bs-target="#collapseOne" aria-expanded="true" aria-controls="collapseOne">
+                                    ¿Cómo agregar un nuevo proveedor?
+                                </button>
+                            </h2>
+                            <div id="collapseOne" class="accordion-collapse collapse show" aria-labelledby="headingOne" data-bs-parent="#ayudaProveedoresAccordion">
+                                <div class="accordion-body">
+                                    <ol>
+                                        <li>Haga clic en el botón <strong>Nuevo Proveedor</strong> en la parte superior derecha.</li>
+                                        <li>Complete los campos obligatorios (marcados con *).</li>
+                                        <li>Opcionalmente, complete los campos adicionales para tener información más detallada.</li>
+                                        <li>Haga clic en <strong>Guardar</strong> para crear el nuevo proveedor.</li>
+                                    </ol>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="accordion-item">
+                            <h2 class="accordion-header" id="headingTwo">
+                                <button class="accordion-button collapsed" type="button" data-bs-toggle="collapse" data-bs-target="#collapseTwo" aria-expanded="false" aria-controls="collapseTwo">
+                                    ¿Cómo subir facturas de proveedores?
+                                </button>
+                            </h2>
+                            <div id="collapseTwo" class="accordion-collapse collapse" aria-labelledby="headingTwo" data-bs-parent="#ayudaProveedoresAccordion">
+                                <div class="accordion-body">
+                                    <ol>
+                                        <li>Vaya a la pestaña <strong>Facturas Recibidas</strong>.</li>
+                                        <li>Seleccione un proveedor del desplegable.</li>
+                                        <li>Haga clic en el botón <strong>Subir Factura</strong>.</li>
+                                        <li>Complete los datos de la factura y adjunte el archivo.</li>
+                                        <li>Haga clic en <strong>Subir Factura</strong> para guardar la información.</li>
+                                    </ol>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="accordion-item">
+                            <h2 class="accordion-header" id="headingThree">
+                                <button class="accordion-button collapsed" type="button" data-bs-toggle="collapse" data-bs-target="#collapseThree" aria-expanded="false" aria-controls="collapseThree">
+                                    ¿Cómo gestionar los contactos de un proveedor?
+                                </button>
+                            </h2>
+                            <div id="collapseThree" class="accordion-collapse collapse" aria-labelledby="headingThree" data-bs-parent="#ayudaProveedoresAccordion">
+                                <div class="accordion-body">
+                                    <ol>
+                                        <li>Vaya a la pestaña <strong>Contactos</strong>.</li>
+                                        <li>Seleccione un proveedor del desplegable.</li>
+                                        <li>Para agregar un contacto, haga clic en <strong>Agregar Contacto</strong>.</li>
+                                        <li>Para editar un contacto existente, haga clic en el ícono de edición en la columna "Acciones".</li>
+                                        <li>Para eliminar un contacto, haga clic en el ícono de eliminación en la columna "Acciones".</li>
+                                    </ol>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="accordion-item">
+                            <h2 class="accordion-header" id="headingFour">
+                                <button class="accordion-button collapsed" type="button" data-bs-toggle="collapse" data-bs-target="#collapseFour" aria-expanded="false" aria-controls="collapseFour">
+                                    ¿Cómo importar proveedores desde Excel?
+                                </button>
+                            </h2>
+                            <div id="collapseFour" class="accordion-collapse collapse" aria-labelledby="headingFour" data-bs-parent="#ayudaProveedoresAccordion">
+                                <div class="accordion-body">
+                                    <ol>
+                                        <li>Haga clic en el ícono de engranaje en la parte superior derecha y seleccione <strong>Importar proveedores</strong>.</li>
+                                        <li>Descargue la plantilla de ejemplo si es necesario.</li>
+                                        <li>Seleccione su archivo Excel con los datos de los proveedores.</li>
+                                        <li>Revise la vista previa para asegurarse de que los datos son correctos.</li>
+                                        <li>Haga clic en <strong>Importar</strong> para procesar el archivo.</li>
+                                    </ol>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cerrar</button>
+                    <a href="../views/ayuda.html#proveedores" class="btn btn-primary">Ver manual completo</a>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Scripts JavaScript -->
+    <!-- jQuery -->
+    <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+    <!-- Bootstrap JS -->
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.1.3/dist/js/bootstrap.bundle.min.js"></script>
+    <!-- DataTables -->
+    <script src="https://cdn.datatables.net/1.13.6/js/jquery.dataTables.min.js"></script>
+    <script src="https://cdn.datatables.net/1.13.6/js/dataTables.bootstrap5.min.js"></script>
+    <!-- Flatpickr -->
+    <script src="https://cdn.jsdelivr.net/npm/flatpickr"></script>
+    <script src="https://cdn.jsdelivr.net/npm/flatpickr/dist/l10n/es.js"></script>
+    <!-- Chart.js -->
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+    <!-- App scripts -->
+    <script src="../assets/js/utils/database.js"></script>
+    <script src="../assets/js/utils/validation.js"></script>
+    <script src="../assets/js/modules/proveedores/index.js"></script>
+    <script src="../assets/js/modules/proveedores/editor.js"></script>
+    <script src="../assets/js/modules/proveedores/historial.js"></script>
+</body>
+</html>

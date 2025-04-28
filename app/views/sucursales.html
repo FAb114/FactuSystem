@@ -1,0 +1,1322 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Gestión de Sucursales - FactuSystem</title>
+    <link rel="stylesheet" href="../assets/css/main.css">
+    <link rel="stylesheet" href="../assets/css/components/sidebar.css">
+    <link rel="stylesheet" href="../assets/css/components/dashboard.css">
+    <link rel="stylesheet" href="../assets/css/components/tables.css">
+    <link rel="stylesheet" href="../assets/css/components/modal.css">
+    <!-- Font Awesome para iconos -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <!-- Chart.js para gráficos de estadísticas -->
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/Chart.js/3.9.1/chart.min.js"></script>
+</head>
+<body>
+    <div class="container">
+        <!-- Contenido principal -->
+        <div class="content-wrapper">
+            <div class="page-header">
+                <h1><i class="fas fa-store-alt"></i> Gestión de Sucursales</h1>
+                <div class="action-buttons">
+                    <button id="btnNuevaSucursal" class="btn btn-primary">
+                        <i class="fas fa-plus"></i> Nueva Sucursal
+                    </button>
+                    <button id="btnSincronizarTodas" class="btn btn-success">
+                        <i class="fas fa-sync-alt"></i> Sincronizar Todas
+                    </button>
+                    <button id="btnExportarDatos" class="btn btn-secondary">
+                        <i class="fas fa-file-export"></i> Exportar
+                    </button>
+                </div>
+            </div>
+
+            <!-- Pestañas de navegación para la gestión de sucursales -->
+            <div class="tabs-container">
+                <div class="tabs">
+                    <button class="tab-btn active" data-target="listado">Listado</button>
+                    <button class="tab-btn" data-target="configuracion">Configuración</button>
+                    <button class="tab-btn" data-target="sincronizacion">Sincronización</button>
+                    <button class="tab-btn" data-target="estadisticas">Estadísticas</button>
+                </div>
+
+                <!-- Contenido de las pestañas -->
+                <div class="tab-content">
+                    <!-- Tab 1: Listado de Sucursales -->
+                    <div id="listado" class="tab-pane active">
+                        <!-- Filtros -->
+                        <div class="filters-container">
+                            <div class="filter-group">
+                                <input type="text" id="filtroBusqueda" placeholder="Buscar por nombre o código...">
+                                <select id="filtroEstado">
+                                    <option value="">Todos los estados</option>
+                                    <option value="activa">Activa</option>
+                                    <option value="inactiva">Inactiva</option>
+                                </select>
+                                <button id="btnAplicarFiltros" class="btn btn-sm">Aplicar</button>
+                            </div>
+                        </div>
+
+                        <!-- Tabla de Sucursales -->
+                        <div class="table-responsive">
+                            <table id="tablaSucursales" class="data-table">
+                                <thead>
+                                    <tr>
+                                        <th>Código</th>
+                                        <th>Nombre</th>
+                                        <th>Dirección</th>
+                                        <th>Teléfono</th>
+                                        <th>Responsable</th>
+                                        <th>Estado</th>
+                                        <th>Última Sincronización</th>
+                                        <th>Acciones</th>
+                                    </tr>
+                                </thead>
+                                <tbody>
+                                    <!-- Los datos se cargarán dinámicamente con JavaScript -->
+                                </tbody>
+                            </table>
+                        </div>
+
+                        <!-- Paginación -->
+                        <div class="pagination-container">
+                            <div class="pagination">
+                                <button id="btnPrevPage" class="btn btn-sm">Anterior</button>
+                                <span id="paginationInfo">Página 1 de 1</span>
+                                <button id="btnNextPage" class="btn btn-sm">Siguiente</button>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Tab 2: Configuración de Sucursales -->
+                    <div id="configuracion" class="tab-pane">
+                        <div class="config-container">
+                            <!-- Selector de sucursal para configurar -->
+                            <div class="sucursal-selector">
+                                <label for="selectSucursalConfig">Seleccionar Sucursal:</label>
+                                <select id="selectSucursalConfig" class="form-control">
+                                    <!-- Opciones cargadas dinámicamente -->
+                                </select>
+                            </div>
+
+                            <!-- Formulario de configuración de sucursal -->
+                            <div class="config-form">
+                                <h3>Configuración General</h3>
+                                <div class="form-section">
+                                    <div class="form-group">
+                                        <label for="nombreSucursal">Nombre de la Sucursal:</label>
+                                        <input type="text" id="nombreSucursal" class="form-control">
+                                    </div>
+                                    <div class="form-group">
+                                        <label for="codigoSucursal">Código:</label>
+                                        <input type="text" id="codigoSucursal" class="form-control">
+                                    </div>
+                                    <div class="form-group">
+                                        <label for="direccionSucursal">Dirección:</label>
+                                        <input type="text" id="direccionSucursal" class="form-control">
+                                    </div>
+                                    <div class="form-group">
+                                        <label for="telefonoSucursal">Teléfono:</label>
+                                        <input type="text" id="telefonoSucursal" class="form-control">
+                                    </div>
+                                    <div class="form-group">
+                                        <label for="emailSucursal">Email:</label>
+                                        <input type="email" id="emailSucursal" class="form-control">
+                                    </div>
+                                    <div class="form-group">
+                                        <label for="responsableSucursal">Responsable:</label>
+                                        <select id="responsableSucursal" class="form-control">
+                                            <!-- Opciones cargadas dinámicamente -->
+                                        </select>
+                                    </div>
+                                </div>
+
+                                <h3>Configuración Fiscal</h3>
+                                <div class="form-section">
+                                    <div class="form-group">
+                                        <label for="ptoVenta">Punto de Venta AFIP:</label>
+                                        <input type="number" id="ptoVenta" class="form-control">
+                                    </div>
+                                    <div class="form-group">
+                                        <label for="inicioFacturaA">Inicio Numeración Factura A:</label>
+                                        <input type="number" id="inicioFacturaA" class="form-control">
+                                    </div>
+                                    <div class="form-group">
+                                        <label for="inicioFacturaB">Inicio Numeración Factura B:</label>
+                                        <input type="number" id="inicioFacturaB" class="form-control">
+                                    </div>
+                                    <div class="form-group">
+                                        <label for="inicioFacturaC">Inicio Numeración Factura C:</label>
+                                        <input type="number" id="inicioFacturaC" class="form-control">
+                                    </div>
+                                </div>
+
+                                <h3>Configuración de Dispositivos</h3>
+                                <div class="form-section">
+                                    <div class="form-group">
+                                        <label for="impresoraTicket">Impresora de Tickets:</label>
+                                        <select id="impresoraTicket" class="form-control">
+                                            <!-- Opciones cargadas dinámicamente -->
+                                        </select>
+                                    </div>
+                                    <div class="form-group">
+                                        <label for="impresoraFactura">Impresora de Facturas:</label>
+                                        <select id="impresoraFactura" class="form-control">
+                                            <!-- Opciones cargadas dinámicamente -->
+                                        </select>
+                                    </div>
+                                    <div class="form-group">
+                                        <label for="lectorCodigos">Lector de Códigos:</label>
+                                        <select id="lectorCodigos" class="form-control">
+                                            <!-- Opciones cargadas dinámicamente -->
+                                        </select>
+                                    </div>
+                                </div>
+
+                                <div class="form-actions">
+                                    <button id="btnGuardarConfig" class="btn btn-primary">Guardar Configuración</button>
+                                    <button id="btnResetearConfig" class="btn btn-secondary">Resetear</button>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Tab 3: Sincronización -->
+                    <div id="sincronizacion" class="tab-pane">
+                        <div class="sync-container">
+                            <!-- Estado de sincronización -->
+                            <div class="sync-status">
+                                <h3>Estado de Sincronización</h3>
+                                <div class="status-cards">
+                                    <div class="status-card">
+                                        <div class="card-icon"><i class="fas fa-cloud-upload-alt"></i></div>
+                                        <div class="card-title">Última Subida</div>
+                                        <div id="ultimaSubida" class="card-value">N/A</div>
+                                    </div>
+                                    <div class="status-card">
+                                        <div class="card-icon"><i class="fas fa-cloud-download-alt"></i></div>
+                                        <div class="card-title">Última Descarga</div>
+                                        <div id="ultimaDescarga" class="card-value">N/A</div>
+                                    </div>
+                                    <div class="status-card">
+                                        <div class="card-icon"><i class="fas fa-exchange-alt"></i></div>
+                                        <div class="card-title">Estado</div>
+                                        <div id="estadoSync" class="card-value">Sincronizado</div>
+                                    </div>
+                                    <div class="status-card">
+                                        <div class="card-icon"><i class="fas fa-exclamation-triangle"></i></div>
+                                        <div class="card-title">Pendientes</div>
+                                        <div id="pendientesSync" class="card-value">0</div>
+                                    </div>
+                                </div>
+                            </div>
+
+                            <!-- Configuración de sincronización -->
+                            <div class="sync-settings">
+                                <h3>Configuración de Sincronización</h3>
+                                <div class="form-section">
+                                    <div class="form-group">
+                                        <label for="servidorSync">Servidor:</label>
+                                        <input type="text" id="servidorSync" class="form-control" placeholder="https://servidor.factusystem.com">
+                                    </div>
+                                    <div class="form-group">
+                                        <label for="puertoSync">Puerto:</label>
+                                        <input type="number" id="puertoSync" class="form-control" placeholder="443">
+                                    </div>
+                                    <div class="form-group">
+                                        <label for="intervaloSync">Intervalo de Sincronización (minutos):</label>
+                                        <input type="number" id="intervaloSync" class="form-control" min="5" max="60" value="15">
+                                    </div>
+                                    <div class="form-group">
+                                        <label for="prioridadSync">Prioridad:</label>
+                                        <select id="prioridadSync" class="form-control">
+                                            <option value="alta">Alta (Inmediata)</option>
+                                            <option value="media" selected>Media (Según intervalo)</option>
+                                            <option value="baja">Baja (Solo manual)</option>
+                                        </select>
+                                    </div>
+                                    <div class="form-group checkbox-group">
+                                        <label class="checkbox-container">
+                                            <input type="checkbox" id="syncVentas" checked>
+                                            <span class="checkmark"></span>
+                                            Sincronizar Ventas
+                                        </label>
+                                    </div>
+                                    <div class="form-group checkbox-group">
+                                        <label class="checkbox-container">
+                                            <input type="checkbox" id="syncCompras" checked>
+                                            <span class="checkmark"></span>
+                                            Sincronizar Compras
+                                        </label>
+                                    </div>
+                                    <div class="form-group checkbox-group">
+                                        <label class="checkbox-container">
+                                            <input type="checkbox" id="syncProductos" checked>
+                                            <span class="checkmark"></span>
+                                            Sincronizar Productos
+                                        </label>
+                                    </div>
+                                    <div class="form-group checkbox-group">
+                                        <label class="checkbox-container">
+                                            <input type="checkbox" id="syncClientes" checked>
+                                            <span class="checkmark"></span>
+                                            Sincronizar Clientes
+                                        </label>
+                                    </div>
+                                    <div class="form-group checkbox-group">
+                                        <label class="checkbox-container">
+                                            <input type="checkbox" id="syncProveedores" checked>
+                                            <span class="checkmark"></span>
+                                            Sincronizar Proveedores
+                                        </label>
+                                    </div>
+                                </div>
+
+                                <div class="form-actions">
+                                    <button id="btnGuardarSync" class="btn btn-primary">Guardar Configuración</button>
+                                    <button id="btnSincronizarAhora" class="btn btn-success">Sincronizar Ahora</button>
+                                </div>
+                            </div>
+
+                            <!-- Log de sincronización -->
+                            <div class="sync-log">
+                                <h3>Registro de Sincronización</h3>
+                                <div class="log-container">
+                                    <div class="log-header">
+                                        <span>Fecha/Hora</span>
+                                        <span>Tipo</span>
+                                        <span>Sucursal</span>
+                                        <span>Estado</span>
+                                        <span>Detalles</span>
+                                    </div>
+                                    <div id="logSyncContainer" class="log-content">
+                                        <!-- Los logs se cargarán dinámicamente -->
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Tab 4: Estadísticas -->
+                    <div id="estadisticas" class="tab-pane">
+                        <div class="stats-container">
+                            <!-- Filtros de período -->
+                            <div class="stats-filters">
+                                <div class="date-range">
+                                    <label for="fechaDesde">Desde:</label>
+                                    <input type="date" id="fechaDesde" class="form-control">
+                                </div>
+                                <div class="date-range">
+                                    <label for="fechaHasta">Hasta:</label>
+                                    <input type="date" id="fechaHasta" class="form-control">
+                                </div>
+                                <button id="btnAplicarPeriodo" class="btn btn-sm">Aplicar</button>
+                            </div>
+
+                            <!-- Gráficos de comparativa entre sucursales -->
+                            <div class="stats-charts">
+                                <div class="chart-container">
+                                    <h3>Ventas por Sucursal</h3>
+                                    <canvas id="chartVentas"></canvas>
+                                </div>
+                                <div class="chart-container">
+                                    <h3>Rotación de Inventario</h3>
+                                    <canvas id="chartInventario"></canvas>
+                                </div>
+                                <div class="chart-container">
+                                    <h3>Efectividad de Facturación</h3>
+                                    <canvas id="chartFacturacion"></canvas>
+                                </div>
+                                <div class="chart-container">
+                                    <h3>Rendimiento de Caja</h3>
+                                    <canvas id="chartCaja"></canvas>
+                                </div>
+                            </div>
+
+                            <!-- Tabla de comparativa resumida -->
+                            <div class="stats-table">
+                                <h3>Comparativa de Sucursales</h3>
+                                <div class="table-responsive">
+                                    <table id="tablaComparativa" class="data-table">
+                                        <thead>
+                                            <tr>
+                                                <th>Sucursal</th>
+                                                <th>Ventas Totales</th>
+                                                <th>Ticket Promedio</th>
+                                                <th>Productos Vendidos</th>
+                                                <th>Clientes Atendidos</th>
+                                                <th>Rendimiento</th>
+                                            </tr>
+                                        </thead>
+                                        <tbody>
+                                            <!-- Los datos se cargarán dinámicamente con JavaScript -->
+                                        </tbody>
+                                    </table>
+                                </div>
+                            </div>
+
+                            <div class="export-actions">
+                                <button id="btnExportarEstadisticas" class="btn btn-primary">
+                                    <i class="fas fa-file-export"></i> Exportar Informe
+                                </button>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Modales -->
+    <!-- Modal para crear/editar sucursal -->
+    <div id="modalSucursal" class="modal">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h2 id="modalSucursalTitle">Nueva Sucursal</h2>
+                <span class="close-modal">&times;</span>
+            </div>
+            <div class="modal-body">
+                <form id="formSucursal">
+                    <div class="form-group">
+                        <label for="modalCodigo">Código:</label>
+                        <input type="text" id="modalCodigo" class="form-control" required>
+                    </div>
+                    <div class="form-group">
+                        <label for="modalNombre">Nombre:</label>
+                        <input type="text" id="modalNombre" class="form-control" required>
+                    </div>
+                    <div class="form-group">
+                        <label for="modalDireccion">Dirección:</label>
+                        <input type="text" id="modalDireccion" class="form-control" required>
+                    </div>
+                    <div class="form-group">
+                        <label for="modalTelefono">Teléfono:</label>
+                        <input type="text" id="modalTelefono" class="form-control">
+                    </div>
+                    <div class="form-group">
+                        <label for="modalEmail">Email:</label>
+                        <input type="email" id="modalEmail" class="form-control">
+                    </div>
+                    <div class="form-group">
+                        <label for="modalResponsable">Responsable:</label>
+                        <select id="modalResponsable" class="form-control">
+                            <!-- Opciones cargadas dinámicamente -->
+                        </select>
+                    </div>
+                    <div class="form-group">
+                        <label for="modalEstado">Estado:</label>
+                        <select id="modalEstado" class="form-control">
+                            <option value="activa">Activa</option>
+                            <option value="inactiva">Inactiva</option>
+                        </select>
+                    </div>
+                </form>
+            </div>
+            <div class="modal-footer">
+                <button id="btnCancelarSucursal" class="btn btn-secondary">Cancelar</button>
+                <button id="btnGuardarSucursal" class="btn btn-primary">Guardar</button>
+            </div>
+        </div>
+    </div>
+
+    <!-- Modal para confirmar eliminación -->
+    <div id="modalConfirmarEliminacion" class="modal">
+        <div class="modal-content modal-sm">
+            <div class="modal-header">
+                <h2>Confirmar Eliminación</h2>
+                <span class="close-modal">&times;</span>
+            </div>
+            <div class="modal-body">
+                <p>¿Está seguro que desea eliminar la sucursal <strong id="nombreSucursalEliminar"></strong>?</p>
+                <p class="warning-text">Esta acción no se puede deshacer y podría afectar datos relacionados.</p>
+            </div>
+            <div class="modal-footer">
+                <button id="btnCancelarEliminacion" class="btn btn-secondary">Cancelar</button>
+                <button id="btnConfirmarEliminacion" class="btn btn-danger">Eliminar</button>
+            </div>
+        </div>
+    </div>
+
+    <!-- Modal de resolución de conflictos -->
+    <div id="modalConflictos" class="modal">
+        <div class="modal-content modal-lg">
+            <div class="modal-header">
+                <h2>Resolución de Conflictos</h2>
+                <span class="close-modal">&times;</span>
+            </div>
+            <div class="modal-body">
+                <div class="conflicts-container">
+                    <div class="conflicts-header">
+                        <p>Se han detectado conflictos durante la sincronización. Por favor revise y seleccione qué datos mantener:</p>
+                    </div>
+                    <div id="listaConflictos" class="conflicts-list">
+                        <!-- Conflictos cargados dinámicamente -->
+                    </div>
+                </div>
+            </div>
+            <div class="modal-footer">
+                <button id="btnResolverTodoLocal" class="btn btn-secondary">Usar Datos Locales</button>
+                <button id="btnResolverTodoRemoto" class="btn btn-secondary">Usar Datos Remotos</button>
+                <button id="btnResolverConflictos" class="btn btn-primary">Aplicar Selección</button>
+            </div>
+        </div>
+    </div>
+
+    <!-- Modal de detalles de sucursal -->
+    <div id="modalDetallesSucursal" class="modal">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h2>Detalles de Sucursal</h2>
+                <span class="close-modal">&times;</span>
+            </div>
+            <div class="modal-body">
+                <div class="branch-details">
+                    <div class="branch-info">
+                        <h3 id="detalleTituloSucursal">Central</h3>
+                        <div class="info-item">
+                            <span class="info-label">Código:</span>
+                            <span id="detalleCodigo" class="info-value">SUC001</span>
+                        </div>
+                        <div class="info-item">
+                            <span class="info-label">Dirección:</span>
+                            <span id="detalleDireccion" class="info-value">Av. Corrientes 1234</span>
+                        </div>
+                        <div class="info-item">
+                            <span class="info-label">Teléfono:</span>
+                            <span id="detalleTelefono" class="info-value">011-4567-8900</span>
+                        </div>
+                        <div class="info-item">
+                            <span class="info-label">Email:</span>
+                            <span id="detalleEmail" class="info-value">central@empresa.com</span>
+                        </div>
+                        <div class="info-item">
+                            <span class="info-label">Responsable:</span>
+                            <span id="detalleResponsable" class="info-value">Juan Pérez</span>
+                        </div>
+                        <div class="info-item">
+                            <span class="info-label">Estado:</span>
+                            <span id="detalleEstado" class="info-value status-active">Activa</span>
+                        </div>
+                    </div>
+
+                    <div class="branch-stats">
+                        <h3>Estadísticas</h3>
+                        <div class="stats-item">
+                            <div class="stat-circle">
+                                <span id="detalleVentasMes" class="stat-value">$120,500</span>
+                                <span class="stat-label">Ventas del Mes</span>
+                            </div>
+                        </div>
+                        <div class="stats-item">
+                            <div class="stat-circle">
+                                <span id="detalleFacturasEmitidas" class="stat-value">325</span>
+                                <span class="stat-label">Facturas Emitidas</span>
+                            </div>
+                        </div>
+                        <div class="stats-item">
+                            <div class="stat-circle">
+                                <span id="detalleUsuariosActivos" class="stat-value">8</span>
+                                <span class="stat-label">Usuarios Activos</span>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="branch-actions">
+                    <button id="btnVerConfiguracion" class="btn btn-secondary">Ver Configuración</button>
+                    <button id="btnSincronizarSucursal" class="btn btn-success">Sincronizar</button>
+                    <button id="btnEditarSucursal" class="btn btn-primary">Editar</button>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Scripts -->
+    <script src="../assets/js/renderer.js"></script>
+    <script src="../assets/js/utils/database.js"></script>
+    <script src="../assets/js/utils/validation.js"></script>
+    <script src="../assets/js/utils/sync.js"></script>
+    <script src="../assets/js/modules/sucursales/index.js"></script>
+    <script src="../assets/js/modules/sucursales/editor.js"></script>
+    <script src="../assets/js/modules/sucursales/configuracion.js"></script>
+    <script src="../assets/js/modules/sucursales/sincronizacion.js"></script>
+    <script>
+        // Script para manejar pestañas
+        document.addEventListener('DOMContentLoaded', function() {
+            // Manejo de pestañas
+            const tabButtons = document.querySelectorAll('.tab-btn');
+            const tabPanes = document.querySelectorAll('.tab-pane');
+            
+            tabButtons.forEach(button => {
+                button.addEventListener('click', function() {
+                    // Remover clase active de todos los botones y paneles
+                    tabButtons.forEach(btn => btn.classList.remove('active'));
+                    tabPanes.forEach(pane => pane.classList.remove('active'));
+                    
+                    // Agregar clase active al botón y panel correspondiente
+                    this.classList.add('active');
+                    const target = this.getAttribute('data-target');
+                    document.getElementById(target).classList.add('active');
+                });
+            });
+
+            // Cargar datos iniciales
+            cargarSucursales();
+            cargarEstadisticasSucursales();
+            inicializarGraficos();
+        });
+
+        // Función para cargar las sucursales en la tabla
+        function cargarSucursales() {
+            // Esta función se implementará en el archivo sucursales/index.js
+            console.log('Cargando sucursales...');
+        }
+
+        // Función para cargar estadísticas
+        function cargarEstadisticasSucursales() {
+            // Esta función se implementará en el archivo sucursales/index.js
+            console.log('Cargando estadísticas...');
+        }
+
+        // Función para inicializar gráficos
+        function inicializarGraficos() {
+            // Gráfico de ventas por sucursal
+            const ctxVentas = document.getElementById('chartVentas').getContext('2d');
+            new Chart(ctxVentas, {
+                type: 'bar',
+                data: {
+                    labels: ['Central', 'Sucursal 1', 'Sucursal 2', 'Sucursal 3'],
+                    datasets: [{
+                        label: 'Ventas Totales ($)',
+                        data: [125000, 95000, 75000, 45000],
+                        backgroundColor: 'rgba(54, 162, 235, 0.6)',
+                        borderColor: 'rgba(54, 162, 235, 1)',
+                        borderWidth: 1
+                    }]
+                },
+                options: {
+                    scales: {
+                        y: {
+                            beginAtZero: true
+                        }
+                    }
+                }
+            });
+
+            // Gráfico de rotación de inventario
+            const ctxInventario = document.getElementById('chartInventario').getContext('2d');
+            new Chart(ctxInventario, {
+                type: 'line',
+                data: {
+                    labels: ['Enero', 'Febrero', 'Marzo', 'Abril', 'Mayo', 'Junio'],
+                    datasets: [
+                        {
+                            label: 'Central',
+                            data: [3.2, 3.5, 3.8, 4.0, 3.7, 3.9],
+                            borderColor: 'rgba(54, 162, 235, 1)',
+                            backgroundColor: 'rgba(54, 162, 235, 0.1)',
+                            tension: 0.4
+                        },
+                        {
+                            label: 'Sucursal 1',
+                            data: [2.7, 3.1, 3.4, 3.5, 3.9, 4.1],
+                            borderColor: 'rgba(255, 99, 132, 1)',
+                            backgroundColor: 'rgba(255, 99, 132, 0.1)',
+                            tension: 0.4
+                        },
+                        {
+                            label: 'Sucursal 2',
+                            data: [3.0, 3.2, 3.0, 3.5, 3.8, 4.0],
+                            borderColor: 'rgba(75, 192, 192, 1)',
+                            backgroundColor: 'rgba(75, 192, 192, 0.1)',
+                            tension: 0.4
+                        },
+                        {
+                            label: 'Sucursal 3',
+                            data: [2.5, 2.8, 3.0, 3.3, 3.5, 3.7],
+                            borderColor: 'rgba(255, 159, 64, 1)',
+                            backgroundColor: 'rgba(255, 159, 64, 0.1)',
+                            tension: 0.4
+                        }
+                    ]
+                },
+                options: {
+                    scales: {
+                        y: {
+                            beginAtZero: false
+                        }
+                    }
+                }
+            });
+
+            // Gráfico de efectividad de facturación
+            const ctxFacturacion = document.getElementById('chartFacturacion').getContext('2d');
+            new Chart(ctxFacturacion, {
+                type: 'radar',
+                data: {
+                    labels: ['Tiempo Promedio', 'Precisión', 'Completitud', 'Satisfacción', 'Sin Errores'],
+                    datasets: [
+                        {
+                            label: 'Central',
+                            data: [95, 85, 90, 88, 92],
+                            backgroundColor: 'rgba(54, 162, 235, 0.2)',
+                            borderColor: 'rgba(54, 162, 235, 1)',
+                            pointBackgroundColor: 'rgba(54, 162, 235, 1)',
+                            pointBorderColor: '#fff',
+                            pointHoverBackgroundColor: '#fff',
+                            pointHoverBorderColor: 'rgba(54, 162, 235, 1)'
+                        },
+                        {
+                            label: 'Sucursal 1',
+                            data: [90, 88, 84, 92, 88],
+                            backgroundColor: 'rgba(255, 99, 132, 0.2)',
+                            borderColor: 'rgba(255, 99, 132, 1)',
+                            pointBackgroundColor: 'rgba(255, 99, 132, 1)',
+                            pointBorderColor: '#fff',
+                            pointHoverBackgroundColor: '#fff',
+                            pointHoverBorderColor: 'rgba(255, 99, 132, 1)'
+                        }
+                    ]
+                },
+                options: {
+                    elements: {
+                        line: {
+                            borderWidth: 2
+                        }
+                    },
+                    scales: {
+                        r: {
+                            angleLines: {
+                                display: true
+                            },
+                            suggestedMin: 50,
+                            suggestedMax: 100
+                        }
+                    }
+                }
+            });
+
+            // Gráfico de rendimiento de caja
+            const ctxCaja = document.getElementById('chartCaja').getContext('2d');
+            new Chart(ctxCaja, {
+                type: 'pie',
+                data: {
+                    labels: ['Central', 'Sucursal 1', 'Sucursal 2', 'Sucursal 3'],
+                    datasets: [{
+                        data: [35, 30, 20, 15],
+                        backgroundColor: [
+                            'rgba(54, 162, 235, 0.7)',
+                            'rgba(255, 99, 132, 0.7)',
+                            'rgba(75, 192, 192, 0.7)',
+                            'rgba(255, 159, 64, 0.7)'
+                        ],
+                        borderColor: [
+                            'rgba(54, 162, 235, 1)',
+                            'rgba(255, 99, 132, 1)',
+                            'rgba(75, 192, 192, 1)',
+                            'rgba(255, 159, 64, 1)'
+                        ],
+                        borderWidth: 1
+                    }]
+                },
+                options: {
+                    responsive: true,
+                    plugins: {
+                        legend: {
+                            position: 'top',
+                        },
+                        tooltip: {
+                            callbacks: {
+                                label: function(context) {
+                                    let label = context.label || '';
+                                    if (label) {
+                                        label += ': ';
+                                    }
+                                    if (context.parsed !== null) {
+                                        label += context.parsed + '% del rendimiento total';
+                                    }
+                                    return label;
+                                }
+                            }
+                        }
+                    }
+                }
+            });
+        }
+
+        // Función para manejar eventos de modales
+        function setupModalEvents() {
+            // Obtener todos los modales
+            const modals = document.querySelectorAll('.modal');
+            // Obtener todos los botones para abrir modales
+            const btnNuevaSucursal = document.getElementById('btnNuevaSucursal');
+            // Obtener todos los botones para cerrar modales
+            const closeBtns = document.querySelectorAll('.close-modal');
+            const btnCancelarSucursal = document.getElementById('btnCancelarSucursal');
+            const btnCancelarEliminacion = document.getElementById('btnCancelarEliminacion');
+            
+            // Eventos para abrir modales
+            btnNuevaSucursal.addEventListener('click', function() {
+                document.getElementById('modalSucursal').style.display = 'block';
+                document.getElementById('modalSucursalTitle').textContent = 'Nueva Sucursal';
+                document.getElementById('formSucursal').reset();
+            });
+            
+            // Eventos para cerrar modales
+            closeBtns.forEach(btn => {
+                btn.addEventListener('click', function() {
+                    const modal = this.closest('.modal');
+                    modal.style.display = 'none';
+                });
+            });
+            
+            btnCancelarSucursal.addEventListener('click', function() {
+                document.getElementById('modalSucursal').style.display = 'none';
+            });
+            
+            btnCancelarEliminacion.addEventListener('click', function() {
+                document.getElementById('modalConfirmarEliminacion').style.display = 'none';
+            });
+            
+            // Cerrar modal al hacer clic fuera del contenido
+            window.addEventListener('click', function(event) {
+                modals.forEach(modal => {
+                    if (event.target === modal) {
+                        modal.style.display = 'none';
+                    }
+                });
+            });
+        }
+
+        // Inicializar eventos de modales
+        document.addEventListener('DOMContentLoaded', function() {
+            setupModalEvents();
+            
+            // Eventos para botones de acción en tabla
+            document.addEventListener('click', function(e) {
+                // Botón de editar sucursal
+                if (e.target.classList.contains('btn-edit') || e.target.closest('.btn-edit')) {
+                    const btn = e.target.closest('.btn-edit');
+                    if (btn) {
+                        const sucursalId = btn.getAttribute('data-id');
+                        editarSucursal(sucursalId);
+                    }
+                }
+                
+                // Botón de eliminar sucursal
+                if (e.target.classList.contains('btn-delete') || e.target.closest('.btn-delete')) {
+                    const btn = e.target.closest('.btn-delete');
+                    if (btn) {
+                        const sucursalId = btn.getAttribute('data-id');
+                        const sucursalNombre = btn.getAttribute('data-nombre');
+                        confirmarEliminacion(sucursalId, sucursalNombre);
+                    }
+                }
+                
+                // Botón de ver detalles
+                if (e.target.classList.contains('btn-view') || e.target.closest('.btn-view')) {
+                    const btn = e.target.closest('.btn-view');
+                    if (btn) {
+                        const sucursalId = btn.getAttribute('data-id');
+                        verDetallesSucursal(sucursalId);
+                    }
+                }
+                
+                // Botón de sincronizar sucursal
+                if (e.target.classList.contains('btn-sync') || e.target.closest('.btn-sync')) {
+                    const btn = e.target.closest('.btn-sync');
+                    if (btn) {
+                        const sucursalId = btn.getAttribute('data-id');
+                        sincronizarSucursal(sucursalId);
+                    }
+                }
+            });
+            
+            // Evento para guardar sucursal
+            document.getElementById('btnGuardarSucursal').addEventListener('click', function() {
+                guardarSucursal();
+            });
+            
+            // Evento para confirmar eliminación
+            document.getElementById('btnConfirmarEliminacion').addEventListener('click', function() {
+                const sucursalId = this.getAttribute('data-id');
+                eliminarSucursal(sucursalId);
+            });
+            
+            // Eventos para configuración de sucursal
+            document.getElementById('btnGuardarConfig').addEventListener('click', function() {
+                guardarConfiguracionSucursal();
+            });
+            
+            document.getElementById('btnResetearConfig').addEventListener('click', function() {
+                resetearConfiguracionSucursal();
+            });
+            
+            // Eventos para sincronización
+            document.getElementById('btnGuardarSync').addEventListener('click', function() {
+                guardarConfiguracionSync();
+            });
+            
+            document.getElementById('btnSincronizarAhora').addEventListener('click', function() {
+                sincronizarAhora();
+            });
+            
+            document.getElementById('btnSincronizarTodas').addEventListener('click', function() {
+                sincronizarTodasSucursales();
+            });
+            
+            // Eventos para resolución de conflictos
+            document.getElementById('btnResolverTodoLocal').addEventListener('click', function() {
+                resolverTodoConLocal();
+            });
+            
+            document.getElementById('btnResolverTodoRemoto').addEventListener('click', function() {
+                resolverTodoConRemoto();
+            });
+            
+            document.getElementById('btnResolverConflictos').addEventListener('click', function() {
+                aplicarResolucionConflictos();
+            });
+            
+            // Eventos para exportación
+            document.getElementById('btnExportarDatos').addEventListener('click', function() {
+                exportarDatosSucursales();
+            });
+            
+            document.getElementById('btnExportarEstadisticas').addEventListener('click', function() {
+                exportarEstadisticasSucursales();
+            });
+            
+            // Eventos para filtros
+            document.getElementById('btnAplicarFiltros').addEventListener('click', function() {
+                aplicarFiltrosSucursales();
+            });
+            
+            document.getElementById('btnAplicarPeriodo').addEventListener('click', function() {
+                aplicarFiltroPeriodo();
+            });
+            
+            // Eventos para paginación
+            document.getElementById('btnPrevPage').addEventListener('click', function() {
+                paginaAnterior();
+            });
+            
+            document.getElementById('btnNextPage').addEventListener('click', function() {
+                paginaSiguiente();
+            });
+            
+            // Eventos para acciones en modal de detalles
+            document.getElementById('btnVerConfiguracion').addEventListener('click', function() {
+                const sucursalId = this.getAttribute('data-id');
+                abrirConfiguracionSucursal(sucursalId);
+            });
+            
+            document.getElementById('btnSincronizarSucursal').addEventListener('click', function() {
+                const sucursalId = this.getAttribute('data-id');
+                sincronizarSucursal(sucursalId);
+            });
+            
+            document.getElementById('btnEditarSucursal').addEventListener('click', function() {
+                const sucursalId = this.getAttribute('data-id');
+                editarSucursal(sucursalId);
+            });
+        });
+
+        // Placeholder para funciones que estarán implementadas en los módulos
+        function editarSucursal(id) {
+            console.log('Editando sucursal con ID:', id);
+            // Esta función se implementará en editor.js
+        }
+        
+        function confirmarEliminacion(id, nombre) {
+            console.log('Confirmando eliminación de sucursal:', nombre);
+            document.getElementById('nombreSucursalEliminar').textContent = nombre;
+            document.getElementById('btnConfirmarEliminacion').setAttribute('data-id', id);
+            document.getElementById('modalConfirmarEliminacion').style.display = 'block';
+        }
+        
+        function eliminarSucursal(id) {
+            console.log('Eliminando sucursal con ID:', id);
+            // Esta función se implementará en editor.js
+            document.getElementById('modalConfirmarEliminacion').style.display = 'none';
+        }
+        
+        function verDetallesSucursal(id) {
+            console.log('Viendo detalles de sucursal con ID:', id);
+            // Esta función se implementará en index.js
+            document.getElementById('modalDetallesSucursal').style.display = 'block';
+        }
+        
+        function guardarSucursal() {
+            console.log('Guardando datos de sucursal');
+            // Esta función se implementará en editor.js
+            document.getElementById('modalSucursal').style.display = 'none';
+        }
+        
+        function guardarConfiguracionSucursal() {
+            console.log('Guardando configuración de sucursal');
+            // Esta función se implementará en configuracion.js
+        }
+        
+        function resetearConfiguracionSucursal() {
+            console.log('Reseteando configuración de sucursal');
+            // Esta función se implementará en configuracion.js
+        }
+        
+        function guardarConfiguracionSync() {
+            console.log('Guardando configuración de sincronización');
+            // Esta función se implementará en sincronizacion.js
+        }
+        
+        function sincronizarAhora() {
+            console.log('Iniciando sincronización manual');
+            // Esta función se implementará en sincronizacion.js
+        }
+        
+        function sincronizarSucursal(id) {
+            console.log('Sincronizando sucursal con ID:', id);
+            // Esta función se implementará en sincronizacion.js
+        }
+        
+        function sincronizarTodasSucursales() {
+            console.log('Sincronizando todas las sucursales');
+            // Esta función se implementará en sincronizacion.js
+        }
+        
+        function resolverTodoConLocal() {
+            console.log('Resolviendo todos los conflictos con datos locales');
+            // Esta función se implementará en sincronizacion.js
+        }
+        
+        function resolverTodoConRemoto() {
+            console.log('Resolviendo todos los conflictos con datos remotos');
+            // Esta función se implementará en sincronizacion.js
+        }
+        
+        function aplicarResolucionConflictos() {
+            console.log('Aplicando resolución de conflictos');
+            // Esta función se implementará en sincronizacion.js
+            document.getElementById('modalConflictos').style.display = 'none';
+        }
+        
+        function exportarDatosSucursales() {
+            console.log('Exportando datos de sucursales');
+            // Esta función se implementará en index.js
+        }
+        
+        function exportarEstadisticasSucursales() {
+            console.log('Exportando estadísticas de sucursales');
+            // Esta función se implementará en index.js
+        }
+        
+        function aplicarFiltrosSucursales() {
+            console.log('Aplicando filtros de sucursales');
+            // Esta función se implementará en index.js
+        }
+        
+        function aplicarFiltroPeriodo() {
+            console.log('Aplicando filtro de período');
+            // Esta función se implementará en index.js
+        }
+        
+        function paginaAnterior() {
+            console.log('Navegando a página anterior');
+            // Esta función se implementará en index.js
+        }
+        
+        function paginaSiguiente() {
+            console.log('Navegando a página siguiente');
+            // Esta función se implementará en index.js
+        }
+        
+        function abrirConfiguracionSucursal(id) {
+            console.log('Abriendo configuración de sucursal con ID:', id);
+            // Esta función se implementará en configuracion.js
+            document.getElementById('modalDetallesSucursal').style.display = 'none';
+            
+            // Cambiar a la pestaña de configuración
+            document.querySelectorAll('.tab-btn').forEach(btn => btn.classList.remove('active'));
+            document.querySelectorAll('.tab-pane').forEach(pane => pane.classList.remove('active'));
+            
+            document.querySelector('.tab-btn[data-target="configuracion"]').classList.add('active');
+            document.getElementById('configuracion').classList.add('active');
+            
+            // Seleccionar la sucursal en el selector
+            document.getElementById('selectSucursalConfig').value = id;
+            // Disparar evento change para cargar los datos
+            const event = new Event('change');
+            document.getElementById('selectSucursalConfig').dispatchEvent(event);
+        }
+    </script>
+
+    <!-- Estilos internos adicionales específicos para la página -->
+    <style>
+        /* Estilos para las tarjetas de estado */
+        .status-cards {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 20px;
+            margin-bottom: 30px;
+        }
+        
+        .status-card {
+            flex: 1;
+            min-width: 200px;
+            background-color: #fff;
+            border-radius: 8px;
+            box-shadow: 0 2px 10px rgba(0, 0, 0, 0.1);
+            padding: 20px;
+            text-align: center;
+        }
+        
+        .card-icon {
+            font-size: 32px;
+            color: #3498db;
+            margin-bottom: 10px;
+        }
+        
+        .card-title {
+            font-size: 16px;
+            color: #777;
+            margin-bottom: 5px;
+        }
+        
+        .card-value {
+            font-size: 24px;
+            font-weight: 600;
+            color: #333;
+        }
+        
+        /* Estilos para el log de sincronización */
+        .log-container {
+            max-height: 300px;
+            overflow-y: auto;
+            border: 1px solid #ddd;
+            border-radius: 4px;
+            margin-top: 15px;
+        }
+        
+        .log-header {
+            display: grid;
+            grid-template-columns: 1fr 0.5fr 1fr 0.5fr 2fr;
+            background-color: #f8f9fa;
+            padding: 10px 15px;
+            font-weight: 600;
+            border-bottom: 1px solid #ddd;
+        }
+        
+        .log-content {
+            max-height: 250px;
+            overflow-y: auto;
+        }
+        
+        .log-item {
+            display: grid;
+            grid-template-columns: 1fr 0.5fr 1fr 0.5fr 2fr;
+            padding: 10px 15px;
+            border-bottom: 1px solid #eee;
+        }
+        
+        .log-item:nth-child(even) {
+            background-color: #f9f9f9;
+        }
+        
+        .log-success {
+            color: #28a745;
+        }
+        
+        .log-error {
+            color: #dc3545;
+        }
+        
+        .log-warning {
+            color: #ffc107;
+        }
+        
+        .log-info {
+            color: #17a2b8;
+        }
+        
+        /* Estilos para los gráficos */
+        .stats-charts {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(450px, 1fr));
+            gap: 20px;
+            margin-bottom: 30px;
+        }
+        
+        .chart-container {
+            background-color: #fff;
+            border-radius: 8px;
+            box-shadow: 0 2px 10px rgba(0, 0, 0, 0.1);
+            padding: 20px;
+        }
+        
+        .chart-container h3 {
+            margin-top: 0;
+            margin-bottom: 20px;
+            font-size: 18px;
+            color: #333;
+        }
+        
+        /* Estilos para detalles de sucursal */
+        .branch-details {
+            display: flex;
+            gap: 30px;
+            margin-bottom: 20px;
+        }
+        
+        .branch-info {
+            flex: 1;
+        }
+        
+        .branch-stats {
+            flex: 1;
+        }
+        
+        .info-item {
+            margin-bottom: 10px;
+            display: flex;
+        }
+        
+        .info-label {
+            font-weight: 600;
+            min-width: 120px;
+            color: #555;
+        }
+        
+        .info-value {
+            flex: 1;
+        }
+        
+        .status-active {
+            color: #28a745;
+            font-weight: 600;
+        }
+        
+        .status-inactive {
+            color: #dc3545;
+            font-weight: 600;
+        }
+        
+        .stat-circle {
+            background-color: #f8f9fa;
+            border-radius: 50%;
+            width: 120px;
+            height: 120px;
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+            align-items: center;
+            margin: 0 auto;
+            padding: 10px;
+        }
+        
+        .stat-value {
+            font-size: 20px;
+            font-weight: 600;
+            color: #3498db;
+            margin-bottom: 5px;
+        }
+        
+        .stat-label {
+            font-size: 12px;
+            color: #777;
+            text-align: center;
+        }
+        
+        .stats-item {
+            margin-bottom: 15px;
+        }
+        
+        .branch-actions {
+            display: flex;
+            justify-content: flex-end;
+            gap: 10px;
+            margin-top: 20px;
+        }
+        
+        /* Estilos para conflictos */
+        .conflicts-container {
+            max-height: 400px;
+            overflow-y: auto;
+        }
+        
+        .conflicts-header {
+            margin-bottom: 15px;
+        }
+        
+        .conflict-item {
+            background-color: #f9f9f9;
+            border: 1px solid #ddd;
+            border-radius: 4px;
+            padding: 15px;
+            margin-bottom: 10px;
+        }
+        
+        .conflict-title {
+            font-weight: 600;
+            margin-bottom: 10px;
+            color: #dc3545;
+        }
+        
+        .conflict-data {
+            display: flex;
+            gap: 20px;
+            margin-bottom: 10px;
+        }
+        
+        .conflict-local, .conflict-remote {
+            flex: 1;
+            padding: 10px;
+            background-color: #fff;
+            border: 1px solid #ddd;
+            border-radius: 4px;
+        }
+        
+        .conflict-actions {
+            display: flex;
+            justify-content: flex-end;
+            gap: 10px;
+        }
+        
+        .config-container {
+            display: flex;
+            gap: 20px;
+        }
+        
+        .sucursal-selector {
+            flex: 0 0 250px;
+        }
+        
+        .config-form {
+            flex: 1;
+        }
+        
+        .form-section {
+            background-color: #f9f9f9;
+            border-radius: 4px;
+            padding: 15px;
+            margin-bottom: 20px;
+        }
+        
+        .checkbox-group {
+            margin-bottom: 0;
+        }
+        
+        .checkbox-container {
+            display: flex;
+            align-items: center;
+            margin-bottom: 10px;
+            cursor: pointer;
+        }
+        
+        .warning-text {
+            color: #dc3545;
+            font-weight: 600;
+        }
+    </style>
+</body>
+</html>

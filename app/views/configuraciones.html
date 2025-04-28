@@ -1,0 +1,1582 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>FactuSystem - Configuraciones</title>
+    <link rel="stylesheet" href="../assets/css/main.css">
+    <link rel="stylesheet" href="../assets/css/components/sidebar.css">
+    <link rel="stylesheet" href="../assets/css/components/modal.css">
+    <link rel="stylesheet" href="../assets/css/components/tabs.css">
+</head>
+<body>
+    <div class="config-container">
+        <div class="config-sidebar">
+            <div class="config-nav">
+                <ul>
+                    <li data-section="empresa" class="active">
+                        <i class="icon-building"></i>
+                        <span>Empresa</span>
+                    </li>
+                    <li data-section="visual">
+                        <i class="icon-palette"></i>
+                        <span>Personalización</span>
+                    </li>
+                    <li data-section="seguridad">
+                        <i class="icon-shield"></i>
+                        <span>Seguridad</span>
+                    </li>
+                    <li data-section="impresion">
+                        <i class="icon-print"></i>
+                        <span>Impresión</span>
+                    </li>
+                    <li data-section="integraciones">
+                        <i class="icon-link"></i>
+                        <span>Integraciones</span>
+                        <ul class="submenu">
+                            <li data-section="integraciones-mercadopago">Mercado Pago</li>
+                            <li data-section="integraciones-arca">ARCA (AFIP)</li>
+                            <li data-section="integraciones-whatsapp">WhatsApp</li>
+                            <li data-section="integraciones-email">Email</li>
+                            <li data-section="integraciones-bancos">Bancos</li>
+                        </ul>
+                    </li>
+                    <li data-section="backups">
+                        <i class="icon-database"></i>
+                        <span>Respaldos</span>
+                    </li>
+                </ul>
+            </div>
+        </div>
+
+        <div class="config-content">
+            <!-- Sección de Configuración de Empresa -->
+            <section id="empresa" class="config-section active">
+                <h2>Datos de la Empresa</h2>
+                <form id="empresa-form">
+                    <div class="form-group">
+                        <label for="empresa-nombre">Nombre de la Empresa</label>
+                        <input type="text" id="empresa-nombre" name="nombre" class="form-control" required>
+                    </div>
+                    <div class="form-group">
+                        <label for="empresa-razon-social">Razón Social</label>
+                        <input type="text" id="empresa-razon-social" name="razonSocial" class="form-control" required>
+                    </div>
+                    <div class="form-group">
+                        <label for="empresa-cuit">CUIT</label>
+                        <input type="text" id="empresa-cuit" name="cuit" class="form-control" required pattern="[0-9]{11}" placeholder="Sin guiones">
+                    </div>
+                    <div class="form-row">
+                        <div class="form-group col-md-6">
+                            <label for="empresa-condicion-iva">Condición frente al IVA</label>
+                            <select id="empresa-condicion-iva" name="condicionIva" class="form-control" required>
+                                <option value="">Seleccionar...</option>
+                                <option value="Responsable Inscripto">Responsable Inscripto</option>
+                                <option value="Monotributista">Monotributista</option>
+                                <option value="Exento">Exento</option>
+                            </select>
+                        </div>
+                        <div class="form-group col-md-6">
+                            <label for="empresa-inicio-actividades">Inicio de Actividades</label>
+                            <input type="date" id="empresa-inicio-actividades" name="inicioActividades" class="form-control">
+                        </div>
+                    </div>
+                    <div class="form-group">
+                        <label for="empresa-domicilio">Domicilio Fiscal</label>
+                        <input type="text" id="empresa-domicilio" name="domicilio" class="form-control" required>
+                    </div>
+                    <div class="form-row">
+                        <div class="form-group col-md-4">
+                            <label for="empresa-ciudad">Ciudad</label>
+                            <input type="text" id="empresa-ciudad" name="ciudad" class="form-control" required>
+                        </div>
+                        <div class="form-group col-md-4">
+                            <label for="empresa-provincia">Provincia</label>
+                            <input type="text" id="empresa-provincia" name="provincia" class="form-control" required>
+                        </div>
+                        <div class="form-group col-md-4">
+                            <label for="empresa-cp">Código Postal</label>
+                            <input type="text" id="empresa-cp" name="codigoPostal" class="form-control" required>
+                        </div>
+                    </div>
+                    <div class="form-row">
+                        <div class="form-group col-md-6">
+                            <label for="empresa-telefono">Teléfono</label>
+                            <input type="tel" id="empresa-telefono" name="telefono" class="form-control">
+                        </div>
+                        <div class="form-group col-md-6">
+                            <label for="empresa-email">Email</label>
+                            <input type="email" id="empresa-email" name="email" class="form-control">
+                        </div>
+                    </div>
+                    <div class="form-group">
+                        <label for="empresa-sitio-web">Sitio Web</label>
+                        <input type="url" id="empresa-sitio-web" name="sitioWeb" class="form-control" placeholder="https://">
+                    </div>
+                    <div class="form-group">
+                        <label for="empresa-logo">Logo de la Empresa</label>
+                        <div class="logo-upload-container">
+                            <div id="logo-preview" class="logo-preview">
+                                <img id="preview-img" src="../assets/img/default-logo.png" alt="Logo de la empresa">
+                            </div>
+                            <div class="logo-upload-controls">
+                                <input type="file" id="empresa-logo" name="logo" accept="image/*" class="form-control-file">
+                                <button type="button" id="remove-logo" class="btn btn-outline-danger btn-sm">Eliminar logo</button>
+                            </div>
+                        </div>
+                        <small class="form-text text-muted">Formato recomendado: PNG o JPG, máximo 2MB. Dimensiones óptimas: 300x100px</small>
+                    </div>
+                    <div class="form-actions">
+                        <button type="submit" class="btn btn-primary">Guardar Cambios</button>
+                        <button type="reset" class="btn btn-outline-secondary">Cancelar</button>
+                    </div>
+                </form>
+            </section>
+
+            <!-- Sección de Personalización Visual -->
+            <section id="visual" class="config-section">
+                <h2>Personalización Visual</h2>
+                <div class="visual-customization">
+                    <div class="form-group">
+                        <label>Tema del Sistema</label>
+                        <div class="theme-options">
+                            <div class="theme-option" data-theme="light">
+                                <div class="theme-preview light-theme"></div>
+                                <span>Claro</span>
+                                <input type="radio" name="theme" value="light" checked>
+                            </div>
+                            <div class="theme-option" data-theme="dark">
+                                <div class="theme-preview dark-theme"></div>
+                                <span>Oscuro</span>
+                                <input type="radio" name="theme" value="dark">
+                            </div>
+                            <div class="theme-option" data-theme="auto">
+                                <div class="theme-preview auto-theme"></div>
+                                <span>Automático</span>
+                                <input type="radio" name="theme" value="auto">
+                            </div>
+                        </div>
+                    </div>
+                    
+                    <div class="form-group">
+                        <label>Color Principal</label>
+                        <div class="color-picker">
+                            <input type="color" id="primary-color" name="primaryColor" value="#007bff">
+                            <span id="primary-color-hex">#007bff</span>
+                            <button type="button" id="reset-primary-color" class="btn btn-sm btn-outline-secondary">Restaurar</button>
+                        </div>
+                    </div>
+                    
+                    <div class="form-group">
+                        <label>Color Secundario</label>
+                        <div class="color-picker">
+                            <input type="color" id="secondary-color" name="secondaryColor" value="#6c757d">
+                            <span id="secondary-color-hex">#6c757d</span>
+                            <button type="button" id="reset-secondary-color" class="btn btn-sm btn-outline-secondary">Restaurar</button>
+                        </div>
+                    </div>
+                    
+                    <div class="form-group">
+                        <label>Fuente del Sistema</label>
+                        <select id="system-font" class="form-control">
+                            <option value="system-ui">Predeterminada del Sistema</option>
+                            <option value="Arial, sans-serif">Arial</option>
+                            <option value="'Open Sans', sans-serif">Open Sans</option>
+                            <option value="'Roboto', sans-serif">Roboto</option>
+                            <option value="'Montserrat', sans-serif">Montserrat</option>
+                        </select>
+                        <div id="font-preview" class="font-preview">
+                            Este es un texto de muestra con la fuente seleccionada
+                        </div>
+                    </div>
+                    
+                    <div class="form-group">
+                        <label>Tamaño de Fuente Base</label>
+                        <div class="range-slider">
+                            <input type="range" id="font-size" min="12" max="18" step="1" value="14">
+                            <span id="font-size-value">14px</span>
+                        </div>
+                        <div id="font-size-preview" class="font-size-preview">
+                            Este es un texto de muestra con el tamaño seleccionado
+                        </div>
+                    </div>
+                    
+                    <div class="form-group">
+                        <label>Estilo de Interfaz</label>
+                        <div class="ui-style-options">
+                            <div class="ui-style-option" data-style="standard">
+                                <div class="ui-style-preview standard-style"></div>
+                                <span>Estándar</span>
+                                <input type="radio" name="ui-style" value="standard" checked>
+                            </div>
+                            <div class="ui-style-option" data-style="compact">
+                                <div class="ui-style-preview compact-style"></div>
+                                <span>Compacto</span>
+                                <input type="radio" name="ui-style" value="compact">
+                            </div>
+                            <div class="ui-style-option" data-style="comfortable">
+                                <div class="ui-style-preview comfortable-style"></div>
+                                <span>Confortable</span>
+                                <input type="radio" name="ui-style" value="comfortable">
+                            </div>
+                        </div>
+                    </div>
+                    
+                    <div class="form-group">
+                        <label>Efectos y Animaciones</label>
+                        <div class="toggle-switch">
+                            <input type="checkbox" id="enable-animations" checked>
+                            <label for="enable-animations">Habilitar animaciones</label>
+                        </div>
+                    </div>
+                    
+                    <div class="form-actions">
+                        <button type="button" id="save-visual" class="btn btn-primary">Guardar Cambios</button>
+                        <button type="button" id="reset-visual" class="btn btn-outline-secondary">Restaurar Predeterminados</button>
+                    </div>
+                </div>
+            </section>
+
+            <!-- Sección de Seguridad -->
+            <section id="seguridad" class="config-section">
+                <h2>Configuración de Seguridad</h2>
+                <div class="security-settings">
+                    <div class="form-group">
+                        <label>Política de Contraseñas</label>
+                        <div class="card password-policy">
+                            <div class="card-body">
+                                <div class="toggle-switch">
+                                    <input type="checkbox" id="complex-passwords" checked>
+                                    <label for="complex-passwords">Requerir contraseñas complejas</label>
+                                </div>
+                                <small class="text-muted">Mínimo 8 caracteres, incluir mayúsculas, minúsculas, números y símbolos</small>
+                                
+                                <div class="form-group mt-3">
+                                    <label for="password-expiry">Caducidad de contraseñas</label>
+                                    <select id="password-expiry" class="form-control">
+                                        <option value="0">Nunca</option>
+                                        <option value="30">30 días</option>
+                                        <option value="60">60 días</option>
+                                        <option value="90" selected>90 días</option>
+                                        <option value="180">180 días</option>
+                                    </select>
+                                </div>
+                                
+                                <div class="form-group">
+                                    <label for="password-history">Historial de contraseñas</label>
+                                    <select id="password-history" class="form-control">
+                                        <option value="0">No recordar contraseñas anteriores</option>
+                                        <option value="3">Recordar últimas 3 contraseñas</option>
+                                        <option value="5" selected>Recordar últimas 5 contraseñas</option>
+                                        <option value="10">Recordar últimas 10 contraseñas</option>
+                                    </select>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                    
+                    <div class="form-group">
+                        <label>Autenticación de Dos Factores (2FA)</label>
+                        <div class="card two-factor">
+                            <div class="card-body">
+                                <div class="toggle-switch">
+                                    <input type="checkbox" id="require-2fa">
+                                    <label for="require-2fa">Requerir 2FA para todos los usuarios</label>
+                                </div>
+                                
+                                <div class="form-group mt-3">
+                                    <label for="2fa-method">Método preferido</label>
+                                    <select id="2fa-method" class="form-control">
+                                        <option value="app">Aplicación de autenticación (Google Authenticator, etc.)</option>
+                                        <option value="sms">SMS</option>
+                                        <option value="email">Correo electrónico</option>
+                                    </select>
+                                </div>
+                                
+                                <button type="button" id="setup-2fa" class="btn btn-outline-primary">Configurar 2FA para administrador</button>
+                            </div>
+                        </div>
+                    </div>
+                    
+                    <div class="form-group">
+                        <label>Sesiones y Bloqueo</label>
+                        <div class="card sessions">
+                            <div class="card-body">
+                                <div class="form-group">
+                                    <label for="session-timeout">Tiempo de inactividad antes de cierre de sesión</label>
+                                    <select id="session-timeout" class="form-control">
+                                        <option value="15">15 minutos</option>
+                                        <option value="30" selected>30 minutos</option>
+                                        <option value="60">1 hora</option>
+                                        <option value="120">2 horas</option>
+                                        <option value="240">4 horas</option>
+                                        <option value="0">Nunca</option>
+                                    </select>
+                                </div>
+                                
+                                <div class="form-group">
+                                    <label for="max-attempts">Intentos máximos de inicio de sesión antes del bloqueo</label>
+                                    <select id="max-attempts" class="form-control">
+                                        <option value="3">3 intentos</option>
+                                        <option value="5" selected>5 intentos</option>
+                                        <option value="10">10 intentos</option>
+                                    </select>
+                                </div>
+                                
+                                <div class="form-group">
+                                    <label for="lockout-duration">Duración del bloqueo</label>
+                                    <select id="lockout-duration" class="form-control">
+                                        <option value="15">15 minutos</option>
+                                        <option value="30" selected>30 minutos</option>
+                                        <option value="60">1 hora</option>
+                                        <option value="1440">24 horas</option>
+                                    </select>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                    
+                    <div class="form-group">
+                        <label>Auditoría y Registro</label>
+                        <div class="card audit">
+                            <div class="card-body">
+                                <div class="toggle-switch">
+                                    <input type="checkbox" id="detailed-audit" checked>
+                                    <label for="detailed-audit">Registro detallado de actividades</label>
+                                </div>
+                                
+                                <div class="form-group mt-3">
+                                    <label>Registrar actividades:</label>
+                                    <div class="checkbox-list">
+                                        <div class="form-check">
+                                            <input class="form-check-input" type="checkbox" id="log-login" checked>
+                                            <label class="form-check-label" for="log-login">Inicios de sesión</label>
+                                        </div>
+                                        <div class="form-check">
+                                            <input class="form-check-input" type="checkbox" id="log-transactions" checked>
+                                            <label class="form-check-label" for="log-transactions">Transacciones (ventas, compras)</label>
+                                        </div>
+                                        <div class="form-check">
+                                            <input class="form-check-input" type="checkbox" id="log-products" checked>
+                                            <label class="form-check-label" for="log-products">Modificaciones de productos</label>
+                                        </div>
+                                        <div class="form-check">
+                                            <input class="form-check-input" type="checkbox" id="log-cash" checked>
+                                            <label class="form-check-label" for="log-cash">Operaciones de caja</label>
+                                        </div>
+                                        <div class="form-check">
+                                            <input class="form-check-input" type="checkbox" id="log-settings" checked>
+                                            <label class="form-check-label" for="log-settings">Cambios en configuración</label>
+                                        </div>
+                                    </div>
+                                </div>
+                                
+                                <div class="form-group">
+                                    <label for="log-retention">Retención de registros</label>
+                                    <select id="log-retention" class="form-control">
+                                        <option value="30">30 días</option>
+                                        <option value="90">90 días</option>
+                                        <option value="180" selected>6 meses</option>
+                                        <option value="365">1 año</option>
+                                        <option value="730">2 años</option>
+                                    </select>
+                                </div>
+                                
+                                <button type="button" id="export-logs" class="btn btn-outline-secondary">Exportar Registros</button>
+                            </div>
+                        </div>
+                    </div>
+                    
+                    <div class="form-actions">
+                        <button type="button" id="save-security" class="btn btn-primary">Guardar Configuración</button>
+                        <button type="button" id="reset-security" class="btn btn-outline-secondary">Restaurar Predeterminados</button>
+                    </div>
+                </div>
+            </section>
+
+            <!-- Sección de Impresión -->
+            <section id="impresion" class="config-section">
+                <h2>Configuración de Impresión</h2>
+                <form id="print-settings-form">
+                    <div class="form-group">
+                        <label>Impresoras Disponibles</label>
+                        <select id="printer-select" class="form-control">
+                            <option value="">Cargando impresoras...</option>
+                        </select>
+                        <div class="printer-actions mt-2">
+                            <button type="button" id="refresh-printers" class="btn btn-sm btn-outline-secondary">Refrescar lista</button>
+                            <button type="button" id="test-printer" class="btn btn-sm btn-outline-primary">Imprimir página de prueba</button>
+                        </div>
+                    </div>
+                    
+                    <div class="form-group">
+                        <label>Impresora por Defecto para Documentos</label>
+                        <div class="card">
+                            <div class="card-body">
+                                <div class="form-group">
+                                    <label for="invoice-printer">Facturas A4</label>
+                                    <select id="invoice-printer" class="form-control printer-option">
+                                        <option value="default">Impresora por defecto del sistema</option>
+                                    </select>
+                                </div>
+                                
+                                <div class="form-group">
+                                    <label for="ticket-printer">Tickets (58mm)</label>
+                                    <select id="ticket-printer" class="form-control printer-option">
+                                        <option value="default">Impresora por defecto del sistema</option>
+                                    </select>
+                                </div>
+                                
+                                <div class="form-group">
+                                    <label for="report-printer">Reportes</label>
+                                    <select id="report-printer" class="form-control printer-option">
+                                        <option value="default">Impresora por defecto del sistema</option>
+                                    </select>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                    
+                    <div class="form-group">
+                        <label>Formato de Impresión</label>
+                        <div class="card">
+                            <div class="card-body">
+                                <div class="form-group">
+                                    <label for="paper-size">Tamaño de Papel</label>
+                                    <select id="paper-size" class="form-control">
+                                        <option value="A4">A4 (210 x 297 mm)</option>
+                                        <option value="Letter">Carta (8.5 x 11 pulgadas)</option>
+                                        <option value="Legal">Legal (8.5 x 14 pulgadas)</option>
+                                        <option value="58mm">Ticket 58mm</option>
+                                        <option value="80mm">Ticket 80mm</option>
+                                    </select>
+                                </div>
+                                
+                                <div class="form-group">
+                                    <label for="orientation">Orientación</label>
+                                    <select id="orientation" class="form-control">
+                                        <option value="portrait">Vertical</option>
+                                        <option value="landscape">Horizontal</option>
+                                    </select>
+                                </div>
+                                
+                                <div class="form-group">
+                                    <label>Márgenes (mm)</label>
+                                    <div class="row">
+                                        <div class="col-3">
+                                            <input type="number" id="margin-top" class="form-control" value="10" min="0">
+                                            <small class="form-text text-center">Superior</small>
+                                        </div>
+                                        <div class="col-3">
+                                            <input type="number" id="margin-right" class="form-control" value="10" min="0">
+                                            <small class="form-text text-center">Derecho</small>
+                                        </div>
+                                        <div class="col-3">
+                                            <input type="number" id="margin-bottom" class="form-control" value="10" min="0">
+                                            <small class="form-text text-center">Inferior</small>
+                                        </div>
+                                        <div class="col-3">
+                                            <input type="number" id="margin-left" class="form-control" value="10" min="0">
+                                            <small class="form-text text-center">Izquierdo</small>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                    
+                    <div class="form-group">
+                        <label>Personalización de Plantillas</label>
+                        <div class="card">
+                            <div class="card-body">
+                                <div class="template-selector">
+                                    <label for="template-type">Seleccionar plantilla para editar</label>
+                                    <select id="template-type" class="form-control">
+                                        <option value="factura-a4">Factura A4</option>
+                                        <option value="factura-ticket">Factura Ticket</option>
+                                        <option value="presupuesto">Presupuesto</option>
+                                        <option value="remito">Remito</option>
+                                        <option value="nota-credito">Nota de Crédito</option>
+                                        <option value="nota-debito">Nota de Débito</option>
+                                    </select>
+                                    
+                                    <button type="button" id="edit-template" class="btn btn-outline-primary mt-2">Editar Plantilla</button>
+                                    <button type="button" id="restore-template" class="btn btn-outline-secondary mt-2">Restaurar Predeterminada</button>
+                                </div>
+                                
+                                <div class="form-group mt-3">
+                                    <div class="toggle-switch">
+                                        <input type="checkbox" id="show-qr" checked>
+                                        <label for="show-qr">Mostrar código QR en facturas</label>
+                                    </div>
+                                    <small class="text-muted">Incluye un código QR con la información tributaria en facturas A4</small>
+                                </div>
+                                
+                                <div class="form-group">
+                                    <div class="toggle-switch">
+                                        <input type="checkbox" id="show-logo" checked>
+                                        <label for="show-logo">Mostrar logo de la empresa</label>
+                                    </div>
+                                </div>
+                                
+                                <div class="form-group">
+                                    <label for="footer-text">Texto del pie de página</label>
+                                    <textarea id="footer-text" class="form-control" rows="3">Gracias por su compra</textarea>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                    
+                    <div class="form-group">
+                        <label>Configuración Avanzada</label>
+                        <div class="card">
+                            <div class="card-body">
+                                <div class="form-group">
+                                    <div class="toggle-switch">
+                                        <input type="checkbox" id="auto-print" checked>
+                                        <label for="auto-print">Imprimir automáticamente al finalizar la factura</label>
+                                    </div>
+                                </div>
+                                
+                                <div class="form-group">
+                                    <div class="toggle-switch">
+                                        <input type="checkbox" id="print-preview" checked>
+                                        <label for="print-preview">Mostrar vista previa antes de imprimir</label>
+                                    </div>
+                                </div>
+                                
+                                <div class="form-group">
+                                    <div class="toggle-switch">
+                                        <input type="checkbox" id="print-duplicate">
+                                        <label for="print-duplicate">Imprimir duplicado automáticamente</label>
+                                    </div>
+                                </div>
+                                
+                                <div class="form-group">
+                                    <label for="printer-command">Comandos adicionales para impresora</label>
+                                    <input type="text" id="printer-command" class="form-control" placeholder="Comandos ESC/POS personalizados">
+                                    <small class="text-muted">Solo para usuarios avanzados</small>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                    
+                    <div class="form-actions">
+                        <button type="submit" class="btn btn-primary">Guardar Configuración</button>
+                        <button type="reset" class="btn btn-outline-secondary">Cancelar Cambios</button>
+                    </div>
+                </form>
+            </section>
+
+            <!-- Sección de Integraciones -->
+            <section id="integraciones" class="config-section">
+                <h2>Integraciones</h2>
+                <div class="integration-tabs">
+                    <div class="tab-nav">
+                        <ul>
+                            <li class="active" data-tab="mercadopago">Mercado Pago</li>
+                            <li data-tab="arca">ARCA (AFIP)</li>
+                            <li data-tab="whatsapp">WhatsApp</li>
+                            <li data-tab="email">Email</li>
+                            <li data-tab="bancos">Bancos</li>                   
+                    </ul>
+                </div>
+                
+                <!-- Tab de Mercado Pago -->
+                <div id="mercadopago" class="tab-content active">
+                    <div class="tab-header">
+                        <h3>Configuración de Mercado Pago</h3>
+                        <div class="toggle-switch main-toggle">
+                            <input type="checkbox" id="enable-mercadopago">
+                            <label for="enable-mercadopago">Habilitar integración</label>
+                        </div>
+                    </div>
+                    
+                    <form id="mercadopago-form">
+                        <div class="form-group">
+                            <label for="mp-client-id">Client ID</label>
+                            <input type="text" id="mp-client-id" class="form-control" placeholder="Client ID de Mercado Pago">
+                        </div>
+                        
+                        <div class="form-group">
+                            <label for="mp-client-secret">Client Secret</label>
+                            <div class="password-field">
+                                <input type="password" id="mp-client-secret" class="form-control" placeholder="Client Secret de Mercado Pago">
+                                <button type="button" class="toggle-password"><i class="icon-eye"></i></button>
+                            </div>
+                        </div>
+                        
+                        <div class="form-group">
+                            <label for="mp-access-token">Access Token</label>
+                            <div class="password-field">
+                                <input type="password" id="mp-access-token" class="form-control" placeholder="Access Token de Mercado Pago">
+                                <button type="button" class="toggle-password"><i class="icon-eye"></i></button>
+                            </div>
+                        </div>
+                        
+                        <div class="form-group">
+                            <label>QR Estático</label>
+                            <div class="qr-options">
+                                <div class="form-check">
+                                    <input class="form-check-input" type="radio" name="qr-type" id="qr-upload" value="upload">
+                                    <label class="form-check-label" for="qr-upload">Subir imagen de QR</label>
+                                </div>
+                                <div class="form-check">
+                                    <input class="form-check-input" type="radio" name="qr-type" id="qr-generate" value="generate" checked>
+                                    <label class="form-check-label" for="qr-generate">Generar desde credenciales</label>
+                                </div>
+                            </div>
+                            
+                            <div id="qr-upload-container" class="mt-3" style="display: none;">
+                                <input type="file" id="qr-image" class="form-control-file" accept="image/*">
+                                <div id="qr-preview" class="qr-preview mt-2">
+                                    <img id="qr-preview-img" src="" alt="QR Preview" style="display: none;">
+                                </div>
+                            </div>
+                            
+                            <div id="qr-generate-container" class="mt-3">
+                                <div class="form-group">
+                                    <label for="qr-name">Nombre del QR</label>
+                                    <input type="text" id="qr-name" class="form-control" placeholder="Caja 1" value="FactuSystem">
+                                </div>
+                                <button type="button" id="generate-qr" class="btn btn-outline-primary">Generar QR</button>
+                                <div id="generated-qr" class="qr-preview mt-2"></div>
+                            </div>
+                        </div>
+                        
+                        <div class="form-group">
+                            <label for="mp-check-interval">Intervalo de verificación de pagos</label>
+                            <select id="mp-check-interval" class="form-control">
+                                <option value="5">5 segundos</option>
+                                <option value="10" selected>10 segundos</option>
+                                <option value="15">15 segundos</option>
+                                <option value="30">30 segundos</option>
+                            </select>
+                            <small class="text-muted">Frecuencia con la que el sistema verifica nuevos pagos recibidos</small>
+                        </div>
+                        
+                        <div class="form-group">
+                            <div class="toggle-switch">
+                                <input type="checkbox" id="mp-auto-reconcile" checked>
+                                <label for="mp-auto-reconcile">Reconciliación automática de pagos</label>
+                            </div>
+                            <small class="text-muted">Verifica y registra automáticamente pagos recibidos</small>
+                        </div>
+                        
+                        <div class="form-group">
+                            <div class="toggle-switch">
+                                <input type="checkbox" id="mp-notifications" checked>
+                                <label for="mp-notifications">Notificaciones de pagos recibidos</label>
+                            </div>
+                        </div>
+                        
+                        <button type="button" id="test-mp-connection" class="btn btn-outline-primary">Probar conexión</button>
+                        <div id="mp-connection-status" class="connection-status mt-2"></div>
+                        
+                        <div class="form-actions mt-4">
+                            <button type="submit" class="btn btn-primary">Guardar Configuración</button>
+                            <button type="reset" class="btn btn-outline-secondary">Cancelar</button>
+                        </div>
+                    </form>
+                </div>
+                
+                <!-- Tab de ARCA (AFIP) -->
+                <div id="arca" class="tab-content">
+                    <div class="tab-header">
+                        <h3>Configuración de ARCA (AFIP)</h3>
+                        <div class="toggle-switch main-toggle">
+                            <input type="checkbox" id="enable-arca">
+                            <label for="enable-arca">Habilitar integración</label>
+                        </div>
+                    </div>
+                    
+                    <form id="arca-form">
+                        <div class="form-group">
+                            <label for="arca-environment">Entorno</label>
+                            <select id="arca-environment" class="form-control">
+                                <option value="testing">Testing / Homologación</option>
+                                <option value="production">Producción</option>
+                            </select>
+                        </div>
+                        
+                        <div class="form-group">
+                            <label for="arca-cuit">CUIT</label>
+                            <input type="text" id="arca-cuit" class="form-control" placeholder="Sin guiones">
+                        </div>
+                        
+                        <div class="form-group">
+                            <label for="arca-certificate">Certificado Digital (.crt)</label>
+                            <input type="file" id="arca-certificate" class="form-control-file" accept=".crt">
+                            <small class="text-muted">Certificado proporcionado por AFIP</small>
+                        </div>
+                        
+                        <div class="form-group">
+                            <label for="arca-key">Clave Privada (.key)</label>
+                            <input type="file" id="arca-key" class="form-control-file" accept=".key">
+                            <small class="text-muted">Clave privada asociada al certificado</small>
+                        </div>
+                        
+                        <div class="form-group">
+                            <label>Puntos de Venta</label>
+                            <div class="card">
+                                <div class="card-body">
+                                    <div class="pos-list">
+                                        <div class="pos-item">
+                                            <div class="form-row">
+                                                <div class="col-md-3">
+                                                    <input type="number" class="form-control pos-number" placeholder="Número" min="1" max="99999">
+                                                </div>
+                                                <div class="col-md-7">
+                                                    <input type="text" class="form-control pos-description" placeholder="Descripción (ej: Sucursal Centro)">
+                                                </div>
+                                                <div class="col-md-2">
+                                                    <button type="button" class="btn btn-outline-danger btn-sm remove-pos"><i class="icon-trash"></i></button>
+                                                </div>
+                                            </div>
+                                        </div>
+                                    </div>
+                                    <button type="button" id="add-pos" class="btn btn-sm btn-outline-secondary mt-2">Agregar Punto de Venta</button>
+                                </div>
+                            </div>
+                        </div>
+                        
+                        <div class="form-group">
+                            <label>Tipos de Comprobantes</label>
+                            <div class="card">
+                                <div class="card-body">
+                                    <div class="checkbox-list">
+                                        <div class="form-check">
+                                            <input class="form-check-input" type="checkbox" id="invoice-a" checked>
+                                            <label class="form-check-label" for="invoice-a">Factura A</label>
+                                        </div>
+                                        <div class="form-check">
+                                            <input class="form-check-input" type="checkbox" id="invoice-b" checked>
+                                            <label class="form-check-label" for="invoice-b">Factura B</label>
+                                        </div>
+                                        <div class="form-check">
+                                            <input class="form-check-input" type="checkbox" id="invoice-c" checked>
+                                            <label class="form-check-label" for="invoice-c">Factura C</label>
+                                        </div>
+                                        <div class="form-check">
+                                            <input class="form-check-input" type="checkbox" id="credit-note-a">
+                                            <label class="form-check-label" for="credit-note-a">Nota de Crédito A</label>
+                                        </div>
+                                        <div class="form-check">
+                                            <input class="form-check-input" type="checkbox" id="credit-note-b">
+                                            <label class="form-check-label" for="credit-note-b">Nota de Crédito B</label>
+                                        </div>
+                                        <div class="form-check">
+                                            <input class="form-check-input" type="checkbox" id="credit-note-c">
+                                            <label class="form-check-label" for="credit-note-c">Nota de Crédito C</label>
+                                        </div>
+                                        <div class="form-check">
+                                            <input class="form-check-input" type="checkbox" id="debit-note-a">
+                                            <label class="form-check-label" for="debit-note-a">Nota de Débito A</label>
+                                        </div>
+                                        <div class="form-check">
+                                            <input class="form-check-input" type="checkbox" id="debit-note-b">
+                                            <label class="form-check-label" for="debit-note-b">Nota de Débito B</label>
+                                        </div>
+                                        <div class="form-check">
+                                            <input class="form-check-input" type="checkbox" id="debit-note-c">
+                                            <label class="form-check-label" for="debit-note-c">Nota de Débito C</label>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                        
+                        <div class="form-group">
+                            <div class="toggle-switch">
+                                <input type="checkbox" id="arca-auto-sync" checked>
+                                <label for="arca-auto-sync">Sincronización automática con AFIP</label>
+                            </div>
+                            <small class="text-muted">Sincroniza los datos con AFIP automáticamente</small>
+                        </div>
+                        
+                        <button type="button" id="test-arca-connection" class="btn btn-outline-primary">Probar conexión</button>
+                        <div id="arca-connection-status" class="connection-status mt-2"></div>
+                        
+                        <div class="form-actions mt-4">
+                            <button type="submit" class="btn btn-primary">Guardar Configuración</button>
+                            <button type="reset" class="btn btn-outline-secondary">Cancelar</button>
+                        </div>
+                    </form>
+                </div>
+                
+                <!-- Tab de WhatsApp -->
+                <div id="whatsapp" class="tab-content">
+                    <div class="tab-header">
+                        <h3>Configuración de WhatsApp</h3>
+                        <div class="toggle-switch main-toggle">
+                            <input type="checkbox" id="enable-whatsapp">
+                            <label for="enable-whatsapp">Habilitar integración</label>
+                        </div>
+                    </div>
+                    
+                    <form id="whatsapp-form">
+                        <div class="form-group">
+                            <label for="whatsapp-method">Método de Integración</label>
+                            <select id="whatsapp-method" class="form-control">
+                                <option value="business-api">WhatsApp Business API</option>
+                                <option value="web">WhatsApp Web</option>
+                            </select>
+                        </div>
+                        
+                        <div id="whatsapp-api-settings">
+                            <div class="form-group">
+                                <label for="whatsapp-token">Token de Acceso</label>
+                                <input type="password" id="whatsapp-token" class="form-control">
+                            </div>
+                            
+                            <div class="form-group">
+                                <label for="whatsapp-phone-id">ID de Teléfono</label>
+                                <input type="text" id="whatsapp-phone-id" class="form-control">
+                            </div>
+                            
+                            <div class="form-group">
+                                <label for="whatsapp-business-id">ID de Business</label>
+                                <input type="text" id="whatsapp-business-id" class="form-control">
+                            </div>
+                        </div>
+                        
+                        <div id="whatsapp-web-settings" style="display: none;">
+                            <div class="whatsapp-qr-container">
+                                <p>Para conectar con WhatsApp Web, escanee el siguiente código QR desde su aplicación de WhatsApp:</p>
+                                <button type="button" id="generate-whatsapp-qr" class="btn btn-outline-primary">Generar Código QR</button>
+                                <div id="whatsapp-qr" class="qr-display mt-3"></div>
+                            </div>
+                            <div id="whatsapp-connection-status" class="mt-3">
+                                <div class="status-badge not-connected">No conectado</div>
+                            </div>
+                        </div>
+                        
+                        <div class="form-group mt-4">
+                            <label>Plantillas de Mensajes</label>
+                            <div class="card">
+                                <div class="card-body">
+                                    <div class="template-type">
+                                        <h5>Envío de Facturas</h5>
+                                        <textarea id="invoice-template" class="form-control" rows="4">Hola {cliente}, adjunto factura {num_factura} por un total de ${monto}. Gracias por su compra!</textarea>
+                                        <div class="template-variables">
+                                            <span class="badge badge-info">cliente</span>
+                                            <span class="badge badge-info">num_factura</span>
+                                            <span class="badge badge-info">monto</span>
+                                            <span class="badge badge-info">fecha</span>
+                                        </div>
+                                    </div>
+                                    
+                                    <div class="template-type mt-3">
+                                        <h5>Recordatorio de Pago</h5>
+                                        <textarea id="payment-reminder-template" class="form-control" rows="4">Hola {cliente}, le recordamos que tiene pendiente la factura {num_factura} por un monto de ${monto} con vencimiento el {fecha_vencimiento}. Gracias!</textarea>
+                                        <div class="template-variables">
+                                            <span class="badge badge-info">cliente</span>
+                                            <span class="badge badge-info">num_factura</span>
+                                            <span class="badge badge-info">monto</span>
+                                            <span class="badge badge-info">fecha_vencimiento</span>
+                                        </div>
+                                    </div>
+                                    
+                                    <div class="template-type mt-3">
+                                        <h5>Ofertas Personalizadas</h5>
+                                        <textarea id="offer-template" class="form-control" rows="4">Hola {cliente}, tenemos una oferta especial para usted: {oferta}. Válida hasta el {fecha_vencimiento}.</textarea>
+                                        <div class="template-variables">
+                                            <span class="badge badge-info">cliente</span>
+                                            <span class="badge badge-info">oferta</span>
+                                            <span class="badge badge-info">fecha_vencimiento</span>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                        
+                        <div class="form-group">
+                            <div class="toggle-switch">
+                                <input type="checkbox" id="auto-send-invoice" checked>
+                                <label for="auto-send-invoice">Preguntar envío por WhatsApp al finalizar factura</label>
+                            </div>
+                        </div>
+                        
+                        <div class="form-group">
+                            <div class="toggle-switch">
+                                <input type="checkbox" id="whatsapp-chatbot">
+                                <label for="whatsapp-chatbot">Activar chatbot básico</label>
+                            </div>
+                            <small class="text-muted">Permite respuestas automáticas sobre stock y precios</small>
+                        </div>
+                        
+                        <button type="button" id="test-whatsapp" class="btn btn-outline-primary">Enviar mensaje de prueba</button>
+                        <input type="tel" id="test-phone" class="form-control d-inline-block ml-2" style="width: 200px;" placeholder="Número con prefijo">
+                        
+                        <div class="form-actions mt-4">
+                            <button type="submit" class="btn btn-primary">Guardar Configuración</button>
+                            <button type="reset" class="btn btn-outline-secondary">Cancelar</button>
+                        </div>
+                    </form>
+                </div>
+                
+                <!-- Tab de Email -->
+                <div id="email" class="tab-content">
+                    <div class="tab-header">
+                        <h3>Configuración de Email</h3>
+                        <div class="toggle-switch main-toggle">
+                            <input type="checkbox" id="enable-email">
+                            <label for="enable-email">Habilitar integración</label>
+                        </div>
+                    </div>
+                    
+                    <form id="email-form">
+                        <div class="form-group">
+                            <label for="email-service">Servicio de Email</label>
+                            <select id="email-service" class="form-control">
+                                <option value="smtp">SMTP Personalizado</option>
+                                <option value="gmail">Gmail</option>
+                                <option value="outlook">Outlook</option>
+                            </select>
+                        </div>
+                        
+                        <div id="smtp-settings">
+                            <div class="form-group">
+                                <label for="smtp-host">Servidor SMTP</label>
+                                <input type="text" id="smtp-host" class="form-control" placeholder="smtp.ejemplo.com">
+                            </div>
+                            
+                            <div class="form-row">
+                                <div class="form-group col-md-6">
+                                    <label for="smtp-port">Puerto</label>
+                                    <input type="number" id="smtp-port" class="form-control" placeholder="587">
+                                </div>
+                                <div class="form-group col-md-6">
+                                    <label for="smtp-security">Seguridad</label>
+                                    <select id="smtp-security" class="form-control">
+                                        <option value="tls">TLS</option>
+                                        <option value="ssl">SSL</option>
+                                        <option value="none">Ninguna</option>
+                                    </select>
+                                </div>
+                            </div>
+                        </div>
+                        
+                        <div class="form-group">
+                            <label for="email-address">Dirección de Email</label>
+                            <input type="email" id="email-address" class="form-control" placeholder="facturas@miempresa.com">
+                        </div>
+                        
+                        <div class="form-group">
+                            <label for="email-password">Contraseña</label>
+                            <div class="password-field">
+                                <input type="password" id="email-password" class="form-control">
+                                <button type="button" class="toggle-password"><i class="icon-eye"></i></button>
+                            </div>
+                        </div>
+                        
+                        <div class="form-group">
+                            <label for="email-name">Nombre para mostrar</label>
+                            <input type="text" id="email-name" class="form-control" placeholder="FactuSystem - Mi Empresa">
+                        </div>
+                        
+                        <div class="form-group">
+                            <label>Plantillas de Email</label>
+                            <div class="card">
+                                <div class="card-body">
+                                    <ul class="nav nav-tabs" id="emailTemplates" role="tablist">
+                                        <li class="nav-item">
+                                            <a class="nav-link active" id="invoice-tab" data-toggle="tab" href="#invoice-email" role="tab">Factura</a>
+                                        </li>
+                                        <li class="nav-item">
+                                            <a class="nav-link" id="receipt-tab" data-toggle="tab" href="#receipt-email" role="tab">Remito</a>
+                                        </li>
+                                        <li class="nav-item">
+                                            <a class="nav-link" id="quote-tab" data-toggle="tab" href="#quote-email" role="tab">Presupuesto</a>
+                                        </li>
+                                    </ul>
+                                    <div class="tab-content mt-3" id="emailTemplatesContent">
+                                        <div class="tab-pane fade show active" id="invoice-email" role="tabpanel">
+                                            <div class="form-group">
+                                                <label for="invoice-email-subject">Asunto</label>
+                                                <input type="text" id="invoice-email-subject" class="form-control" value="Factura #{num_factura} - {empresa}">
+                                            </div>
+                                            <div class="form-group">
+                                                <label for="invoice-email-body">Cuerpo del mensaje</label>
+                                                <textarea id="invoice-email-body" class="form-control rich-editor" rows="6">
+<p>Estimado/a {cliente},</p>
+<p>Adjuntamos la factura #{num_factura} por un total de ${monto} correspondiente a su compra del {fecha}.</p>
+<p>Puede visualizar la factura en el archivo adjunto.</p>
+<p>Saludos cordiales,<br>{empresa}</p>
+                                                </textarea>
+                                            </div>
+                                        </div>
+                                        <div class="tab-pane fade" id="receipt-email" role="tabpanel">
+                                            <div class="form-group">
+                                                <label for="receipt-email-subject">Asunto</label>
+                                                <input type="text" id="receipt-email-subject" class="form-control" value="Remito #{num_remito} - {empresa}">
+                                            </div>
+                                            <div class="form-group">
+                                                <label for="receipt-email-body">Cuerpo del mensaje</label>
+                                                <textarea id="receipt-email-body" class="form-control rich-editor" rows="6">
+<p>Estimado/a {cliente},</p>
+<p>Adjuntamos el remito #{num_remito} correspondiente a su pedido del {fecha}.</p>
+<p>Puede visualizar el detalle en el archivo adjunto.</p>
+<p>Saludos cordiales,<br>{empresa}</p>
+                                                </textarea>
+                                            </div>
+                                        </div>
+                                        <div class="tab-pane fade" id="quote-email" role="tabpanel">
+                                            <div class="form-group">
+                                                <label for="quote-email-subject">Asunto</label>
+                                                <input type="text" id="quote-email-subject" class="form-control" value="Presupuesto #{num_presupuesto} - {empresa}">
+                                            </div>
+                                            <div class="form-group">
+                                                <label for="quote-email-body">Cuerpo del mensaje</label>
+                                                <textarea id="quote-email-body" class="form-control rich-editor" rows="6">
+<p>Estimado/a {cliente},</p>
+<p>Adjuntamos el presupuesto #{num_presupuesto} por un total de ${monto} según lo solicitado.</p>
+<p>Este presupuesto tiene validez hasta el {fecha_vencimiento}.</p>
+<p>Ante cualquier consulta, no dude en contactarnos.</p>
+<p>Saludos cordiales,<br>{empresa}</p>
+                                                </textarea>
+                                            </div>
+                                        </div>
+                                    </div>
+                                    <div class="template-variables mt-2">
+                                        <span class="badge badge-info">cliente</span>
+                                        <span class="badge badge-info">empresa</span>
+                                        <span class="badge badge-info">num_factura</span>
+                                        <span class="badge badge-info">num_remito</span>
+                                        <span class="badge badge-info">num_presupuesto</span>
+                                        <span class="badge badge-info">monto</span>
+                                        <span class="badge badge-info">fecha</span>
+                                        <span class="badge badge-info">fecha_vencimiento</span>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                        
+                        <div class="form-group">
+                            <div class="toggle-switch">
+                                <input type="checkbox" id="auto-send-email" checked>
+                                <label for="auto-send-email">Preguntar envío por email al finalizar factura</label>
+                            </div>
+                        </div>
+                        
+                        <button type="button" id="test-email" class="btn btn-outline-primary">Enviar email de prueba</button>
+                        <input type="email" id="test-email-address" class="form-control d-inline-block ml-2" style="width: 250px;" placeholder="dirección@ejemplo.com">
+                        
+                        <div class="form-actions mt-4">
+                            <button type="submit" class="btn btn-primary">Guardar Configuración</button>
+                            <button type="reset" class="btn btn-outline-secondary">Cancelar</button>
+                        </div>
+                    </form>
+                </div>
+                
+                <!-- Tab de Bancos -->
+                <div id="bancos" class="tab-content">
+                    <div class="tab-header">
+                        <h3>Configuración de Bancos</h3>
+                    </div>
+                    
+                    <div class="bank-tabs">
+                        <ul class="nav nav-tabs" id="bankTabs" role="tablist">
+                            <li class="nav-item">
+                                <a class="nav-link active" id="galicia-tab" data-toggle="tab" href="#galicia-content" role="tab">Galicia</a>
+                            </li>
+                            <li class="nav-item">
+                                <a class="nav-link" id="getnet-tab" data-toggle="tab" href="#getnet-content" role="tab">GetNet</a>
+                            </li>
+                            <li class="nav-item">
+                                <a class="nav-link" id="bbva-tab" data-toggle="tab" href="#bbva-content" role="tab">BBVA</a>
+                            </li>
+                            <li class="nav-item">
+                                <a class="nav-link" id="payway-tab" data-toggle="tab" href="#payway-content" role="tab">PayWay</a>
+                            </li>
+                        </ul>
+                        
+                        <div class="tab-content mt-3" id="bankTabsContent">
+                            <!-- Galicia -->
+                            <div class="tab-pane fade show active" id="galicia-content" role="tabpanel">
+                                <div class="toggle-switch mb-3">
+                                    <input type="checkbox" id="enable-galicia">
+                                    <label for="enable-galicia">Habilitar integración</label>
+                                </div>
+                                
+                                <form id="galicia-form">
+                                    <div class="form-group">
+                                        <label for="galicia-client-id">Client ID</label>
+                                        <input type="text" id="galicia-client-id" class="form-control">
+                                    </div>
+                                    
+                                    <div class="form-group">
+                                        <label for="galicia-client-secret">Client Secret</label>
+                                        <div class="password-field">
+                                            <input type="password" id="galicia-client-secret" class="form-control">
+                                            <button type="button" class="toggle-password"><i class="icon-eye"></i></button>
+                                        </div>
+                                    </div>
+                                    
+                                    <div class="form-group">
+                                        <label for="galicia-account">Número de Cuenta</label>
+                                        <input type="text" id="galicia-account" class="form-control">
+                                    </div>
+                                    
+                                    <div class="form-group">
+                                        <label for="galicia-cbu">CBU</label>
+                                        <input type="text" id="galicia-cbu" class="form-control">
+                                    </div>
+                                    
+                                    <div class="form-group">
+                                        <div class="toggle-switch">
+                                            <input type="checkbox" id="galicia-auto-reconcile" checked>
+                                            <label for="galicia-auto-reconcile">Conciliación automática</label>
+                                        </div>
+                                    </div>
+                                    
+                                    <button type="button" id="test-galicia" class="btn btn-outline-primary">Probar conexión</button>
+                                    
+                                    <div class="form-actions mt-4">
+                                        <button type="submit" class="btn btn-primary">Guardar</button>
+                                        <button type="reset" class="btn btn-outline-secondary">Cancelar</button>
+                                    </div>
+                                </form>
+                            </div>
+                            
+                            <!-- GetNet -->
+                            <div class="tab-pane fade" id="getnet-content" role="tabpanel">
+                                <div class="toggle-switch mb-3">
+                                    <input type="checkbox" id="enable-getnet">
+                                    <label for="enable-getnet">Habilitar integración</label>
+                                </div>
+                                
+                                <form id="getnet-form">
+                                    <div class="form-group">
+                                        <label for="getnet-merchant-id">ID de Comercio</label>
+                                        <input type="text" id="getnet-merchant-id" class="form-control">
+                                    </div>
+                                    
+                                    <div class="form-group">
+                                        <label for="getnet-api-key">API Key</label>
+                                        <div class="password-field">
+                                            <input type="password" id="getnet-api-key" class="form-control">
+                                            <button type="button" class="toggle-password"><i class="icon-eye"></i></button>
+                                        </div>
+                                    </div>
+                                    
+                                    <div class="form-group">
+                                        <label for="getnet-terminal">Terminal ID</label>
+                                        <input type="text" id="getnet-terminal" class="form-control">
+                                    </div>
+                                    
+                                    <div class="form-group">
+                                        <div class="toggle-switch">
+                                            <input type="checkbox" id="getnet-auto-reconcile" checked>
+                                            <label for="getnet-auto-reconcile">Conciliación automática</label>
+                                        </div>
+                                    </div>
+                                    
+                                    <button type="button" id="test-getnet" class="btn btn-outline-primary">Probar conexión</button>
+                                    
+                                    <div class="form-actions mt-4">
+                                        <button type="submit" class="btn btn-primary">Guardar</button>
+                                        <button type="reset" class="btn btn-outline-secondary">Cancelar</button>
+                                    </div>
+                                </form>
+                            </div>
+                            
+                            <!-- BBVA -->
+                            <div class="tab-pane fade" id="bbva-content" role="tabpanel">
+                                <div class="toggle-switch mb-3">
+                                    <input type="checkbox" id="enable-bbva">
+                                    <label for="enable-bbva">Habilitar integración</label>
+                                </div>
+                                
+                                <form id="bbva-form">
+                                    <div class="form-group">
+                                        <label for="bbva-api-key">API Key</label>
+                                        <div class="password-field">
+                                            <input type="password" id="bbva-api-key" class="form-control">
+                                            <button type="button" class="toggle-password"><i class="icon-eye"></i></button>
+                                        </div>
+                                    </div>
+                                    
+                                    <div class="form-group">
+                                        <label for="bbva-account">Número de Cuenta</label>
+                                        <input type="text" id="bbva-account" class="form-control">
+                                    </div>
+                                    
+                                    <div class="form-group">
+                                        <label for="bbva-cbu">CBU</label>
+                                        <input type="text" id="bbva-cbu" class="form-control">
+                                    </div>
+                                    
+                                    <div class="form-group">
+                                        <div class="toggle-switch">
+                                            <input type="checkbox" id="bbva-auto-reconcile" checked>
+                                            <label for="bbva-auto-reconcile">Conciliación automática</label>
+                                        </div>
+                                    </div>
+                                    
+                                    <button type="button" id="test-bbva" class="btn btn-outline-primary">Probar conexión</button>
+                                    
+                                    <div class="form-actions mt-4">
+                                        <button type="submit" class="btn btn-primary">Guardar</button>
+                                        <button type="reset" class="btn btn-outline-secondary">Cancelar</button>
+                                    </div>
+                                </form>
+                            </div>
+                            
+                            <!-- PayWay -->
+                            <div class="tab-pane fade" id="payway-content" role="tabpanel">
+                                <div class="toggle-switch mb-3">
+                                    <input type="checkbox" id="enable-payway">
+                                    <label for="enable-payway">Habilitar integración</label>
+                                </div>
+                                
+                                <form id="payway-form">
+                                    <div class="form-group">
+                                        <label for="payway-site-id">Site ID</label>
+                                        <input type="text" id="payway-site-id" class="form-control">
+                                    </div>
+                                    
+                                    <div class="form-group">
+                                        <label for="payway-private-key">Clave Privada</label>
+                                        <div class="password-field">
+                                            <input type="password" id="payway-private-key" class="form-control">
+                                            <button type="button" class="toggle-password"><i class="icon-eye"></i></button>
+                                        </div>
+                                    </div>
+                                    
+                                    <div class="form-group">
+                                        <label for="payway-environment">Entorno</label>
+                                        <select id="payway-environment" class="form-control">
+                                            <option value="test">Testing</option>
+                                            <option value="production">Producción</option>
+                                        </select>
+                                    </div>
+                                    
+                                    <div class="form-group">
+                                        <div class="toggle-switch">
+                                            <input type="checkbox" id="payway-auto-reconcile" checked>
+                                            <label for="payway-auto-reconcile">Conciliación automática</label>
+                                        </div>
+                                    </div>
+                                    
+                                    <button type="button" id="test-payway" class="btn btn-outline-primary">Probar conexión</button>
+                                    
+                                    <div class="form-actions mt-4">
+                                        <button type="submit" class="btn btn-primary">Guardar</button>
+                                        <button type="reset" class="btn btn-outline-secondary">Cancelar</button>
+                                    </div>
+                                </form>
+                            </div>
+                        </div>
+                        
+                        <div class="bank-actions mt-4">
+                            <button type="button" id="add-bank" class="btn btn-outline-primary">
+                                <i class="icon-plus"></i> Agregar otro banco
+                            </button>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <!-- Sección de Respaldos (Backups) -->
+        <section id="backups" class="config-section">
+            <h2>Respaldos del Sistema</h2>
+            <div class="backup-settings">
+                <div class="form-group">
+                    <label>Respaldo Automático</label>
+                    <div class="card">
+                        <div class="card-body">
+                            <div class="toggle-switch">
+                                <input type="checkbox" id="auto-backup" checked>
+                                <label for="auto-backup">Activar respaldos automáticos</label>
+                            </div>
+                            
+                            <div class="form-group mt-3">
+                                <label for="backup-frequency">Frecuencia</label>
+                                <select id="backup-frequency" class="form-control">
+                                    <option value="daily">Diario</option>
+                                    <option value="weekly" selected>Semanal</option>
+                                    <option value="monthly">Mensual</option>
+                                </select>
+                            </div>
+                            
+                            <div class="form-group">
+                                <label for="backup-time">Hora del día</label>
+                                <input type="time" id="backup-time" class="form-control" value="03:00">
+                                <small class="text-muted">Se recomienda programar respaldos en horarios de baja actividad</small>
+                            </div>
+                            
+                            <div class="form-group">
+                                <label for="backup-retention">Mantener respaldos por</label>
+                                <select id="backup-retention" class="form-control">
+                                    <option value="7">7 días</option>
+                                    <option value="30" selected>30 días</option>
+                                    <option value="90">90 días</option>
+                                    <option value="180">6 meses</option>
+                                    <option value="365">1 año</option>
+                                </select>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                
+                <div class="form-group">
+                    <label>Ubicación de Respaldos</label>
+                    <div class="card">
+                        <div class="card-body">
+                            <div class="form-check">
+                                <input class="form-check-input" type="checkbox" id="backup-local" checked>
+                                <label class="form-check-label" for="backup-local">Almacenamiento local</label>
+                            </div>
+                            
+                            <div class="form-group mt-3">
+                                <label for="backup-path">Ruta de almacenamiento local</label>
+                                <div class="input-group">
+                                    <input type="text" id="backup-path" class="form-control" value="C:\FactuSystem\Backups" readonly>
+                                    <div class="input-group-append">
+                                        <button class="btn btn-outline-secondary" type="button" id="select-path">Seleccionar</button>
+                                    </div>
+                                </div>
+                            </div>
+                            
+                            <div class="form-check mt-3">
+                                <input class="form-check-input" type="checkbox" id="backup-cloud">
+                                <label class="form-check-label" for="backup-cloud">Almacenamiento en la nube</label>
+                            </div>
+                            
+                            <div id="cloud-settings" class="mt-3" style="display: none;">
+                                <div class="form-group">
+                                    <label for="cloud-provider">Proveedor</label>
+                                    <select id="cloud-provider" class="form-control">
+                                        <option value="google-drive">Google Drive</option>
+                                        <option value="dropbox">Dropbox</option>
+                                        <option value="onedrive">OneDrive</option>
+                                    </select>
+                                </div>
+                                
+                                <div class="form-group">
+                                    <button type="button" id="connect-cloud" class="btn btn-outline-primary">Conectar cuenta</button>
+                                    <div id="cloud-status" class="status-badge mt-2 not-connected">No conectado</div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                
+                <div class="form-group">
+                    <label>Respaldos Disponibles</label>
+                    <div class="card">
+                        <div class="card-body">
+                            <div class="backup-controls mb-3">
+                                <button type="button" id="create-backup" class="btn btn-primary">Crear Respaldo Ahora</button>
+                                <button type="button" id="refresh-backups" class="btn btn-outline-secondary">Refrescar Lista</button>
+                            </div>
+                            
+                            <div class="backup-list">
+                                <table class="table table-striped">
+                                    <thead>
+                                        <tr>
+                                            <th>Fecha</th>
+                                            <th>Tamaño</th>
+                                            <th>Tipo</th>
+                                            <th>Ubicación</th>
+                                            <th>Acciones</th>
+                                        </tr>
+                                    </thead>
+                                    <tbody id="backup-list-body">
+                                        <tr>
+                                            <td>20/04/2025 08:30</td>
+                                            <td>45 MB</td>
+                                            <td>Completo</td>
+                                            <td>Local</td>
+                                            <td>
+                                                <button type="button" class="btn btn-sm btn-outline-primary restore-backup">Restaurar</button>
+                                                <button type="button" class="btn btn-sm btn-outline-secondary download-backup">Descargar</button>
+                                                <button type="button" class="btn btn-sm btn-outline-danger delete-backup">Eliminar</button>
+                                            </td>
+                                        </tr>
+                                        <tr>
+                                            <td>13/04/2025 03:00</td>
+                                            <td>42 MB</td>
+                                            <td>Automático</td>
+                                            <td>Local, Nube</td>
+                                            <td>
+                                                <button type="button" class="btn btn-sm btn-outline-primary restore-backup">Restaurar</button>
+                                                <button type="button" class="btn btn-sm btn-outline-secondary download-backup">Descargar</button>
+                                                <button type="button" class="btn btn-sm btn-outline-danger delete-backup">Eliminar</button>
+                                            </td>
+                                        </tr>
+                                        <tr>
+                                            <td>06/04/2025 03:00</td>
+                                            <td>40 MB</td>
+                                            <td>Automático</td>
+                                            <td>Local, Nube</td>
+                                            <td>
+                                                <button type="button" class="btn btn-sm btn-outline-primary restore-backup">Restaurar</button>
+                                                <button type="button" class="btn btn-sm btn-outline-secondary download-backup">Descargar</button>
+                                                <button type="button" class="btn btn-sm btn-outline-danger delete-backup">Eliminar</button>
+                                            </td>
+                                        </tr>
+                                    </tbody>
+                                </table>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                
+                <div class="form-group">
+                    <label>Restauración del Sistema</label>
+                    <div class="card">
+                        <div class="card-body">
+                            <div class="form-group">
+                                <label for="upload-backup">Subir archivo de respaldo</label>
+                                <input type="file" id="upload-backup" class="form-control-file" accept=".bak, .zip">
+                            </div>
+                            
+                            <div class="alert alert-warning">
+                                <i class="icon-warning"></i>
+                                <strong>Advertencia:</strong> La restauración de un respaldo sobrescribirá todos los datos actuales. Asegúrese de crear un respaldo antes de proceder.
+                            </div>
+                            
+                            <button type="button" id="restore-uploaded" class="btn btn-warning" disabled>Restaurar desde Archivo</button>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </section>
+    </div>
+</div>
+
+<!-- Modal para confirmación de acciones -->
+<div class="modal" id="confirmation-modal">
+    <div class="modal-dialog">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title">Confirmar Acción</h5>
+                <button type="button" class="close" data-dismiss="modal">&times;</button>
+            </div>
+            <div class="modal-body">
+                <p id="confirmation-message">¿Está seguro que desea realizar esta acción?</p>
+            </div>
+            <div class="modal-footer">
+                <button type="button" class="btn btn-secondary" data-dismiss="modal">Cancelar</button>
+                <button type="button" class="btn btn-primary" id="confirm-action">Confirmar</button>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- Modal para editar plantillas -->
+<div class="modal" id="template-editor-modal">
+    <div class="modal-dialog modal-lg">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title">Editor de Plantillas</h5>
+                <button type="button" class="close" data-dismiss="modal">&times;</button>
+            </div>
+            <div class="modal-body">
+                <div class="template-editor-tabs">
+                    <ul class="nav nav-tabs" id="templateEditorTabs" role="tablist">
+                        <li class="nav-item">
+                            <a class="nav-link active" id="visual-editor-tab" data-toggle="tab" href="#visual-editor" role="tab">Editor Visual</a>
+                        </li>
+                        <li class="nav-item">
+                            <a class="nav-link" id="html-editor-tab" data-toggle="tab" href="#html-editor" role="tab">Editor HTML</a>
+                        </li>
+                        <li class="nav-item">
+                            <a class="nav-link" id="preview-tab" data-toggle="tab" href="#template-preview" role="tab">Vista Previa</a>
+                        </li>
+                    </ul>
+                    <div class="tab-content mt-3" id="templateEditorContent">
+                        <div class="tab-pane fade show active" id="visual-editor" role="tabpanel">
+                            <!-- Editor visual de plantillas -->
+                            <div class="template-visual-editor">
+                                <div class="editor-toolbar">
+                                    <button type="button" class="btn btn-sm btn-outline-secondary">Encabezado</button>
+                                    <button type="button" class="btn btn-sm btn-outline-secondary">Logo</button>
+                                    <button type="button" class="btn btn-sm btn-outline-secondary">Tabla</button>
+                                    <button type="button" class="btn btn-sm btn-outline-secondary">Texto</button>
+                                    <button type="button" class="btn btn-sm btn-outline-secondary">QR</button>
+                                    <button type="button" class="btn btn-sm btn-outline-secondary">Pie de página</button>
+                                </div>
+                                <div class="editor-canvas">
+                                    <!-- Aquí va el editor visual drag-and-drop -->
+                                </div>
+                            </div>
+                        </div>
+                        <div class="tab-pane fade" id="html-editor" role="tabpanel">
+                            <!-- Editor HTML -->
+                            <textarea id="html-code-editor" class="form-control code-editor" rows="20"></textarea>
+                        </div>
+                        <div class="tab-pane fade" id="template-preview" role="tabpanel">
+                            <!-- Vista previa -->
+                            <div class="template-preview-container">
+                                <iframe id="template-preview-frame" class="template-preview-frame"></iframe>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            <div class="modal-footer">
+                <button type="button" class="btn btn-secondary" data-dismiss="modal">Cancelar</button>
+                <button type="button" class="btn btn-primary" id="save-template">Guardar Plantilla</button>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- Modal para configuración 2FA -->
+<div class="modal" id="setup-2fa-modal">
+    <div class="modal-dialog">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title">Configurar Autenticación de Dos Factores</h5>
+                <button type="button" class="close" data-dismiss="modal">&times;</button>
+            </div>
+            <div class="modal-body">
+                <div class="setup-2fa-steps">
+                    <div class="step active" id="step-1">
+                        <h4>Paso 1: Escanea el código QR</h4>
+                        <p>Abre tu aplicación de autenticación (Google Authenticator, Microsoft Authenticator, etc.) y escanea el siguiente código QR:</p>
+                        <div class="qr-container" id="twofa-qr"></div>
+                        <p class="mt-3">O ingresa manualmente esta clave secreta:</p>
+                        <div class="secret-key" id="twofa-secret">ABCD EFGH IJKL MNOP</div>
+                    </div>
+                    <div class="step" id="step-2">
+                        <h4>Paso 2: Verifica el código</h4>
+                        <p>Ingresa el código de 6 dígitos generado por tu aplicación de autenticación:</p>
+                        <div class="verification-code-input">
+                            <input type="text" id="verification-code" class="form-control" maxlength="6" placeholder="000000">
+                        </div>
+                    </div>
+                    <div class="step" id="step-3">
+                        <h4>¡Configuración completada!</h4>
+                        <p>La autenticación de dos factores ha sido configurada correctamente.</p>
+                        <div class="recovery-codes">
+                            <p>Guarda estos códigos de recuperación en un lugar seguro:</p>
+                            <ul id="recovery-codes-list">
+                                <li>1234-5678-ABCD</li>
+                                <li>9012-DEFG-HIJK</li>
+                                <li>LMNO-PQRS-3456</li>
+                                <li>TUVW-XYZ7-8901</li>
+                                <li>2345-6789-ABCD</li>
+                            </ul>
+                            <button type="button" id="download-recovery-codes" class="btn btn-sm btn-outline-secondary">Descargar códigos</button>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            <div class="modal-footer">
+                <button type="button" class="btn btn-secondary" data-dismiss="modal">Cancelar</button>
+                <button type="button" class="btn btn-primary" id="next-step">Siguiente</button>
+            </div>
+        </div>
+    </div>
+</div>
+
+<script src="../assets/js/vendor/jquery.min.js"></script>
+<script src="../assets/js/vendor/bootstrap.bundle.min.js"></script>
+<script src="../assets/js/settings.js"></script>
+</body>
+</html>

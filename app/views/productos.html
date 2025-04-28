@@ -1,0 +1,1916 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Gestión de Productos - FactuSystem</title>
+    <link rel="stylesheet" href="../assets/css/main.css">
+    <link rel="stylesheet" href="../assets/css/components/tables.css">
+    <link rel="stylesheet" href="../assets/css/components/modal.css">
+    <link rel="stylesheet" href="../assets/css/components/dashboard.css">
+    <!-- Font Awesome para iconos -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <!-- Select2 para selects mejorados -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/select2/4.1.0-rc.0/css/select2.min.css">
+    <!-- Datatable para tablas mejoradas -->
+    <link rel="stylesheet" href="https://cdn.datatables.net/1.13.5/css/dataTables.bootstrap5.min.css">
+    <!-- Bootstrap para estilos -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/bootstrap/5.3.0/css/bootstrap.min.css">
+    <!-- JsBarcode para generación de códigos de barras -->
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/jsbarcode/3.11.5/JsBarcode.all.min.js"></script>
+    <style>
+        .producto-img-container {
+            width: 80px;
+            height: 80px;
+            overflow: hidden;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            border: 1px solid #ddd;
+            border-radius: 4px;
+        }
+        
+        .producto-img {
+            max-width: 100%;
+            max-height: 100%;
+            object-fit: contain;
+        }
+
+        .card-header-tabs {
+            border-bottom: none;
+        }
+
+        .card-header-tabs .nav-link {
+            margin-bottom: -1px;
+            border: 1px solid transparent;
+            border-top-left-radius: 0.25rem;
+            border-top-right-radius: 0.25rem;
+        }
+
+        .card-header-tabs .nav-link.active {
+            color: #495057;
+            background-color: #fff;
+            border-color: #dee2e6 #dee2e6 #fff;
+        }
+
+        .barcode-container {
+            text-align: center;
+            margin: 10px 0;
+        }
+
+        .barcode-preview {
+            margin-top: 15px;
+        }
+
+        #stock-alert {
+            padding: 15px;
+            margin-bottom: 20px;
+            border-radius: 5px;
+        }
+
+        .stock-warning {
+            border-left: 4px solid #ffc107;
+            background-color: #fff3cd;
+        }
+
+        .tab-pane {
+            padding: 20px 0;
+        }
+
+        .actions-column {
+            white-space: nowrap;
+        }
+
+        #filtros-avanzados {
+            padding: 15px;
+            background-color: #f8f9fa;
+            border-radius: 5px;
+            margin-bottom: 20px;
+        }
+
+        .badge-stock-bajo {
+            background-color: #dc3545;
+            color: white;
+        }
+
+        .badge-stock-medio {
+            background-color: #ffc107;
+            color: black;
+        }
+
+        .badge-stock-alto {
+            background-color: #28a745;
+            color: white;
+        }
+
+        .drag-drop-area {
+            border: 2px dashed #ccc;
+            border-radius: 5px;
+            padding: 25px;
+            text-align: center;
+            margin: 15px 0;
+            transition: all 0.3s;
+        }
+
+        .drag-drop-area:hover, .drag-drop-area.active {
+            border-color: #007bff;
+            background-color: #f8f9fa;
+        }
+
+        .table-overflow {
+            overflow-x: auto;
+        }
+
+        /* Estilos para etiquetas de precios */
+        .price-tag-preview {
+            border: 1px solid #ddd;
+            padding: 10px;
+            margin: 10px 0;
+            width: 250px;
+            height: 150px;
+            position: relative;
+        }
+
+        .price-tag-preview .product-name {
+            font-weight: bold;
+            font-size: 14px;
+        }
+
+        .price-tag-preview .product-price {
+            font-size: 20px;
+            font-weight: bold;
+            margin: 5px 0;
+        }
+
+        .price-tag-preview .product-barcode {
+            position: absolute;
+            bottom: 10px;
+            left: 0;
+            right: 0;
+            text-align: center;
+        }
+    </style>
+</head>
+<body>
+    <div class="container-fluid py-4">
+        <!-- Encabezado de sección -->
+        <div class="d-flex justify-content-between align-items-center mb-4">
+            <h1><i class="fas fa-box me-2"></i> Gestión de Productos</h1>
+            <div>
+                <button id="btn-nuevo-producto" class="btn btn-primary" data-bs-toggle="modal" data-bs-target="#modalProducto">
+                    <i class="fas fa-plus me-2"></i>Nuevo Producto
+                </button>
+                <div class="btn-group ms-2">
+                    <button type="button" class="btn btn-outline-secondary dropdown-toggle" data-bs-toggle="dropdown" aria-expanded="false">
+                        <i class="fas fa-cog me-1"></i> Acciones
+                    </button>
+                    <ul class="dropdown-menu dropdown-menu-end">
+                        <li><a class="dropdown-item" href="#" id="btn-importar-excel"><i class="fas fa-file-import me-2"></i>Importar desde Excel</a></li>
+                        <li><a class="dropdown-item" href="#" id="btn-exportar-excel"><i class="fas fa-file-export me-2"></i>Exportar a Excel</a></li>
+                        <li><hr class="dropdown-divider"></li>
+                        <li><a class="dropdown-item" href="#" id="btn-generar-codigos"><i class="fas fa-barcode me-2"></i>Imprimir Códigos de Barras</a></li>
+                        <li><a class="dropdown-item" href="#" id="btn-imprimir-etiquetas"><i class="fas fa-tags me-2"></i>Imprimir Etiquetas de Precios</a></li>
+                        <li><hr class="dropdown-divider"></li>
+                        <li><a class="dropdown-item" href="#" id="btn-ajustar-stock"><i class="fas fa-warehouse me-2"></i>Ajuste Masivo de Stock</a></li>
+                        <li><a class="dropdown-item" href="#" id="btn-actualizar-precios"><i class="fas fa-percentage me-2"></i>Actualización Masiva de Precios</a></li>
+                    </ul>
+                </div>
+            </div>
+        </div>
+
+        <!-- Alertas de stock bajo -->
+        <div id="stock-alert" class="stock-warning" style="display: none;">
+            <div class="d-flex align-items-center">
+                <i class="fas fa-exclamation-triangle me-3 fs-4"></i>
+                <div>
+                    <h5 class="mb-1">Alerta de Stock</h5>
+                    <p class="mb-0">Hay <strong id="cantidad-productos-bajo-stock">0</strong> productos con stock por debajo del mínimo.</p>
+                </div>
+                <button type="button" class="btn btn-sm btn-warning ms-auto" id="btn-ver-productos-bajo-stock">
+                    Ver productos
+                </button>
+            </div>
+        </div>
+
+        <!-- Pestañas de navegación -->
+        <ul class="nav nav-tabs mb-4" id="productosTab" role="tablist">
+            <li class="nav-item" role="presentation">
+                <button class="nav-link active" id="lista-tab" data-bs-toggle="tab" data-bs-target="#lista" type="button" role="tab" aria-controls="lista" aria-selected="true">
+                    <i class="fas fa-list me-2"></i>Listado de Productos
+                </button>
+            </li>
+            <li class="nav-item" role="presentation">
+                <button class="nav-link" id="stock-tab" data-bs-toggle="tab" data-bs-target="#stock" type="button" role="tab" aria-controls="stock" aria-selected="false">
+                    <i class="fas fa-warehouse me-2"></i>Gestión de Stock
+                </button>
+            </li>
+            <li class="nav-item" role="presentation">
+                <button class="nav-link" id="categorias-tab" data-bs-toggle="tab" data-bs-target="#categorias" type="button" role="tab" aria-controls="categorias" aria-selected="false">
+                    <i class="fas fa-tags me-2"></i>Categorías
+                </button>
+            </li>
+            <li class="nav-item" role="presentation">
+                <button class="nav-link" id="codigos-tab" data-bs-toggle="tab" data-bs-target="#codigos" type="button" role="tab" aria-controls="codigos" aria-selected="false">
+                    <i class="fas fa-barcode me-2"></i>Códigos de Barras
+                </button>
+            </li>
+        </ul>
+
+        <!-- Contenido de las pestañas -->
+        <div class="tab-content" id="productosTabContent">
+            <!-- Pestaña: Listado de Productos -->
+            <div class="tab-pane fade show active" id="lista" role="tabpanel" aria-labelledby="lista-tab">
+                <!-- Filtros rápidos -->
+                <div class="row mb-3">
+                    <div class="col-md-3">
+                        <div class="input-group">
+                            <span class="input-group-text"><i class="fas fa-search"></i></span>
+                            <input type="text" class="form-control" id="busqueda-rapida" placeholder="Buscar producto...">
+                        </div>
+                    </div>
+                    <div class="col-md-3">
+                        <select class="form-select" id="filtro-categoria">
+                            <option value="">Todas las categorías</option>
+                            <!-- Se llenarán dinámicamente -->
+                        </select>
+                    </div>
+                    <div class="col-md-2">
+                        <div class="form-check form-switch mt-2">
+                            <input class="form-check-input" type="checkbox" id="switch-stock">
+                            <label class="form-check-label" for="switch-stock">Solo con stock</label>
+                        </div>
+                    </div>
+                    <div class="col-md-4 text-end">
+                        <button class="btn btn-outline-secondary" type="button" data-bs-toggle="collapse" data-bs-target="#filtros-avanzados">
+                            <i class="fas fa-filter me-2"></i>Filtros avanzados
+                        </button>
+                    </div>
+                </div>
+
+                <!-- Filtros avanzados (colapsables) -->
+                <div class="collapse mb-4" id="filtros-avanzados">
+                    <div class="card card-body">
+                        <div class="row">
+                            <div class="col-md-3">
+                                <label class="form-label">Grupo</label>
+                                <select class="form-select" id="filtro-grupo">
+                                    <option value="">Todos los grupos</option>
+                                    <!-- Se llenarán dinámicamente -->
+                                </select>
+                            </div>
+                            <div class="col-md-3">
+                                <label class="form-label">Subgrupo</label>
+                                <select class="form-select" id="filtro-subgrupo">
+                                    <option value="">Todos los subgrupos</option>
+                                    <!-- Se llenarán dinámicamente -->
+                                </select>
+                            </div>
+                            <div class="col-md-3">
+                                <label class="form-label">Familia</label>
+                                <select class="form-select" id="filtro-familia">
+                                    <option value="">Todas las familias</option>
+                                    <!-- Se llenarán dinámicamente -->
+                                </select>
+                            </div>
+                            <div class="col-md-3">
+                                <label class="form-label">Tipo</label>
+                                <select class="form-select" id="filtro-tipo">
+                                    <option value="">Todos los tipos</option>
+                                    <!-- Se llenarán dinámicamente -->
+                                </select>
+                            </div>
+                        </div>
+                        <div class="row mt-3">
+                            <div class="col-md-3">
+                                <label class="form-label">Rango de precios</label>
+                                <div class="input-group">
+                                    <input type="number" class="form-control" placeholder="Mín" id="filtro-precio-min">
+                                    <span class="input-group-text">a</span>
+                                    <input type="number" class="form-control" placeholder="Máx" id="filtro-precio-max">
+                                </div>
+                            </div>
+                            <div class="col-md-3">
+                                <label class="form-label">Estado de stock</label>
+                                <select class="form-select" id="filtro-estado-stock">
+                                    <option value="">Cualquier estado</option>
+                                    <option value="bajo">Stock bajo</option>
+                                    <option value="normal">Stock normal</option>
+                                    <option value="sinstock">Sin stock</option>
+                                </select>
+                            </div>
+                            <div class="col-md-3">
+                                <label class="form-label">IVA</label>
+                                <select class="form-select" id="filtro-iva">
+                                    <option value="">Todos</option>
+                                    <option value="21">21%</option>
+                                    <option value="10.5">10.5%</option>
+                                    <option value="27">27%</option>
+                                    <option value="0">0%</option>
+                                    <option value="exento">Exento</option>
+                                </select>
+                            </div>
+                            <div class="col-md-3 d-flex align-items-end">
+                                <button class="btn btn-primary w-100" id="btn-aplicar-filtros">
+                                    <i class="fas fa-check me-2"></i>Aplicar filtros
+                                </button>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Tabla de productos -->
+                <div class="table-overflow">
+                    <table class="table table-striped table-hover" id="tabla-productos">
+                        <thead>
+                            <tr>
+                                <th>Imagen</th>
+                                <th>Código</th>
+                                <th>Nombre</th>
+                                <th>Categoría</th>
+                                <th>Precio</th>
+                                <th>IVA</th>
+                                <th>Stock</th>
+                                <th>Acciones</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            <!-- Se llena dinámicamente -->
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+
+            <!-- Pestaña: Gestión de Stock -->
+            <div class="tab-pane fade" id="stock" role="tabpanel" aria-labelledby="stock-tab">
+                <div class="row mb-4">
+                    <div class="col-md-6">
+                        <div class="card">
+                            <div class="card-header">
+                                <h5 class="card-title mb-0">Resumen de Stock</h5>
+                            </div>
+                            <div class="card-body">
+                                <div class="row text-center">
+                                    <div class="col-md-4">
+                                        <div class="border rounded p-3 mb-3">
+                                            <h6>Productos en Stock</h6>
+                                            <h2 id="contador-productos-stock">0</h2>
+                                        </div>
+                                    </div>
+                                    <div class="col-md-4">
+                                        <div class="border rounded p-3 mb-3">
+                                            <h6>Stock Bajo</h6>
+                                            <h2 id="contador-stock-bajo" class="text-warning">0</h2>
+                                        </div>
+                                    </div>
+                                    <div class="col-md-4">
+                                        <div class="border rounded p-3 mb-3">
+                                            <h6>Sin Stock</h6>
+                                            <h2 id="contador-sin-stock" class="text-danger">0</h2>
+                                        </div>
+                                    </div>
+                                </div>
+                                <div class="mt-4">
+                                    <h6>Distribución por Sucursal</h6>
+                                    <div id="grafico-stock-sucursal" style="height: 200px;"></div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="col-md-6">
+                        <div class="card">
+                            <div class="card-header">
+                                <h5 class="card-title mb-0">Ajuste de Stock</h5>
+                            </div>
+                            <div class="card-body">
+                                <form id="form-ajuste-stock">
+                                    <div class="mb-3">
+                                        <label class="form-label">Producto</label>
+                                        <select class="form-select select2-productos" id="producto-ajuste-stock" required>
+                                            <option value="">Seleccione un producto</option>
+                                            <!-- Se llena dinámicamente -->
+                                        </select>
+                                    </div>
+                                    <div class="row mb-3">
+                                        <div class="col-md-6">
+                                            <label class="form-label">Sucursal</label>
+                                            <select class="form-select" id="sucursal-ajuste-stock" required>
+                                                <option value="">Seleccione sucursal</option>
+                                                <!-- Se llena dinámicamente -->
+                                            </select>
+                                        </div>
+                                        <div class="col-md-6">
+                                            <label class="form-label">Stock Actual</label>
+                                            <input type="text" class="form-control" id="stock-actual" readonly>
+                                        </div>
+                                    </div>
+                                    <div class="row mb-3">
+                                        <div class="col-md-6">
+                                            <label class="form-label">Tipo de Ajuste</label>
+                                            <select class="form-select" id="tipo-ajuste-stock" required>
+                                                <option value="agregar">Agregar</option>
+                                                <option value="restar">Restar</option>
+                                                <option value="fijar">Fijar valor</option>
+                                            </select>
+                                        </div>
+                                        <div class="col-md-6">
+                                            <label class="form-label">Cantidad</label>
+                                            <input type="number" class="form-control" id="cantidad-ajuste-stock" required min="0">
+                                        </div>
+                                    </div>
+                                    <div class="mb-3">
+                                        <label class="form-label">Motivo</label>
+                                        <select class="form-select" id="motivo-ajuste-stock" required>
+                                            <option value="">Seleccione motivo</option>
+                                            <option value="compra">Compra</option>
+                                            <option value="devolucion">Devolución</option>
+                                            <option value="merma">Merma/Pérdida</option>
+                                            <option value="inventario">Ajuste de inventario</option>
+                                            <option value="otro">Otro</option>
+                                        </select>
+                                    </div>
+                                    <div class="mb-3" id="div-otro-motivo" style="display: none;">
+                                        <label class="form-label">Especifique motivo</label>
+                                        <input type="text" class="form-control" id="otro-motivo-ajuste">
+                                    </div>
+                                    <div class="mb-3">
+                                        <label class="form-label">Observaciones</label>
+                                        <textarea class="form-control" id="observaciones-ajuste-stock" rows="2"></textarea>
+                                    </div>
+                                    <div class="text-end">
+                                        <button type="submit" class="btn btn-primary">Guardar Ajuste</button>
+                                    </div>
+                                </form>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Historial de Movimientos de Stock -->
+                <div class="card">
+                    <div class="card-header">
+                        <h5 class="card-title mb-0">Historial de Movimientos</h5>
+                    </div>
+                    <div class="card-body">
+                        <div class="row mb-3">
+                            <div class="col-md-3">
+                                <label class="form-label">Desde</label>
+                                <input type="date" class="form-control" id="fecha-desde-movimientos">
+                            </div>
+                            <div class="col-md-3">
+                                <label class="form-label">Hasta</label>
+                                <input type="date" class="form-control" id="fecha-hasta-movimientos">
+                            </div>
+                            <div class="col-md-3">
+                                <label class="form-label">Producto</label>
+                                <select class="form-select select2-productos" id="producto-movimientos">
+                                    <option value="">Todos los productos</option>
+                                    <!-- Se llena dinámicamente -->
+                                </select>
+                            </div>
+                            <div class="col-md-3">
+                                <label class="form-label">Tipo</label>
+                                <select class="form-select" id="tipo-movimientos">
+                                    <option value="">Todos los tipos</option>
+                                    <option value="entrada">Entradas</option>
+                                    <option value="salida">Salidas</option>
+                                    <option value="ajuste">Ajustes</option>
+                                </select>
+                            </div>
+                        </div>
+                        <div class="table-overflow">
+                            <table class="table table-striped" id="tabla-movimientos-stock">
+                                <thead>
+                                    <tr>
+                                        <th>Fecha</th>
+                                        <th>Producto</th>
+                                        <th>Sucursal</th>
+                                        <th>Tipo</th>
+                                        <th>Cantidad</th>
+                                        <th>Motivo</th>
+                                        <th>Usuario</th>
+                                        <th>Observaciones</th>
+                                    </tr>
+                                </thead>
+                                <tbody>
+                                    <!-- Se llena dinámicamente -->
+                                </tbody>
+                            </table>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Pestaña: Categorías -->
+            <div class="tab-pane fade" id="categorias" role="tabpanel" aria-labelledby="categorias-tab">
+                <div class="row">
+                    <!-- Grupos -->
+                    <div class="col-md-6 mb-4">
+                        <div class="card">
+                            <div class="card-header d-flex justify-content-between align-items-center">
+                                <h5 class="card-title mb-0">Grupos</h5>
+                                <button class="btn btn-sm btn-primary" data-bs-toggle="modal" data-bs-target="#modalGrupo">
+                                    <i class="fas fa-plus"></i> Nuevo
+                                </button>
+                            </div>
+                            <div class="card-body">
+                                <table class="table table-striped" id="tabla-grupos">
+                                    <thead>
+                                        <tr>
+                                            <th>Nombre</th>
+                                            <th>Descripción</th>
+                                            <th>Productos</th>
+                                            <th>Acciones</th>
+                                        </tr>
+                                    </thead>
+                                    <tbody>
+                                        <!-- Se llena dinámicamente -->
+                                    </tbody>
+                                </table>
+                            </div>
+                        </div>
+                    </div>
+                    
+                    <!-- Subgrupos -->
+                    <div class="col-md-6 mb-4">
+                        <div class="card">
+                            <div class="card-header d-flex justify-content-between align-items-center">
+                                <h5 class="card-title mb-0">Subgrupos</h5>
+                                <button class="btn btn-sm btn-primary" data-bs-toggle="modal" data-bs-target="#modalSubgrupo">
+                                    <i class="fas fa-plus"></i> Nuevo
+                                </button>
+                            </div>
+                            <div class="card-body">
+                                <table class="table table-striped" id="tabla-subgrupos">
+                                    <thead>
+                                        <tr>
+                                            <th>Nombre</th>
+                                            <th>Grupo</th>
+                                            <th>Productos</th>
+                                            <th>Acciones</th>
+                                        </tr>
+                                    </thead>
+                                    <tbody>
+                                        <!-- Se llena dinámicamente -->
+                                    </tbody>
+                                </table>
+                            </div>
+                        </div>
+                    </div>
+                    
+                    <!-- Familias -->
+                    <div class="col-md-6 mb-4">
+                        <div class="card">
+                            <div class="card-header d-flex justify-content-between align-items-center">
+                                <h5 class="card-title mb-0">Familias</h5>
+                                <button class="btn btn-sm btn-primary" data-bs-toggle="modal" data-bs-target="#modalFamilia">
+                                    <i class="fas fa-plus"></i> Nueva
+                                </button>
+                            </div>
+                            <div class="card-body">
+                                <table class="table table-striped" id="tabla-familias">
+                                    <thead>
+                                        <tr>
+                                            <th>Nombre</th>
+                                            <th>Descripción</th>
+                                            <th>Productos</th>
+                                            <th>Acciones</th>
+                                        </tr>
+                                    </thead>
+                                    <tbody>
+                                        <!-- Se llena dinámicamente -->
+                                    </tbody>
+                                </table>
+                            </div>
+                        </div>
+                    </div>
+                    
+                    <!-- Tipos -->
+                    <div class="col-md-6 mb-4">
+                        <div class="card">
+                            <div class="card-header d-flex justify-content-between align-items-center">
+                                <h5 class="card-title mb-0">Tipos</h5>
+                                <button class="btn btn-sm btn-primary" data-bs-toggle="modal" data-bs-target="#modalTipo">
+                                    <i class="fas fa-plus"></i> Nuevo
+                                </button>
+                            </div>
+                            <div class="card-body">
+                                <table class="table table-striped" id="tabla-tipos">
+                                    <thead>
+                                        <tr>
+                                            <th>Nombre</th>
+                                            <th>Descripción</th>
+                                            <th>Productos</th>
+                                            <th>Acciones</th>
+                                        </tr>
+                                    </thead>
+                                    <tbody>
+                                        <!-- Se llena dinámicamente -->
+                                    </tbody>
+                                </table>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Pestaña: Códigos de Barras -->
+            <div class="tab-pane fade" id="codigos" role="tabpanel" aria-labelledby="codigos-tab">
+                <div class="row">
+                    <div class="col-md-6">
+                        <div class="card">
+                            <div class="card-header">
+                                <h5 class="card-title mb-0">Generador de Códigos de Barras</h5>
+                            </div>
+                            <div class="card-body">
+                                <form id="form-generar-codigo">
+                                    <div class="mb-3">
+                                        <label class="form-label">Seleccionar Productos</label>
+                                        <select class="form-select select2-productos" id="select-productos-barcode" multiple>
+                                            <!-- Se llena dinámicamente -->
+                                        </select>
+                                    </div>
+                                    <div class="row mb-3">
+                                        <div class="col-md-6">
+                                            <label class="form-label">Tipo de Código</label>
+                                            <select class="form-select" id="tipo-codigo-barras">
+                                                <option value="CODE128">CODE128 (General)</option>
+                                                <option value="EAN13">EAN-13 (Estándar comercial)</option>
+                                                <option value="EAN8">EAN-8 (Espacios reducidos)</option>
+                                                <option value="UPC">UPC (Universal Product Code)</option>
+                                                <option value="CODE39">CODE39 (Alfanumérico)</option>
+                                            </select>
+                                        </div>
+                                        <div class="col-md-6">
+                                            <label class="form-label">Copias por producto</label>
+                                            <input type="number" class="form-control" id="copias-codigo" value="1" min="1" max="100">
+                                        </div>
+                                    </div>
+                                    <div class="mb-3">
+                                        <label class="form-label">Formato de impresión</label>
+                                        <select class="form-select" id="formato-impresion">
+                                            <option value="pequeno">Pequeño (12 por página)</option>
+                                            <option value="mediano">Mediano (8 por página)</option>
+                                            <option value="grande">Grande (4 por página)</option>
+                                            <option value="etiqueta-30x20">Etiqueta 30x20mm</option>
+                                            <option value="etiqueta-50x30">Etiqueta 50x30mm</option>
+                                        </select>
+                                    </div>
+                                    <div class="mb-3">
+                                        <div class="form-check">
+                                            <input class="form-check-input" type="checkbox" id="mostrar-precio" checked>
+                                            <label class="form-check-label" for="mostrar-precio">
+                                                Mostrar precio
+                                            </label>
+                                        </div>
+                                    </div>
+                                    <div class="mb-3">
+                                        <div class="form-check">
+                                            <input class="form-check-input" type="checkbox" id="mostrar-nombre" checked>
+                                            <label class="form-check-label" for="mostrar-nombre">
+                                                Mostrar nombre del producto
+                                            </label>
+                                        </div>
+                                    </div>
+                                    <div class="text-end">
+                                        <button type="button" class="btn btn-secondary" id="btn-previsualizar-barcode">
+                                            <i class="fas fa-eye me-2"></i>Previsualizar
+                                        </button>
+                                        <button type="submit" class="btn btn-primary">
+                                            <i class="fas fa-print me-2"></i>Imprimir códigos
+                                        </button>
+                                    </div>
+                                </form>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="col-md-6">
+                        <div class="card">
+                            <div class="card-header">
+                                <h5 class="card-title mb-0">Previsualización</h5>
+                            </div>
+                            <div class="card-body">
+                                <div class="barcode-container">
+                                    <div id="barcode-preview" class="barcode-preview">
+                                        <!-- Contenido de previsualización -->
+                                        <div class="text-center py-5 text-muted">
+                                            <i class="fas fa-barcode fa-3x mb-3"></i>
+                                            <p>Seleccione productos y haga clic en "Previsualizar" para ver el resultado.</p>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                        
+                        <!-- Plantilla de etiqueta de precio -->
+                        <div class="card mt-4">
+                            <div class="card-header">
+                                <h5 class="card-title mb-0">Etiqueta de precio</h5>
+                            </div>
+                            <div class="card-body">
+                                <div class="price-tag-preview">
+                                    <div class="product-name">Nombre del producto</div>
+                                    <div class="product-price">$1,000.00</div>
+                                    <div class="product-barcode">
+                                        <svg id="price-tag-barcode"></svg>
+                                    </div>
+                                </div>
+                                <div class="text-center mt-3">
+                                    <button type="button" class="btn btn-primary btn-sm" id="btn-imprimir-etiqueta-precio">
+                                        <i class="fas fa-print me-2"></i>Imprimir etiquetas
+                                    </button>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                
+                <!-- Generador de códigos personalizados -->
+                <div class="card mt-4">
+                    <div class="card-header">
+                        <h5 class="card-title mb-0">Generador de Códigos Personalizados</h5>
+                    </div>
+                    <div class="card-body">
+                        <form id="form-codigo-personalizado">
+                            <div class="row">
+                                <div class="col-md-6">
+                                    <div class="mb-3">
+                                        <label class="form-label">Tipo de Código</label>
+                                        <select class="form-select" id="tipo-codigo-personalizado">
+                                            <option value="CODE128">CODE128 (General)</option>
+                                            <option value="EAN13">EAN-13 (Estándar comercial)</option>
+                                            <option value="EAN8">EAN-8 (Espacios reducidos)</option>
+                                            <option value="UPC">UPC (Universal Product Code)</option>
+                                            <option value="CODE39">CODE39 (Alfanumérico)</option>
+                                        </select>
+                                    </div>
+                                    <div class="mb-3">
+                                        <label class="form-label">Valor del Código</label>
+                                        <input type="text" class="form-control" id="valor-codigo-personalizado" placeholder="Ingrese el código">
+                                        <small class="text-muted">EAN-13 requiere 12-13 dígitos, EAN-8 requiere 7-8 dígitos, UPC requiere 11-12 dígitos.</small>
+                                    </div>
+                                    <div class="mb-3">
+                                        <label class="form-label">Texto a mostrar (opcional)</label>
+                                        <input type="text" class="form-control" id="texto-codigo-personalizado" placeholder="Texto descriptivo">
+                                    </div>
+                                    <div class="mb-3">
+                                        <label class="form-label">Cantidad</label>
+                                        <input type="number" class="form-control" id="cantidad-codigo-personalizado" value="1" min="1" max="100">
+                                    </div>
+                                </div>
+                                <div class="col-md-6">
+                                    <div class="barcode-container py-4">
+                                        <h6 class="mb-3">Previsualización</h6>
+                                        <div id="codigo-personalizado-preview">
+                                            <!-- Previsualización del código -->
+                                            <svg id="svg-codigo-personalizado" class="d-block mx-auto"></svg>
+                                        </div>
+                                        <div class="mt-3 text-center" id="texto-codigo-personalizado-preview"></div>
+                                    </div>
+                                    <div class="text-center mt-4">
+                                        <button type="button" class="btn btn-secondary" id="btn-generar-codigo-personalizado">
+                                            <i class="fas fa-sync me-2"></i>Generar
+                                        </button>
+                                        <button type="submit" class="btn btn-primary">
+                                            <i class="fas fa-print me-2"></i>Imprimir
+                                        </button>
+                                    </div>
+                                </div>
+                            </div>
+                        </form>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Modal: Nuevo/Editar Producto -->
+    <div class="modal fade" id="modalProducto" tabindex="-1" aria-labelledby="modalProductoLabel" aria-hidden="true">
+        <div class="modal-dialog modal-lg">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h5 class="modal-title" id="modalProductoLabel">Nuevo Producto</h5>
+                    <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Cerrar"></button>
+                </div>
+                <div class="modal-body">
+                    <form id="form-producto">
+                        <input type="hidden" id="producto-id">
+                        <ul class="nav nav-tabs card-header-tabs" id="productoTab" role="tablist">
+                            <li class="nav-item" role="presentation">
+                                <button class="nav-link active" id="general-tab" data-bs-toggle="tab" data-bs-target="#general-producto" type="button" role="tab" aria-controls="general-producto" aria-selected="true">General</button>
+                            </li>
+                            <li class="nav-item" role="presentation">
+                                <button class="nav-link" id="precios-tab" data-bs-toggle="tab" data-bs-target="#precios-producto" type="button" role="tab" aria-controls="precios-producto" aria-selected="false">Precios</button>
+                            </li>
+                            <li class="nav-item" role="presentation">
+                                <button class="nav-link" id="stock-tab-producto" data-bs-toggle="tab" data-bs-target="#stock-producto" type="button" role="tab" aria-controls="stock-producto" aria-selected="false">Stock</button>
+                            </li>
+                            <li class="nav-item" role="presentation">
+                                <button class="nav-link" id="imagen-tab" data-bs-toggle="tab" data-bs-target="#imagen-producto" type="button" role="tab" aria-controls="imagen-producto" aria-selected="false">Imagen</button>
+                            </li>
+                            <li class="nav-item" role="presentation">
+                                <button class="nav-link" id="adicional-tab" data-bs-toggle="tab" data-bs-target="#adicional-producto" type="button" role="tab" aria-controls="adicional-producto" aria-selected="false">Adicional</button>
+                            </li>
+                        </ul>
+                        
+                        <div class="tab-content pt-3" id="productoTabContent">
+                            <!-- Pestaña: General -->
+                            <div class="tab-pane fade show active" id="general-producto" role="tabpanel" aria-labelledby="general-tab">
+                                <div class="row">
+                                    <div class="col-md-6">
+                                        <div class="mb-3">
+                                            <label for="producto-codigo" class="form-label">Código</label>
+                                            <div class="input-group">
+                                                <input type="text" class="form-control" id="producto-codigo" required>
+                                                <button class="btn btn-outline-secondary" type="button" id="btn-generar-codigo-automatico">
+                                                    <i class="fas fa-barcode"></i>
+                                                </button>
+                                            </div>
+                                        </div>
+                                    </div>
+                                    <div class="col-md-6">
+                                        <div class="mb-3">
+                                            <label for="producto-codigo-barras" class="form-label">Código de Barras</label>
+                                            <input type="text" class="form-control" id="producto-codigo-barras">
+                                            <small class="text-muted">Dejar vacío para usar código interno</small>
+                                        </div>
+                                    </div>
+                                </div>
+                                
+                                <div class="mb-3">
+                                    <label for="producto-nombre" class="form-label">Nombre del Producto</label>
+                                    <input type="text" class="form-control" id="producto-nombre" required>
+                                </div>
+                                
+                                <div class="row">
+                                    <div class="col-md-12">
+                                        <div class="mb-3">
+                                            <label for="producto-descripcion" class="form-label">Descripción</label>
+                                            <textarea class="form-control" id="producto-descripcion" rows="3"></textarea>
+                                        </div>
+                                    </div>
+                                </div>
+                                
+                                <div class="row">
+                                    <div class="col-md-6">
+                                        <div class="mb-3">
+                                            <label for="producto-grupo" class="form-label">Grupo</label>
+                                            <select class="form-select" id="producto-grupo">
+                                                <option value="">Seleccione un grupo</option>
+                                                <!-- Se llena dinámicamente -->
+                                            </select>
+                                        </div>
+                                    </div>
+                                    <div class="col-md-6">
+                                        <div class="mb-3">
+                                            <label for="producto-subgrupo" class="form-label">Subgrupo</label>
+                                            <select class="form-select" id="producto-subgrupo">
+                                                <option value="">Seleccione un subgrupo</option>
+                                                <!-- Se llena dinámicamente según el grupo -->
+                                            </select>
+                                        </div>
+                                    </div>
+                                </div>
+                                
+                                <div class="row">
+                                    <div class="col-md-6">
+                                        <div class="mb-3">
+                                            <label for="producto-familia" class="form-label">Familia</label>
+                                            <select class="form-select" id="producto-familia">
+                                                <option value="">Seleccione una familia</option>
+                                                <!-- Se llena dinámicamente -->
+                                            </select>
+                                        </div>
+                                    </div>
+                                    <div class="col-md-6">
+                                        <div class="mb-3">
+                                            <label for="producto-tipo" class="form-label">Tipo</label>
+                                            <select class="form-select" id="producto-tipo">
+                                                <option value="">Seleccione un tipo</option>
+                                                <!-- Se llena dinámicamente -->
+                                            </select>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                            
+                            <!-- Pestaña: Precios -->
+                            <div class="tab-pane fade" id="precios-producto" role="tabpanel" aria-labelledby="precios-tab">
+                                <div class="row">
+                                    <div class="col-md-6">
+                                        <div class="mb-3">
+                                            <label for="producto-costo" class="form-label">Costo</label>
+                                            <div class="input-group">
+                                                <span class="input-group-text">$</span>
+                                                <input type="number" class="form-control" id="producto-costo" step="0.01" min="0">
+                                            </div>
+                                        </div>
+                                    </div>
+                                    <div class="col-md-6">
+                                        <div class="mb-3">
+                                            <label for="producto-precio" class="form-label">Precio de Venta</label>
+                                            <div class="input-group">
+                                                <span class="input-group-text">$</span>
+                                                <input type="number" class="form-control" id="producto-precio" step="0.01" min="0" required>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+                                
+                                <div class="row">
+                                    <div class="col-md-6">
+                                        <div class="mb-3">
+                                            <label for="producto-margen" class="form-label">Margen</label>
+                                            <div class="input-group">
+                                                <input type="number" class="form-control" id="producto-margen" step="0.01" min="0">
+                                                <span class="input-group-text">%</span>
+                                            </div>
+                                        </div>
+                                    </div>
+                                    <div class="col-md-6">
+                                        <div class="mb-3">
+                                            <label for="producto-iva" class="form-label">IVA</label>
+                                            <select class="form-select" id="producto-iva" required>
+                                                <option value="21">21%</option>
+                                                <option value="10.5">10.5%</option>
+                                                <option value="27">27%</option>
+                                                <option value="0">0%</option>
+                                                <option value="exento">Exento</option>
+                                            </select>
+                                        </div>
+                                    </div>
+                                </div>
+                                
+                                <div class="mb-3">
+                                    <div class="form-check">
+                                        <input class="form-check-input" type="checkbox" id="producto-preciosvarios" value="1">
+                                        <label class="form-check-label" for="producto-preciosvarios">
+                                            Habilitar múltiples precios
+                                        </label>
+                                    </div>
+                                </div>
+                                
+                                <div id="precios-adicionales" style="display: none;">
+                                    <hr>
+                                    <h6>Precios Adicionales</h6>
+                                    
+                                    <div class="row">
+                                        <div class="col-md-6">
+                                            <div class="mb-3">
+                                                <label for="producto-precio2" class="form-label">Precio 2 (Mayorista)</label>
+                                                <div class="input-group">
+                                                    <span class="input-group-text">$</span>
+                                                    <input type="number" class="form-control" id="producto-precio2" step="0.01" min="0">
+                                                </div>
+                                            </div>
+                                        </div>
+                                        <div class="col-md-6">
+                                            <div class="mb-3">
+                                                <label for="producto-precio3" class="form-label">Precio 3 (Especial)</label>
+                                                <div class="input-group">
+                                                    <span class="input-group-text">$</span>
+                                                    <input type="number" class="form-control" id="producto-precio3" step="0.01" min="0">
+                                                </div>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                            
+                            <!-- Pestaña: Stock -->
+                            <div class="tab-pane fade" id="stock-producto" role="tabpanel" aria-labelledby="stock-tab-producto">
+                                <div class="row">
+                                    <div class="col-md-6">
+                                        <div class="mb-3">
+                                            <div class="form-check">
+                                                <input class="form-check-input" type="checkbox" id="producto-control-stock" value="1" checked>
+                                                <label class="form-check-label" for="producto-control-stock">
+                                                    Controlar stock
+                                                </label>
+                                            </div>
+                                        </div>
+                                    </div>
+                                    <div class="col-md-6">
+                                        <div class="mb-3">
+                                            <div class="form-check">
+                                                <input class="form-check-input" type="checkbox" id="producto-stock-negativo" value="1">
+                                                <label class="form-check-label" for="producto-stock-negativo">
+                                                    Permitir stock negativo
+                                                </label>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+                                
+                                <div id="config-stock">
+                                    <div class="row">
+                                        <div class="col-md-6">
+                                            <div class="mb-3">
+                                                <label for="producto-stockminimo" class="form-label">Stock Mínimo</label>
+                                                <input type="number" class="form-control" id="producto-stockminimo" min="0" value="0">
+                                            </div>
+                                        </div>
+                                        <div class="col-md-6">
+                                            <div class="mb-3">
+                                                <label for="producto-stockoptimo" class="form-label">Stock Óptimo</label>
+                                                <input type="number" class="form-control" id="producto-stockoptimo" min="0" value="0">
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+                                
+                                <div class="mb-3">
+                                    <label class="form-label">Stock por Sucursal</label>
+                                    <div class="table-responsive">
+                                        <table class="table table-bordered" id="tabla-stock-sucursales">
+                                            <thead>
+                                                <tr>
+                                                    <th>Sucursal</th>
+                                                    <th>Stock Actual</th>
+                                                    <th>Ubicación</th>
+                                                </tr>
+                                            </thead>
+                                            <tbody>
+                                                <!-- Se llena dinámicamente -->
+                                            </tbody>
+                                        </table>
+                                    </div>
+                                </div>
+                            </div>
+                            
+                            <!-- Pestaña: Imagen -->
+                            <div class="tab-pane fade" id="imagen-producto" role="tabpanel" aria-labelledby="imagen-tab">
+                                <div class="text-center mb-3">
+                                    <img id="producto-imagen-preview" src="../assets/img/products/default.png" alt="Vista previa" style="max-width: 200px; max-height: 200px;" class="img-thumbnail">
+                                </div>
+                                
+                                <div class="mb-3">
+                                    <label for="producto-imagen" class="form-label">Seleccionar imagen</label>
+                                    <input class="form-control" type="file" id="producto-imagen" accept="image/*">
+                                </div>
+                                
+                                <div class="drag-drop-area" id="drag-drop-area">
+                                    <i class="fas fa-cloud-upload-alt fa-2x mb-2"></i>
+                                    <p>Arrastre y suelte una imagen aquí<br>o haga clic para seleccionar</p>
+                                </div>
+                                
+                                <div class="mb-3">
+                                    <div class="form-check">
+                                        <input class="form-check-input" type="checkbox" id="producto-eliminar-imagen">
+                                        <label class="form-check-label" for="producto-eliminar-imagen">
+                                            Eliminar imagen actual
+                                        </label>
+                                    </div>
+                                </div>
+                            </div>
+                            
+                            <!-- Pestaña: Adicional -->
+                            <div class="tab-pane fade" id="adicional-producto" role="tabpanel" aria-labelledby="adicional-tab">
+                                <div class="row">
+                                    <div class="col-md-6">
+                                        <div class="mb-3">
+                                            <label for="producto-unidad" class="form-label">Unidad de Medida</label>
+                                            <select class="form-select" id="producto-unidad">
+                                                <option value="unidad">Unidad</option>
+                                                <option value="kg">Kilogramos</option>
+                                                <option value="m">Metros</option>
+                                                <option value="l">Litros</option>
+                                                <option value="m2">Metros cuadrados</option>
+                                                <option value="m3">Metros cúbicos</option>
+                                                <option value="docena">Docena</option>
+                                                <option value="caja">Caja</option>
+                                                <option value="paquete">Paquete</option>
+                                                <option value="otro">Otro</option>
+                                            </select>
+                                        </div>
+                                    </div>
+                                    <div class="col-md-6" id="otra-unidad-div" style="display: none;">
+                                        <div class="mb-3">
+                                            <label for="producto-otra-unidad" class="form-label">Especificar Unidad</label>
+                                            <input type="text" class="form-control" id="producto-otra-unidad">
+                                        </div>
+                                    </div>
+                                </div>
+                                
+                                <div class="row">
+                                    <div class="col-md-6">
+                                        <div class="mb-3">
+                                            <label for="producto-proveedor" class="form-label">Proveedor Principal</label>
+                                            <select class="form-select" id="producto-proveedor">
+                                                <option value="">Seleccione un proveedor</option>
+                                                <!-- Se llena dinámicamente -->
+                                            </select>
+                                        </div>
+                                    </div>
+                                    <div class="col-md-6">
+                                        <div class="mb-3">
+                                            <label for="producto-codigo-proveedor" class="form-label">Código de Proveedor</label>
+                                            <input type="text" class="form-control" id="producto-codigo-proveedor">
+                                        </div>
+                                    </div>
+                                </div>
+                                
+                                <div class="row">
+                                    <div class="col-md-6">
+                                        <div class="mb-3">
+                                            <label for="producto-peso" class="form-label">Peso (g)</label>
+                                            <input type="number" class="form-control" id="producto-peso" step="0.01" min="0">
+                                        </div>
+                                    </div>
+                                    <div class="col-md-6">
+                                        <div class="mb-3">
+                                            <label for="producto-garantia" class="form-label">Garantía (meses)</label>
+                                            <input type="number" class="form-control" id="producto-garantia" min="0">
+                                        </div>
+                                    </div>
+                                </div>
+                                
+                                <div class="mb-3">
+                                    <label for="producto-notas" class="form-label">Notas Internas</label>
+                                    <textarea class="form-control" id="producto-notas" rows="3"></textarea>
+                                </div>
+                                
+                                <div class="mb-3">
+                                    <div class="form-check">
+                                        <input class="form-check-input" type="checkbox" id="producto-activo" value="1" checked>
+                                        <label class="form-check-label" for="producto-activo">
+                                            Producto activo
+                                        </label>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </form>
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cancelar</button>
+                    <button type="button" class="btn btn-primary" id="btn-guardar-producto">Guardar</button>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Modal: Nuevo/Editar Grupo -->
+    <div class="modal fade" id="modalGrupo" tabindex="-1" aria-labelledby="modalGrupoLabel" aria-hidden="true">
+        <div class="modal-dialog">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h5 class="modal-title" id="modalGrupoLabel">Nuevo Grupo</h5>
+                    <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Cerrar"></button>
+                </div>
+                <div class="modal-body">
+                    <form id="form-grupo">
+                        <input type="hidden" id="grupo-id">
+                        <div class="mb-3">
+                            <label for="grupo-nombre" class="form-label">Nombre</label>
+                            <input type="text" class="form-control" id="grupo-nombre" required>
+                        </div>
+                        <div class="mb-3">
+                            <label for="grupo-descripcion" class="form-label">Descripción</label>
+                            <textarea class="form-control" id="grupo-descripcion" rows="3"></textarea>
+                        </div>
+                    </form>
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cancelar</button>
+                    <button type="button" class="btn btn-primary" id="btn-guardar-grupo">Guardar</button>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Modal: Nuevo/Editar Subgrupo -->
+    <div class="modal fade" id="modalSubgrupo" tabindex="-1" aria-labelledby="modalSubgrupoLabel" aria-hidden="true">
+        <div class="modal-dialog">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h5 class="modal-title" id="modalSubgrupoLabel">Nuevo Subgrupo</h5>
+                    <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Cerrar"></button>
+                </div>
+                <div class="modal-body">
+                    <form id="form-subgrupo">
+                        <input type="hidden" id="subgrupo-id">
+                        <div class="mb-3">
+                            <label for="subgrupo-nombre" class="form-label">Nombre</label>
+                            <input type="text" class="form-control" id="subgrupo-nombre" required>
+                        </div>
+                        <div class="mb-3">
+                            <label for="subgrupo-grupo" class="form-label">Grupo</label>
+                            <select class="form-select" id="subgrupo-grupo" required>
+                                <option value="">Seleccione un grupo</option>
+                                <!-- Se llena dinámicamente -->
+                            </select>
+                        </div>
+                        <div class="mb-3">
+                            <label for="subgrupo-descripcion" class="form-label">Descripción</label>
+                            <textarea class="form-control" id="subgrupo-descripcion" rows="3"></textarea>
+                        </div>
+                    </form>
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cancelar</button>
+                    <button type="button" class="btn btn-primary" id="btn-guardar-subgrupo">Guardar</button>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Modal: Nueva/Editar Familia -->
+    <div class="modal fade" id="modalFamilia" tabindex="-1" aria-labelledby="modalFamiliaLabel" aria-hidden="true">
+        <div class="modal-dialog">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h5 class="modal-title" id="modalFamiliaLabel">Nueva Familia</h5>
+                    <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Cerrar"></button>
+                </div>
+                <div class="modal-body">
+                    <form id="form-familia">
+                        <input type="hidden" id="familia-id">
+                        <div class="mb-3">
+                            <label for="familia-nombre" class="form-label">Nombre</label>
+                            <input type="text" class="form-control" id="familia-nombre" required>
+                        </div>
+                        <div class="mb-3">
+                            <label for="familia-descripcion" class="form-label">Descripción</label>
+                            <textarea class="form-control" id="familia-descripcion" rows="3"></textarea>
+                        </div>
+                    </form>
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cancelar</button>
+                    <button type="button" class="btn btn-primary" id="btn-guardar-familia">Guardar</button>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Modal: Nuevo/Editar Tipo -->
+    <div class="modal fade" id="modalTipo" tabindex="-1" aria-labelledby="modalTipoLabel" aria-hidden="true">
+        <div class="modal-dialog">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h5 class="modal-title" id="modalTipoLabel">Nuevo Tipo</h5>
+                    <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Cerrar"></button>
+                </div>
+                <div class="modal-body">
+                    <form id="form-tipo">
+                        <input type="hidden" id="tipo-id">
+                        <div class="mb-3">
+                            <label for="tipo-nombre" class="form-label">Nombre</label>
+                            <input type="text" class="form-control" id="tipo-nombre" required>
+                        </div>
+                        <div class="mb-3">
+                            <label for="tipo-descripcion" class="form-label">Descripción</label>
+                            <textarea class="form-control" id="tipo-descripcion" rows="3"></textarea>
+                        </div>
+                    </form>
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cancelar</button>
+                    <button type="button" class="btn btn-primary" id="btn-guardar-tipo">Guardar</button>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Modal: Importar desde Excel -->
+    <div class="modal fade" id="modalImportarExcel" tabindex="-1" aria-labelledby="modalImportarExcelLabel" aria-hidden="true">
+        <div class="modal-dialog modal-lg">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h5 class="modal-title" id="modalImportarExcelLabel">Importar Productos desde Excel</h5>
+                    <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Cerrar"></button>
+                </div>
+                <div class="modal-body">
+                    <div class="alert alert-info">
+                        <h6><i class="fas fa-info-circle me-2"></i>Instrucciones</h6>
+                        <ol class="mb-0">
+                            <li>Descargue la plantilla si aún no la tiene.</li>
+                            <li>Complete los datos en la plantilla Excel.</li>
+                            <li>Seleccione el archivo Excel con los productos.</li>
+                            <li>Haga clic en Importar para procesar los datos.</li>
+                        </ol>
+                    </div>
+                    
+                    <form id="form-importar-excel">
+                        <div class="mb-3">
+                            <label for="archivo-excel" class="form-label">Archivo Excel</label>
+                            <input class="form-control" type="file" id="archivo-excel" accept=".xlsx, .xls" required>
+                        </div>
+                        
+                        <div class="mb-3">
+                            <div class="form-check">
+                                <input class="form-check-input" type="checkbox" id="actualizar-existentes" checked>
+                                <label class="form-check-label" for="actualizar-existentes">
+                                    Actualizar productos existentes
+                                </label>
+                            </div>
+                        </div>
+                        
+                        <div class="text-center mb-3">
+                            <button type="button" class="btn btn-outline-primary" id="btn-descargar-plantilla">
+                                <i class="fas fa-download me-2"></i>Descargar Plantilla
+                            </button>
+                        </div>
+                    </form>
+                    
+                    <div id="preview-importacion" style="display: none;">
+                        <h6 class="mb-3">Vista previa de datos</h6>
+                        <div class="table-overflow">
+                            <table class="table table-sm table-bordered" id="tabla-preview-importacion">
+                                <thead>
+                                    <tr>
+                                        <th>Código</th>
+                                        <th>Nombre</th>
+                                        <th>Precio</th>
+                                        <th>Stock</th>
+                                        <th>Estado</th>
+                                    </tr>
+                                </thead>
+                                <tbody>
+                                    <!-- Se llena dinámicamente -->
+                                </tbody>
+                            </table>
+                        </div>
+                    </div>
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cancelar</button>
+                    <button type="button" class="btn btn-primary" id="btn-procesar-importacion">Importar</button>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Modal: Exportar a Excel -->
+    <div class="modal fade" id="modalExportarExcel" tabindex="-1" aria-labelledby="modalExportarExcelLabel" aria-hidden="true">
+        <div class="modal-dialog">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h5 class="modal-title" id="modalExportarExcelLabel">Exportar Productos a Excel</h5>
+                    <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Cerrar"></button>
+                </div>
+                <div class="modal-body">
+                    <form id="form-exportar-excel">
+                        <div class="mb-3">
+                            <label class="form-label">Datos a exportar</label>
+                            <div class="form-check">
+                                <input class="form-check-input" type="radio" name="exportar-filtro" id="exportar-todos" value="todos" checked>
+                                <label class="form-check-label" for="exportar-todos">
+                                    Todos los productos
+                                </label>
+                            </div>
+                            <div class="form-check">
+                                <input class="form-check-input" type="radio" name="exportar-filtro" id="exportar-filtrados" value="filtrados">
+                                <label class="form-check-label" for="exportar-filtrados">
+                                    Solo productos filtrados
+                                </label>
+                            </div>
+                        </div>
+                        
+                        <div class="mb-3">
+                            <label class="form-label">Campos a incluir</label>
+                            <div class="row">
+                                <div class="col-md-6">
+                                    <div class="form-check">
+                                        <input class="form-check-input" type="checkbox" id="exportar-precios" checked>
+                                        <label class="form-check-label" for="exportar-precios">
+                                            Precios y costos
+                                        </label>
+                                    </div>
+                                    <div class="form-check">
+                                        <input class="form-check-input" type="checkbox" id="exportar-stock" checked>
+                                        <label class="form-check-label" for="exportar-stock">
+                                            Stock
+                                        </label>
+                                    </div>
+                                </div>
+                                <div class="col-md-6">
+                                    <div class="form-check">
+                                        <input class="form-check-input" type="checkbox" id="exportar-categorias" checked>
+                                        <label class="form-check-label" for="exportar-categorias">
+                                            Categorías
+                                        </label>
+                                    </div>
+                                    <div class="form-check">
+                                        <input class="form-check-input" type="checkbox" id="exportar-detalles" checked>
+                                        <label class="form-check-label" for="exportar-detalles">
+                                            Detalles adicionales
+                                        </label>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                        
+                        <div class="mb-3">
+                            <label for="formato-exportacion" class="form-label">Formato de exportación</label>
+                            <select class="form-select" id="formato-exportacion">
+                                <option value="xlsx">Excel (XLSX)</option>
+                                <option value="csv">CSV (valores separados por comas)</option>
+                            </select>
+                        </div>
+                    </form>
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cancelar</button>
+                    <button type="button" class="btn btn-primary" id="btn-realizar-exportacion">Exportar</button>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Modal: Ajuste Masivo de Stock -->
+    <div class="modal fade" id="modalAjusteStock" tabindex="-1" aria-labelledby="modalAjusteStockLabel" aria-hidden="true">
+        <div class="modal-dialog modal-lg">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h5 class="modal-title" id="modalAjusteStockLabel">Ajuste Masivo de Stock</h5>
+                    <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Cerrar"></button>
+                </div>
+                <div class="modal-body">
+                    <div class="mb-4">
+                        <h6>Seleccionar Productos</h6>
+                        <div class="row">
+                            <div class="col-md-6">
+                                <div class="mb-3">
+                                    <label for="filtro-productos-stock" class="form-label">Filtro</label>
+                                    <select class="form-select" id="filtro-productos-stock">
+                                        <option value="todos">Todos los productos</option>
+                                        <option value="categoria">Por categoría</option>
+                                        <option value="stock-bajo">Con stock bajo</option>
+                                        <option value="sin-stock">Sin stock</option>
+                                        <option value="manual">Selección manual</option>
+                                    </select>
+                                </div>
+                            </div>
+                            <div class="col-md-6" id="div-categoria-stock" style="display: none;">
+                                <div class="mb-3">
+                                    <label for="categoria-productos-stock" class="form-label">Categoría</label>
+                                    <select class="form-select" id="categoria-productos-stock">
+                                        <option value="">Seleccione categoría</option>
+                                        <!-- Se llena dinámicamente -->
+                                    </select>
+                                </div>
+                            </div>
+                        </div>
+                        
+                        <div id="div-seleccion-productos" style="display: none;">
+                            <div class="mb-3">
+                                <label for="seleccion-productos-stock" class="form-label">Seleccionar productos</label>
+                                <select class="form-select select2-productos" id="seleccion-productos-stock" multiple>
+                                    <!-- Se llena dinámicamente -->
+                                </select>
+                            </div>
+                        </div>
+                        
+                        <div class="table-overflow mb-3" id="tabla-productos-ajuste-container">
+                            <table class="table table-sm table-striped" id="tabla-productos-ajuste">
+                                <thead>
+                                    <tr>
+                                        <th style="width: 40px;">
+                                            <div class="form-check">
+                                                <input class="form-check-input" type="checkbox" id="check-todos-productos">
+                                            </div>
+                                        </th>
+                                        <th>Código</th>
+                                        <th>Nombre</th>
+                                        <th>Stock Actual</th>
+                                        <th>Nuevo Stock</th>
+                                    </tr>
+                                </thead>
+                                <tbody>
+                                    <!-- Se llena dinámicamente -->
+                                </tbody>
+                            </table>
+                        </div>
+                    </div>
+                    
+                    <div class="mb-3">
+                        <h6>Operación</h6>
+                        <div class="row">
+                            <div class="col-md-4">
+                                <div class="mb-3">
+                                    <label for="operacion-stock" class="form-label">Tipo de ajuste</label>
+                                    <select class="form-select" id="operacion-stock">
+                                        <option value="aumentar">Aumentar stock</option>
+                                        <option value="disminuir">Disminuir stock</option>
+                                        <option value="fijar">Fijar valor</option>
+                                        <option value="porcentaje">Ajustar porcentaje</option>
+                                    </select>
+                                </div>
+                            </div>
+                            <div class="col-md-4">
+                                <div class="mb-3">
+                                    <label for="valor-ajuste-stock" class="form-label">Valor</label>
+                                    <div class="input-group">
+                                        <input type="number" class="form-control" id="valor-ajuste-stock" min="0" step="1">
+                                        <span class="input-group-text" id="simbolo-ajuste-stock"></span>
+                                    </div>
+                                </div>
+                            </div>
+                            <div class="col-md-4">
+                                <div class="mb-3">
+                                    <label for="sucursal-ajuste-masivo" class="form-label">Sucursal</label>
+                                    <select class="form-select" id="sucursal-ajuste-masivo">
+                                        <!-- Se llena dinámicamente -->
+                                    </select>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                    
+                    <div class="mb-3">
+                        <label for="motivo-ajuste-masivo" class="form-label">Motivo del ajuste</label>
+                        <select class="form-select" id="motivo-ajuste-masivo" required>
+                            <option value="">Seleccione motivo</option>
+                            <option value="inventario">Ajuste de inventario</option>
+                            <option value="compra">Compra</option>
+                            <option value="merma">Merma/Pérdida</option>
+                            <option value="otro">Otro</option>
+                        </select>
+                    </div>
+                    
+                    <div class="mb-3" id="div-otro-motivo-masivo" style="display: none;">
+                        <label for="otro-motivo-ajuste-masivo" class="form-label">Especifique motivo</label>
+                        <input type="text" class="form-control" id="otro-motivo-ajuste-masivo">
+                    </div>
+                    
+                    <div class="mb-3">
+                        <label for="observaciones-ajuste-masivo" class="form-label">Observaciones</label>
+                        <textarea class="form-control" id="observaciones-ajuste-masivo" rows="2"></textarea>
+                    </div>
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cancelar</button>
+                    <button type="button" class="btn btn-primary" id="btn-aplicar-ajuste-masivo">Aplicar Ajuste</button>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Modal: Actualización Masiva de Precios -->
+    <div class="modal fade" id="modalActualizacionPrecios" tabindex="-1" aria-labelledby="modalActualizacionPreciosLabel" aria-hidden="true">
+        <div class="modal-dialog modal-lg">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h5 class="modal-title" id="modalActualizacionPreciosLabel">Actualización Masiva de Precios</h5>
+                    <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Cerrar"></button>
+                </div>
+                <div class="modal-body">
+                    <div class="mb-4">
+                        <h6>Seleccionar Productos</h6>
+                        <div class="row">
+                            <div class="col-md-6">
+                                <div class="mb-3">
+                                    <label for="filtro-productos-precios" class="form-label">Filtro</label>
+                                    <select class="form-select" id="filtro-productos-precios">
+                                        <option value="todos">Todos los productos</option>
+                                        <option value="categoria">Por categoría</option>
+                                        <option value="proveedor">Por proveedor</option>
+                                        <option value="manual">Selección manual</option>
+                                    </select>
+                                </div>
+                            </div>
+                            <div class="col-md-6" id="div-categoria-precios" style="display: none;">
+                                <div class="mb-3">
+                                    <label for="categoria-productos-precios" class="form-label">Categoría</label>
+                                    <select class="form-select" id="categoria-productos-precios">
+                                        <option value="">Seleccione categoría</option>
+                                        <!-- Se llena dinámicamente -->
+                                    </select>
+                                </div>
+                            </div>
+                            <div class="col-md-6" id="div-proveedor-precios" style="display: none;">
+                                <div class="mb-3">
+                                    <label for="proveedor-productos-precios" class="form-label">Proveedor</label>
+                                    <select class="form-select" id="proveedor-productos-precios">
+                                        <option value="">Seleccione proveedor</option>
+                                        <!-- Se llena dinámicamente -->
+                                    </select>
+                                </div>
+                            </div>
+                        </div>
+                        
+                        <div id="div-seleccion-productos-precios" style="display: none;">
+                            <div class="mb-3">
+                                <label for="seleccion-productos-precios" class="form-label">Seleccionar productos</label>
+                                <select class="form-select select2-productos" id="seleccion-productos-precios" multiple>
+                                    <!-- Se llena dinámicamente -->
+                                </select>
+                            </div>
+                        </div>
+                        
+                        <div class="table-overflow mb-3" id="tabla-productos-precios-container">
+                            <table class="table table-sm table-striped" id="tabla-productos-precios">
+                                <thead>
+                                    <tr>
+                                        <th style="width: 40px;">
+                                            <div class="form-check">
+                                                <input class="form-check-input" type="checkbox" id="check-todos-productos-precios">
+                                            </div>
+                                        </th>
+                                        <th>Código</th>
+                                        <th>Nombre</th>
+                                        <th>Costo Actual</th>
+                                        <th>Precio Actual</th>
+                                        <th>Nuevo Costo</th>
+                                        <th>Nuevo Precio</th>
+                                    </tr>
+                                </thead>
+                                <tbody>
+                                    <!-- Se llena dinámicamente -->
+                                </tbody>
+                            </table>
+                        </div>
+                    </div>
+                    
+                    <div class="mb-3">
+                        <h6>Operación</h6>
+                        <div class="row">
+                            <div class="col-md-4">
+                                <div class="mb-3">
+                                    <label for="tipo-ajuste-precio" class="form-label">Ajustar</label>
+                                    <select class="form-select" id="tipo-ajuste-precio">
+                                        <option value="precio">Precio de venta</option>
+                                        <option value="costo">Costo</option>
+                                        <option value="ambos">Ambos</option>
+                                    </select>
+                                </div>
+                            </div>
+                            <div class="col-md-4">
+                                <div class="mb-3">
+                                    <label for="operacion-precio" class="form-label">Tipo de ajuste</label>
+                                    <select class="form-select" id="operacion-precio">
+                                        <option value="porcentaje">Porcentaje</option>
+                                        <option value="monto">Monto fijo</option>
+                                        <option value="margen">Aplicar margen</option>
+                                    </select>
+                                </div>
+                            </div>
+                            <div class="col-md-4">
+                                <div class="mb-3">
+                                    <label for="valor-ajuste-precio" class="form-label">Valor</label>
+                                    <div class="input-group">
+                                        <input type="number" class="form-control" id="valor-ajuste-precio" step="0.01">
+                                        <span class="input-group-text" id="simbolo-ajuste-precio">%</span>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                        
+                        <div class="form-check mb-3">
+                            <input class="form-check-input" type="checkbox" id="redondear-precios">
+                            <label class="form-check-label" for="redondear-precios">
+                                Redondear precios
+                            </label>
+                        </div>
+                        
+                        <div class="row mb-3" id="div-redondeo" style="display: none;">
+                            <div class="col-md-6">
+                                <label for="tipo-redondeo" class="form-label">Tipo de redondeo</label>
+                                <select class="form-select" id="tipo-redondeo">
+                                    <option value="entero">Al entero más cercano</option>
+                                    <option value="decena">A la decena más cercana</option>
+                                    <option value="centena">A la centena más cercana</option>
+                                    <option value="decimal">A 2 decimales</option>
+                                </select>
+                            </div>
+                            <div class="col-md-6">
+                                <label for="direccion-redondeo" class="form-label">Dirección</label>
+                                <select class="form-select" id="direccion-redondeo">
+                                    <option value="arriba">Hacia arriba</option>
+                                    <option value="abajo">Hacia abajo</option>
+                                    <option value="cercano">Al más cercano</option>
+                                </select>
+                            </div>
+                        </div>
+                    </div>
+                    
+                    <div class="mb-3">
+                        <label for="motivo-ajuste-precios" class="form-label">Motivo del ajuste</label>
+                        <select class="form-select" id="motivo-ajuste-precios">
+                            <option value="inflacion">Ajuste por inflación</option>
+                            <option value="proveedor">Cambio de precios de proveedor</option>
+                            <option value="temporada">Temporada alta/baja</option>
+                            <option value="promocion">Promoción</option>
+                            <option value="otro">Otro</option>
+                        </select>
+                    </div>
+                    
+                    <div class="mb-3" id="div-otro-motivo-precios" style="display: none;">
+                        <label for="otro-motivo-ajuste-precios" class="form-label">Especifique motivo</label>
+                        <input type="text" class="form-control" id="otro-motivo-ajuste-precios">
+                    </div>
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cancelar</button>
+                    <button type="button" class="btn btn-primary" id="btn-aplicar-ajuste-precios">Aplicar Cambios</button>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Modal: Imprimir Etiquetas de Precios -->
+    <div class="modal fade" id="modalEtiquetasPrecios" tabindex="-1" aria-labelledby="modalEtiquetasPreciosLabel" aria-hidden="true">
+        <div class="modal-dialog modal-lg">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h5 class="modal-title" id="modalEtiquetasPreciosLabel">Imprimir Etiquetas de Precios</h5>
+                    <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Cerrar"></button>
+                </div>
+                <div class="modal-body">
+                    <div class="row">
+                        <div class="col-md-6">
+                            <div class="mb-3">
+                                <label for="productos-etiquetas" class="form-label">Seleccionar Productos</label>
+                                <select class="form-select select2-productos" id="productos-etiquetas" multiple>
+                                    <!-- Se llena dinámicamente -->
+                                </select>
+                            </div>
+                            
+                            <div class="mb-3">
+                                <label for="formato-etiqueta" class="form-label">Formato de Etiqueta</label>
+                                <select class="form-select" id="formato-etiqueta">
+                                    <option value="pequeno">Pequeño (30x20mm)</option>
+                                    <option value="mediano" selected>Mediano (50x30mm)</option>
+                                    <option value="grande">Grande (70x40mm)</option>
+                                    <option value="gondola">Góndola (100x80mm)</option>
+                                </select>
+                            </div>
+                            
+                            <div class="mb-3">
+                                <label for="copias-etiqueta" class="form-label">Copias por producto</label>
+                                <input type="number" class="form-control" id="copias-etiqueta" value="1" min="1" max="100">
+                            </div>
+                            
+                            <div class="mb-3">
+                                <div class="form-check">
+                                    <input class="form-check-input" type="checkbox" id="mostrar-codigo-etiqueta" checked>
+                                    <label class="form-check-label" for="mostrar-codigo-etiqueta">
+                                        Mostrar código de barras
+                                    </label>
+                                </div>
+                            </div>
+                            
+                            <div class="mb-3">
+                                <div class="form-check">
+                                    <input class="form-check-input" type="checkbox" id="mostrar-oferta" value="1">
+                                    <label class="form-check-label" for="mostrar-oferta">
+                                        Destacar como oferta
+                                    </label>
+                                </div>
+                            </div>
+                            
+                            <div class="text-center mt-4">
+                                <button type="button" class="btn btn-primary" id="btn-imprimir-etiquetas-precios">
+                                    <i class="fas fa-print me-2"></i>Imprimir Etiquetas
+                                </button>
+                            </div>
+                        </div>
+                        <div class="col-md-6">
+                            <div class="card">
+                                <div class="card-header">
+                                    <h6 class="card-title mb-0">Vista previa</h6>
+                                </div>
+                                <div class="card-body text-center">
+                                    <div class="price-tag-preview">
+                                        <div class="product-name">Nombre del producto</div>
+                                        <div class="product-price">$1,000.00</div>
+                                        <div class="product-barcode">
+                                            <svg id="etiqueta-barcode-preview"></svg>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                            
+                            <div class="card mt-3">
+                                <div class="card-header">
+                                    <h6 class="card-title mb-0">Productos seleccionados</h6>
+                                </div>
+                                <div class="card-body p-0">
+                                    <div class="table-overflow" style="max-height: 250px;">
+                                        <table class="table table-sm table-striped mb-0" id="tabla-productos-etiquetas">
+                                            <thead>
+                                                <tr>
+                                                    <th>Código</th>
+                                                    <th>Nombre</th>
+                                                    <th>Precio</th>
+                                                    <th>Cant</th>
+                                                    <th></th>
+                                                </tr>
+                                            </thead>
+                                            <tbody>
+                                                <!-- Se llena dinámicamente -->
+                                            </tbody>
+                                        </table>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cerrar</button>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Modal: Configuración de Columnas -->
+    <div class="modal fade" id="modalConfigColumnas" tabindex="-1" aria-labelledby="modalConfigColumnasLabel" aria-hidden="true">
+        <div class="modal-dialog">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h5 class="modal-title" id="modalConfigColumnasLabel">Configuración de Columnas</h5>
+                    <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Cerrar"></button>
+                </div>
+                <div class="modal-body">
+                    <p class="text-muted small mb-3">Seleccione las columnas que desea mostrar en la tabla de productos.</p>
+                    
+                    <div class="columnas-container">
+                        <!-- Columnas básicas -->
+                        <div class="mb-2 fw-bold">Información básica</div>
+                        <div class="row mb-3">
+                            <div class="col-md-6">
+                                <div class="form-check">
+                                    <input class="form-check-input config-columna" type="checkbox" id="col-codigo" data-columna="codigo" checked disabled>
+                                    <label class="form-check-label" for="col-codigo">Código</label>
+                                </div>
+                                <div class="form-check">
+                                    <input class="form-check-input config-columna" type="checkbox" id="col-nombre" data-columna="nombre" checked disabled>
+                                    <label class="form-check-label" for="col-nombre">Nombre</label>
+                                </div>
+                                <div class="form-check">
+                                    <input class="form-check-input config-columna" type="checkbox" id="col-precio" data-columna="precio" checked>
+                                    <label class="form-check-label" for="col-precio">Precio</label>
+                                </div>
+                            </div>
+                            <div class="col-md-6">
+                                <div class="form-check">
+                                    <input class="form-check-input config-columna" type="checkbox" id="col-stock" data-columna="stock" checked>
+                                    <label class="form-check-label" for="col-stock">Stock</label>
+                                </div>
+                                <div class="form-check">
+                                    <input class="form-check-input config-columna" type="checkbox" id="col-categoria" data-columna="categoria" checked>
+                                    <label class="form-check-label" for="col-categoria">Categoría</label>
+                                </div>
+                                <div class="form-check">
+                                    <input class="form-check-input config-columna" type="checkbox" id="col-estado" data-columna="estado" checked>
+                                    <label class="form-check-label" for="col-estado">Estado</label>
+                                </div>
+                            </div>
+                        </div>
+                        
+                        <!-- Columnas adicionales -->
+                        <div class="mb-2 fw-bold">Información adicional</div>
+                        <div class="row mb-3">
+                            <div class="col-md-6">
+                                <div class="form-check">
+                                    <input class="form-check-input config-columna" type="checkbox" id="col-costo" data-columna="costo">
+                                    <label class="form-check-label" for="col-costo">Costo</label>
+                                </div>
+                                <div class="form-check">
+                                    <input class="form-check-input config-columna" type="checkbox" id="col-margen" data-columna="margen">
+                                    <label class="form-check-label" for="col-margen">Margen</label>
+                                </div>
+                                <div class="form-check">
+                                    <input class="form-check-input config-columna" type="checkbox" id="col-marca" data-columna="marca">
+                                    <label class="form-check-label" for="col-marca">Marca</label>
+                                </div>
+                            </div>
+                            <div class="col-md-6">
+                                <div class="form-check">
+                                    <input class="form-check-input config-columna" type="checkbox" id="col-proveedor" data-columna="proveedor">
+                                    <label class="form-check-label" for="col-proveedor">Proveedor</label>
+                                </div>
+                                <div class="form-check">
+                                    <input class="form-check-input config-columna" type="checkbox" id="col-ubicacion" data-columna="ubicacion">
+                                    <label class="form-check-label" for="col-ubicacion">Ubicación</label>
+                                </div>
+                                <div class="form-check">
+                                    <input class="form-check-input config-columna" type="checkbox" id="col-ult-actualizacion" data-columna="ultima-actualizacion">
+                                    <label class="form-check-label" for="col-ult-actualizacion">Últ. Actualización</label>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cancelar</button>
+                    <button type="button" class="btn btn-primary" id="btn-guardar-config-columnas">Guardar</button>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Scripts -->
+    <script src="/assets/js/vendors/jquery.min.js"></script>
+    <script src="/assets/js/vendors/bootstrap.bundle.min.js"></script>
+    <script src="/assets/js/vendors/select2.min.js"></script>
+    <script src="/assets/js/vendors/xlsx.full.min.js"></script>
+    <script src="/assets/js/vendors/jsbarcode.min.js"></script>
+    <script src="/assets/js/vendors/sweetalert2.min.js"></script>
+    <script src="/assets/js/vendors/sortable.min.js"></script>
+    <script src="/assets/js/utils.js"></script>
+    <script src="/assets/js/productos.js"></script>
+</body>
+</html>

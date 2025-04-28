@@ -1,0 +1,156 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>Caja | FactuSystem</title>
+
+  <!-- Estilos globales y componentes -->
+  <link rel="stylesheet" href="../assets/css/main.css">
+  <link rel="stylesheet" href="../assets/css/components/modal.css">
+  <link rel="stylesheet" href="../assets/css/components/tables.css">
+  <link rel="stylesheet" href="../assets/css/components/dashboard.css">
+
+  <!-- Íconos -->
+  <script src="https://kit.fontawesome.com/yourkit.js" crossorigin="anonymous"></script>
+</head>
+<body>
+  <div class="container mt-4">
+    <h2 class="mb-3">Gestión de Caja</h2>
+
+    <!-- Estado actual -->
+    <div id="estado-caja" class="badge badge-secondary mb-3">Cargando...</div>
+
+    <!-- Info de caja abierta -->
+    <div id="info-caja-abierta" class="card hidden">
+      <div class="card-body">
+        <div class="row">
+          <div class="col-md-3"><strong>Fecha:</strong> <span id="txt-fecha-apertura">-</span></div>
+          <div class="col-md-3"><strong>Hora:</strong> <span id="txt-hora-apertura">-</span></div>
+          <div class="col-md-3"><strong>Usuario:</strong> <span id="txt-usuario-apertura">-</span></div>
+          <div class="col-md-3"><strong>Monto Inicial:</strong> <span id="txt-monto-inicial">-</span></div>
+        </div>
+      </div>
+    </div>
+
+    <!-- Info de caja cerrada -->
+    <div id="info-caja-cerrada" class="alert alert-warning text-center">No hay una caja abierta actualmente.</div>
+
+    <!-- Botones principales -->
+    <div class="my-3">
+      <button class="btn btn-success" id="btn-abrir-caja"><i class="fas fa-door-open"></i> Abrir Caja</button>
+      <button class="btn btn-danger" id="btn-cerrar-caja" disabled><i class="fas fa-door-closed"></i> Cerrar Caja</button>
+      <button class="btn btn-info" id="btn-registrar-ingreso" disabled><i class="fas fa-plus-circle"></i> Ingreso</button>
+      <button class="btn btn-warning" id="btn-registrar-egreso" disabled><i class="fas fa-minus-circle"></i> Egreso</button>
+      <button class="btn btn-outline-secondary" id="btn-actualizar-caja"><i class="fas fa-sync-alt"></i> Actualizar</button>
+    </div>
+
+    <!-- Filtros -->
+    <div class="row my-3">
+      <div class="col-md-3">
+        <label>Desde</label>
+        <input type="date" id="filtro-fecha-inicio" class="form-control"/>
+      </div>
+      <div class="col-md-3">
+        <label>Hasta</label>
+        <input type="date" id="filtro-fecha-fin" class="form-control"/>
+      </div>
+      <div class="col-md-3">
+        <label>Tipo</label>
+        <select id="filtro-tipo-movimiento" class="form-control">
+          <option value="todos">Todos</option>
+          <option value="ingreso">Ingreso</option>
+          <option value="egreso">Egreso</option>
+          <option value="venta">Venta</option>
+        </select>
+      </div>
+      <div class="col-md-3 d-flex align-items-end">
+        <button class="btn btn-outline-primary mr-2" id="btn-exportar-pdf"><i class="fas fa-file-pdf"></i> PDF</button>
+        <button class="btn btn-outline-success" id="btn-exportar-excel"><i class="fas fa-file-excel"></i> Excel</button>
+      </div>
+    </div>
+
+    <!-- Sección de totales -->
+    <div class="row text-center my-4">
+      <div class="col">
+        <h5>Ingresos</h5>
+        <div id="txt-total-ingresos">$0.00</div>
+      </div>
+      <div class="col">
+        <h5>Ventas</h5>
+        <div id="txt-total-ventas">$0.00</div>
+      </div>
+      <div class="col">
+        <h5>Egresos</h5>
+        <div id="txt-total-egresos">$0.00</div>
+      </div>
+      <div class="col">
+        <h5>Saldo Actual</h5>
+        <div id="txt-saldo-actual">$0.00</div>
+      </div>
+    </div>
+
+    <!-- Gráficos -->
+    <div class="row my-4">
+      <div class="col-md-6">
+        <h6>Flujo de Efectivo</h6>
+        <canvas id="grafico-flujo-efectivo" height="200"></canvas>
+      </div>
+      <div class="col-md-6">
+        <h6>Distribución por Tipo</h6>
+        <canvas id="grafico-distribucion-tipos" height="200"></canvas>
+      </div>
+    </div>
+
+    <!-- Tabla de movimientos -->
+    <div class="table-responsive mt-4" id="seccion-movimientos">
+      <table class="table table-striped table-bordered">
+        <thead>
+          <tr>
+            <th>Fecha</th>
+            <th>Hora</th>
+            <th>Tipo</th>
+            <th>Categoría</th>
+            <th>Concepto</th>
+            <th>Monto</th>
+            <th>Acciones</th>
+          </tr>
+        </thead>
+        <tbody id="tabla-movimientos-body">
+          <tr><td colspan="7" class="text-center">Sin datos</td></tr>
+        </tbody>
+      </table>
+    </div>
+  </div>
+
+  <!-- Modales -->
+  <div id="modal-apertura-caja" class="hidden"></div>
+  <div id="modal-cierre-caja" class="hidden"></div>
+  <div id="modal-registrar-movimiento" class="hidden"></div>
+  <div id="modal-detalles-movimiento" class="hidden"></div>
+
+  <!-- SCRIPTS -->
+  <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+  <script src="../assets/js/utils/format.js"></script>
+  <script src="../assets/js/utils/database.js"></script>
+  <script src="../assets/js/utils/logger.js"></script>
+  <script src="../assets/js/utils/sync.js"></script>
+  <script src="../assets/js/utils/validation.js"></script>
+  <script src="../assets/js/components/notifications.js"></script>
+  <script src="../assets/js/components/tabs.js"></script>
+
+  <!-- Módulos de Caja -->
+  <script src="../assets/js/modules/caja/apertura.js"></script>
+  <script src="../assets/js/modules/caja/cierre.js"></script>
+  <script src="../assets/js/modules/caja/movimientos.js"></script>
+  <script src="../assets/js/modules/caja/reportes.js"></script>
+  <script src="../assets/js/modules/caja/index.js"></script>
+
+  <script>
+    document.addEventListener('DOMContentLoaded', () => {
+      // Inicializa toda la lógica de Caja
+      if (window.initCaja) initCaja();
+    });
+  </script>
+</body>
+</html>
