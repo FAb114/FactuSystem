@@ -4,9 +4,11 @@
   "description": "",
   "main": "main.js",
   "scripts": {
-    "start": "electron .",
-    "test": "echo \"Error: no test specified\" && exit 1"
-  },
+  "start": "electron .",
+  "rebuild": "electron-rebuild -f -w better-sqlite3",
+  "test": "echo \"Error: no test specified\" && exit 1"
+},
+
   "keywords": [],
   "author": "",
   "license": "ISC",

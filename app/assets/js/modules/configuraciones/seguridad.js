@@ -5,10 +5,10 @@
  */
 
 // Importaciones de utilidades y servicios
-const { database } = require('../../../utils/database.js');
-const { logger } = require('../../../utils/logger.js');
-const { auth } = require('../../../utils/auth.js');
-const { ipcRenderer } = require ('../../../renderer.js');
+const { database } = require('../../utils/database.js');
+const { logger } = require('../../utils/logger.js');
+const { auth } = require('../../utils/auth.js');
+const { ipcRenderer } = require ('../../renderer.js');
 
 // Importaciones de servicios específicos de autenticación
 const { twoFactor } = require ('../../../../services/auth/twoFactor.js');
