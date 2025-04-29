@@ -5,14 +5,14 @@
  */
 
 // Importaciones de utilidades y servicios
-import { database } from '../../../utils/database.js';
-import { logger } from '../../../utils/logger.js';
-import { auth } from '../../../utils/auth.js';
-import { ipcRenderer } from '../../../renderer.js';
+const { database } = require('../../../utils/database.js');
+const { logger } = require('../../../utils/logger.js');
+const { auth } = require('../../../utils/auth.js');
+const { ipcRenderer } = require ('../../../renderer.js');
 
 // Importaciones de servicios específicos de autenticación
-import { twoFactor } from '../../../../services/auth/twoFactor.js';
-import { permissions } from '../../../../services/auth/permissions.js';
+const { twoFactor } = require ('../../../../services/auth/twoFactor.js');
+const { permissions } = require ('../../../../services/auth/permissions.js');
 
 /**
  * Clase para gestionar la configuración de seguridad del sistema
@@ -710,4 +710,4 @@ class SeguridadConfig {
 
 // Exportar instancia
 const seguridadConfig = new SeguridadConfig();
-export default seguridadConfig;
+module.exports = seguridadConfig;

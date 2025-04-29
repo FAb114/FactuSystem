@@ -12,7 +12,7 @@ const { ipcRenderer } = require('electron');
 const database = require('../../utils/database');
 const validation = require('../../utils/validation');
 const logger = require('../../utils/logger');
-const arcaAPI = require('../../../../integrations/arca/api');
+const arcaAPI = require('../../../../../integrations/arca/api');
 
 // Variables globales del módulo
 let currentConfig = null;
@@ -1080,10 +1080,17 @@ const setupAdditionalButtons = () => {
 };
 
 // Inicializar al cargar la página
-document.addEventListener('DOMContentLoaded', () => {
-    initEmpresaModule();
-    setupAdditionalButtons();
-});
+if (typeof window !== 'undefined' && typeof document !== 'undefined') {
+    // Inicializar al cargar la página (solo en el contexto del renderer)
+    document.addEventListener('DOMContentLoaded', () => {
+        initEmpresaModule();
+        setupAdditionalButtons();
+    });
+} else {
+    // Estamos en el proceso principal u otro entorno sin DOM
+    console.log('Módulo empresa.js cargado en un entorno sin DOM (main process)');
+    // Aquí puedes exportar solo las funciones que no dependan del DOM
+}
 
 // Exportar funciones públicas del módulo
 module.exports = {

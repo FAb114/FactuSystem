@@ -1,11 +1,16 @@
 // /app/assets/js/utils/sync.js
 // Módulo de sincronización para FactuSystem (Cliente)
 
-import database from './database';
-import logger from './logger';
-import auth from './auth';
+const database = require ('./database');
+const logger = require ('./logger');
+const auth = require ('./auth');
+const { ipcRenderer } = require('electron');
 
-const syncAPI = window.electronAPI.syncService;
+// Reemplazar el acceso a window.electronAPI con una interfaz basada en ipcRenderer
+const syncAPI = {
+  syncData: (data) => ipcRenderer.invoke('sync:syncData', data),
+  sendOfflineChange: (change) => ipcRenderer.invoke('sync:sendOfflineChange', change)
+};
 
 class SyncManager {
   constructor() {
@@ -104,4 +109,4 @@ class SyncManager {
 }
 
 const syncManager = new SyncManager();
-export default syncManager;
+module.exports = syncManager;

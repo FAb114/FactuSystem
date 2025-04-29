@@ -12,8 +12,8 @@ const logger = require('./logger.js');
 const backup = require('./backup.js');
 
 // Servicios de autenticación específicos que están en /services/auth/
-const twoFactorService = require('../../../services/auth/twoFactor.js');
-const permissionsService = require('../../../services/auth/permissions.js');
+const twoFactorService = require('../../../../services/auth/twoFactor.js');
+const permissionsService = require('../../../../services/auth/permissions.js');
 
 // Variables globales
 let currentUser = null;

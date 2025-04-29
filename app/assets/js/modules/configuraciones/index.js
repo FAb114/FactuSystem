@@ -11,48 +11,24 @@
  */
 
 // Importación de submódulos
-import { initEmpresaConfiguracion, guardarConfiguracionEmpresa, obtenerConfiguracionEmpresa } from './empresa.js';
-import { initVisualizacionConfig, aplicarTema, guardarConfiguracionVisual } from './visual.js';
-import { initSeguridadConfig, actualizarPoliticasSeguridad } from './seguridad.js';
-import { initConfiguracionImpresion, guardarConfiguracionImpresion } from './impresion.js';
-import { initBackupConfig, configurarBackupAutomatico } from './backups.js';
+const empresaModule = require('./empresa.js');
+const visualModule = require('./visual.js');
+const seguridadModule = require('./seguridad.js');
+const impresionModule = require('./impresion.js');
+const backupsModule = require('./backups.js');
 
 // Importación de integraciones
-import { 
-    initMercadoPagoConfig, 
-    guardarConfiguracionMercadoPago, 
-    verificarCredencialesMercadoPago 
-} from './integraciones/mercadoPago.js';
-
-import { 
-    initArcaConfig, 
-    guardarConfiguracionArca, 
-    verificarCredencialesArca 
-} from './integraciones/arca.js';
-
-import { 
-    initWhatsappConfig, 
-    guardarConfiguracionWhatsapp, 
-    testConexionWhatsapp 
-} from './integraciones/whatsapp.js';
-
-import { 
-    initEmailConfig, 
-    guardarConfiguracionEmail, 
-    enviarEmailPrueba 
-} from './integraciones/email.js';
-
-import { 
-    initBancosConfig, 
-    guardarConfiguracionBancos,
-    testConexionBancos 
-} from './integraciones/bancos/index.js';
+const mercadoPagoModule = require('./integraciones/mercadoPago.js');
+const arcaModule = require('./integraciones/arca.js');
+const whatsappModule = require('./integraciones/whatsapp.js');
+const emailModule = require('./integraciones/email.js');
+const bancosModule = require('./integraciones/bancos/index.js');
 
 // Importamos utilidades
-import { mostrarNotificacion } from '../../../utils/notifications.js';
-import { guardarEnDB, obtenerDeDB } from '../../../utils/database.js';
-import { verificarConexionInternet } from '../../../utils/sync.js';
-import { registrarAuditoria } from '../../../utils/logger.js';
+const { mostrarNotificacion } = require('../../../utils/notifications.js');
+const { guardarEnDB, obtenerDeDB } = require('../../../utils/database.js');
+const { verificarConexionInternet } = require('../../../utils/sync.js');
+const { registrarAuditoria } = require('../../../utils/logger.js');
 
 // Estado de las configuraciones
 let configuracionActual = {
@@ -75,7 +51,7 @@ let contenedorPrincipal;
  * Inicializa el módulo de configuraciones
  * @param {HTMLElement} container - Contenedor donde se renderizará el módulo
  */
-export function initConfiguraciones(container) {
+function initConfiguraciones(container) {
     contenedorPrincipal = container;
     contenedorPrincipal.innerHTML = '';
     
@@ -227,34 +203,34 @@ function mostrarSeccion(seccion) {
 function inicializarSeccion(seccion, contenedor) {
     switch (seccion) {
         case 'empresa':
-            initEmpresaConfiguracion(contenedor, configuracionActual.empresa);
+            empresaModule.initEmpresaConfiguracion(contenedor, configuracionActual.empresa);
             break;
         case 'visual':
-            initVisualizacionConfig(contenedor, configuracionActual.visual);
+            visualModule.initVisualizacionConfig(contenedor, configuracionActual.visual);
             break;
         case 'seguridad':
-            initSeguridadConfig(contenedor, configuracionActual.seguridad);
+            seguridadModule.initSeguridadConfig(contenedor, configuracionActual.seguridad);
             break;
         case 'impresion':
-            initConfiguracionImpresion(contenedor, configuracionActual.impresion);
+            impresionModule.initConfiguracionImpresion(contenedor, configuracionActual.impresion);
             break;
         case 'mercadoPago':
-            initMercadoPagoConfig(contenedor, configuracionActual.mercadoPago);
+            mercadoPagoModule.initMercadoPagoConfig(contenedor, configuracionActual.mercadoPago);
             break;
         case 'arca':
-            initArcaConfig(contenedor, configuracionActual.arca);
+            arcaModule.initArcaConfig(contenedor, configuracionActual.arca);
             break;
         case 'whatsapp':
-            initWhatsappConfig(contenedor, configuracionActual.whatsapp);
+            whatsappModule.initWhatsappConfig(contenedor, configuracionActual.whatsapp);
             break;
         case 'email':
-            initEmailConfig(contenedor, configuracionActual.email);
+            emailModule.initEmailConfig(contenedor, configuracionActual.email);
             break;
         case 'bancos':
-            initBancosConfig(contenedor, configuracionActual.bancos);
+            bancosModule.initBancosConfig(contenedor, configuracionActual.bancos);
             break;
         case 'backups':
-            initBackupConfig(contenedor, configuracionActual.backups);
+            backupsModule.initBackupConfig(contenedor, configuracionActual.backups);
             break;
         default:
             contenedor.innerHTML = '<p>Sección no implementada</p>';
@@ -280,7 +256,7 @@ async function cargarConfiguracionesGuardadas() {
         
         // Aplicar configuraciones visuales inmediatamente
         if (configuracionActual.visual && Object.keys(configuracionActual.visual).length > 0) {
-            aplicarTema(configuracionActual.visual);
+            visualModule.aplicarTema(configuracionActual.visual);
         }
         
         // Refrescar todas las secciones visibles
@@ -304,7 +280,7 @@ async function cargarConfiguracionesGuardadas() {
 async function guardarConfiguraciones() {
     try {
         // Recopilar datos de todas las secciones
-        const empresaData = obtenerConfiguracionEmpresa();
+        const empresaData = empresaModule.obtenerConfiguracionEmpresa();
         const visualData = document.querySelector('#config-visual').dataset.config ? 
             JSON.parse(document.querySelector('#config-visual').dataset.config) : {};
         const seguridadData = document.querySelector('#config-seguridad').dataset.config ? 
@@ -329,7 +305,7 @@ async function guardarConfiguraciones() {
         if (hayConexion) {
             // Verificar credenciales de integraciones antes de guardar
             if (mercadoPagoData.clientId && mercadoPagoData.clientSecret) {
-                const mpCredencialesValidas = await verificarCredencialesMercadoPago(
+                const mpCredencialesValidas = await mercadoPagoModule.verificarCredencialesMercadoPago(
                     mercadoPagoData.clientId, 
                     mercadoPagoData.clientSecret
                 );
@@ -343,7 +319,7 @@ async function guardarConfiguraciones() {
             }
             
             if (arcaData.certificado && arcaData.clave) {
-                const arcaCredencialesValidas = await verificarCredencialesArca(
+                const arcaCredencialesValidas = await arcaModule.verificarCredencialesArca(
                     arcaData.certificado,
                     arcaData.clave,
                     arcaData.cuit
@@ -385,9 +361,9 @@ async function guardarConfiguraciones() {
         await guardarEnDB('configuraciones', 'backups', backupsData);
 
         // Aplicar configuraciones
-        aplicarTema(visualData);
-        actualizarPoliticasSeguridad(seguridadData);
-        configurarBackupAutomatico(backupsData);
+        visualModule.aplicarTema(visualData);
+        seguridadModule.actualizarPoliticasSeguridad(seguridadData);
+        backupsModule.configurarBackupAutomatico(backupsData);
         
         // Notificar al usuario
         mostrarNotificacion('Configuraciones guardadas correctamente', 'success');
@@ -406,25 +382,25 @@ async function guardarConfiguraciones() {
  * @param {string} tipo - Tipo de integración a probar
  * @param {Object} config - Configuración de la integración
  */
-export async function probarIntegracion(tipo, config) {
+async function probarIntegracion(tipo, config) {
     try {
         let resultado = false;
         
         switch (tipo) {
             case 'mercadoPago':
-                resultado = await verificarCredencialesMercadoPago(config.clientId, config.clientSecret);
+                resultado = await mercadoPagoModule.verificarCredencialesMercadoPago(config.clientId, config.clientSecret);
                 break;
             case 'arca':
-                resultado = await verificarCredencialesArca(config.certificado, config.clave, config.cuit);
+                resultado = await arcaModule.verificarCredencialesArca(config.certificado, config.clave, config.cuit);
                 break;
             case 'whatsapp':
-                resultado = await testConexionWhatsapp(config);
+                resultado = await whatsappModule.testConexionWhatsapp(config);
                 break;
             case 'email':
-                resultado = await enviarEmailPrueba(config);
+                resultado = await emailModule.enviarEmailPrueba(config);
                 break;
             case 'bancos':
-                resultado = await testConexionBancos(config.banco, config.credenciales);
+                resultado = await bancosModule.testConexionBancos(config.banco, config.credenciales);
                 break;
         }
         
@@ -445,7 +421,7 @@ export async function probarIntegracion(tipo, config) {
 /**
  * Exporta todas las configuraciones a un archivo JSON
  */
-export async function exportarConfiguraciones() {
+async function exportarConfiguraciones() {
     try {
         // Obtener todas las configuraciones actuales
         const todasLasConfiguraciones = {
@@ -516,7 +492,7 @@ export async function exportarConfiguraciones() {
  * Importa configuraciones desde un archivo JSON
  * @param {File} archivo - Archivo JSON con las configuraciones
  */
-export async function importarConfiguraciones(archivo) {
+async function importarConfiguraciones(archivo) {
     try {
         return new Promise((resolve, reject) => {
             const reader = new FileReader();
@@ -627,7 +603,7 @@ export async function importarConfiguraciones(archivo) {
 /**
  * Restaura las configuraciones a valores predeterminados
  */
-export async function restaurarValoresPredeterminados() {
+async function restaurarValoresPredeterminados() {
     try {
         if (!confirm('¿Está seguro de restaurar todas las configuraciones a valores predeterminados? Esta acción no se puede deshacer.')) {
             return false;
@@ -776,12 +752,11 @@ export async function restaurarValoresPredeterminados() {
         return false;
     }
 }
-
 /**
  * Verifica si existen todas las configuraciones necesarias
  * @returns {boolean} - True si todas las configuraciones básicas están presentes
  */
-export async function verificarConfiguracionesBasicas() {
+async function verificarConfiguracionesBasicas() {
     try {
         // Verificar si existen configuraciones de empresa
         const empresa = await obtenerDeDB('configuraciones', 'empresa');
@@ -807,7 +782,7 @@ export async function verificarConfiguracionesBasicas() {
  * @param {string} integracion - Nombre de la integración a verificar
  * @returns {Promise<boolean>} - True si la integración está activa y configurada
  */
-export async function verificarIntegracion(integracion) {
+async function verificarIntegracion(integracion) {
     try {
         const config = await obtenerDeDB('configuraciones', integracion);
         
@@ -846,7 +821,7 @@ export async function verificarIntegracion(integracion) {
  * @param {string} idSucursal - ID de la sucursal
  * @returns {Promise<Object>} - Configuraciones de la sucursal
  */
-export async function obtenerConfiguracionSucursal(idSucursal) {
+async function obtenerConfiguracionSucursal(idSucursal) {
     try {
         // Cargar configuraciones generales
         const configuracionesGenerales = {
@@ -876,7 +851,7 @@ export async function obtenerConfiguracionSucursal(idSucursal) {
  * @param {string} modulo - Nombre del módulo
  * @returns {Object} - Configuraciones aplicables al módulo
  */
-export async function obtenerConfiguracionModulo(modulo) {
+async function obtenerConfiguracionModulo(modulo) {
     const resultado = {};
     
     try {
@@ -915,23 +890,42 @@ export async function obtenerConfiguracionModulo(modulo) {
 /**
  * Eventos del ciclo de vida del módulo
  */
-export function onModuloActivado() {
+function onModuloActivado() {
     // Registrar en log
     registrarAuditoria('Acceso', 'Módulo de configuraciones', 'Módulo activado');
 }
 
-export function onModuloDesactivado() {
+function onModuloDesactivado() {
     // Registrar en log cuando se sale del módulo
     registrarAuditoria('Acceso', 'Módulo de configuraciones', 'Módulo desactivado');
 }
+ // Mostrar la primera sección
+ mostrarSeccion('empresa');
+        
+ mostrarNotificacion('Configuraciones restauradas a valores predeterminados', 'success');
+ 
+ // Registrar en log
+ registrarAuditoria('Configuración', 'Restauración', 'Se restauraron las configuraciones a valores predeterminados');
+ 
+ return true;
+ {(error) 
+ console.error('Error al restaurar valores predeterminados:', error);
+ mostrarNotificacion('Error al restaurar valores predeterminados: ' + error.message, 'error');
+ return false;
+}
 
-// Exportamos todas las funciones que podrían ser útiles para otros módulos
-export {
-    initConfiguraciones,
-    cargarConfiguracionesGuardadas,
-    mostrarSeccion,
-    guardarConfiguraciones,
-    obtenerConfiguracionEmpresa,
-    verificarConfiguracionesBasicas,
-    verificarIntegracion
+// Exportar todas las funciones que podrían ser útiles para otros módulos
+module.exports = {
+initConfiguraciones,
+cargarConfiguracionesGuardadas,
+mostrarSeccion,
+guardarConfiguraciones,
+obtenerConfiguracionEmpresa,
+verificarConfiguracionesBasicas,
+verificarIntegracion,
+obtenerConfiguracionSucursal,
+obtenerConfiguracionModulo,
+restaurarValoresPredeterminados,
+onModuloActivado,
+onModuloDesactivado
 };

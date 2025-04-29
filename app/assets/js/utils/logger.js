@@ -38,5 +38,6 @@ const Logger = (() => {
     };
   })();
   
-  export default Logger;
+  module.exports = Logger;
+
   

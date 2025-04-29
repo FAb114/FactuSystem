@@ -7,8 +7,8 @@
  */
 
 const { ipcRenderer } = require('electron');
-const logger = require('../../audit/logger');
-const db = require('../../../app/assets/js/utils/database');
+const logger = require('../audit/logger');
+const db = require('../../app/assets/js/utils/database');
 
 // Constantes para los módulos del sistema
 const MODULES = {

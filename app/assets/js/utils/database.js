@@ -1758,8 +1758,7 @@ async function cambiarSucursal(sucursalId) {
     if (value === null || value === undefined || value === '') {
       return null;
     }
-    return value;
-  }
+   
   
     // Intentar convertir a número
     if (/^-?\d+(\.\d+)?$/.test(value)) {
@@ -1770,6 +1769,8 @@ async function cambiarSucursal(sucursalId) {
     if (value.toLowerCase() === 'true') return true;
     if (value.toLowerCase() === 'false') return false;
     
+    return value;
+  }
         /**
  * Exporta una colección a archivo CSV
  * @param {string} collection - Nombre de la colección

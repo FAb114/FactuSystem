@@ -2,6 +2,7 @@ const { contextBridge, ipcRenderer } = require('electron');
 
 contextBridge.exposeInMainWorld('factuSystem', {
   auth: {
+    backupService: () => ipcRenderer.invoke('backup-service'),
     login: (credentials) => ipcRenderer.invoke('login', credentials),
     logout: () => ipcRenderer.invoke('logout'),
     checkAuth: () => ipcRenderer.invoke('check-auth'),

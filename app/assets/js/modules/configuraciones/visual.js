@@ -15,12 +15,12 @@ const fs = require('fs');
 const path = require('path');
 
 // Importamos utilidades
-const database = require('../../../utils/database');
-const auth = require('../../../utils/auth');
-const logger = require('../../../utils/logger');
+const database = require('../../utils/database');
+const auth = require('../../utils/auth');
+const logger = require('../../utils/logger');
 
 // Clase principal para gestión de configuraciones visuales
-class VisualConfig {
+class VisualConfigModule {
     constructor() {
         this.db = database.getConnection();
         this.config = null;
