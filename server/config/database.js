@@ -7,7 +7,7 @@
 const path = require('path');
 const fs = require('fs');
 const sqlite3 = require('sqlite3').verbose();
-const mysql = require('mysql2/promise');
+const mysql = require('mysql2/promise.js');
 const { Pool } = require('pg');
 const mongoose = require('mongoose');
 const winston = require('winston');

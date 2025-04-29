@@ -1,13 +1,14 @@
  // /app/assets/js/modules/compras/index.js
 
-import { initRegistrarCompra, resetFormularioCompra } from './registrar.js';
-import { initHistorialCompras, cargarCompras } from './historial.js';
-import { initAnalisisCompras, generarAnalisisCompras } from './analisis.js';
-import { syncDataIfNeeded } from '../../utils/sync.js';
-import { logEvent } from '../../utils/logger.js';
+const { initRegistrarCompra, resetFormularioCompra } = require('./registrar.js');
+const { initHistorialCompras, cargarCompras } = require('./historial.js');
+const { initAnalisisCompras, generarAnalisisCompras } = require('./analisis.js');
+const { syncDataIfNeeded } = require('../../utils/sync.js');
+const { logEvent } = require('../../utils/logger.js');
 
 // Función principal de inicialización del módulo de Compras
-export function initComprasModule() {
+function initComprasModule
+module.exports.initComprasModule = initComprasModule() {
     console.log('[Compras] Módulo inicializado');
 
     // Inicializar pestaña Registrar (carga por defecto)

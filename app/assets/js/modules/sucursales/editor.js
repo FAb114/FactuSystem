@@ -4,12 +4,12 @@
  */
 
 // Importación de utilidades y servicios necesarios
-import { database } from '../../../utils/database.js';
-import { validation } from '../../../utils/validation.js';
-import { auth } from '../../../utils/auth.js';
-import { notifications } from '../../../components/notifications.js';
-import { sync } from '../../../utils/sync.js';
-import { logger } from '../../../utils/logger.js';
+const { database } = require('../../../utils/database.js');
+const { validation } = require('../../../utils/validation.js');
+const { auth } = require('../../../utils/auth.js');
+const { notifications } = require('../../../components/notifications.js');
+const { sync } = require('../../../utils/sync.js');
+const { logger } = require('../../../utils/logger.js');
 
 // Clase principal para la gestión del editor de sucursales
 class SucursalEditor {
@@ -1101,4 +1101,6 @@ class SucursalEditor {
 }
 
 // Exportar la clase para su uso en otros módulos
-export default new SucursalEditor();
+ new
+
+module.exports = new SucursalEditor();

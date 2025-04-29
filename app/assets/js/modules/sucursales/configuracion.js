@@ -5,20 +5,20 @@
  */
 
 // Importaciones de utilidades necesarias
-import { db } from '../../../../utils/database.js';
-import { showNotification } from '../../../../components/notifications.js';
-import { validateForm } from '../../../../utils/validation.js';
-import { syncManager } from '../../../../utils/sync.js';
-import { logger } from '../../../../utils/logger.js';
-import { backupManager } from '../../../../utils/backup.js';
-import { getCurrentUser } from '../../../../utils/auth.js';
+const { db } = require('../../../../utils/database.js');
+const { showNotification } = require('../../../../components/notifications.js');
+const { validateForm } = require('../../../../utils/validation.js');
+const { syncManager } = require('../../../../utils/sync.js');
+const { logger } = require('../../../../utils/logger.js');
+const { backupManager } = require('../../../../utils/backup.js');
+const { getCurrentUser } = require('../../../../utils/auth.js');
 
 // Importaciones relacionadas con integraciones
-import { testMercadoPagoConfig } from '../../../configuraciones/integraciones/mercadoPago.js';
-import { testArcaConfig } from '../../../configuraciones/integraciones/arca.js';
-import { testWhatsAppConfig } from '../../../configuraciones/integraciones/whatsapp.js';
-import { testEmailConfig } from '../../../configuraciones/integraciones/email.js';
-import { testBancoConfig } from '../../../configuraciones/integraciones/bancos/index.js';
+const { testMercadoPagoConfig } = require('../../../configuraciones/integraciones/mercadoPago.js');
+const { testArcaConfig } = require('../../../configuraciones/integraciones/arca.js');
+const { testWhatsAppConfig } = require('../../../configuraciones/integraciones/whatsapp.js');
+const { testEmailConfig } = require('../../../configuraciones/integraciones/email.js');
+const { testBancoConfig } = require('../../../configuraciones/integraciones/bancos/index.js');
 
 /**
  * Clase principal para la configuración de sucursales
@@ -1156,4 +1156,6 @@ class SucursalConfiguracion {
 
 // Exportar una instancia del módulo
 const sucursalConfiguracion = new SucursalConfiguracion();
-export default sucursalConfiguracion;
+ sucursalConfiguracion
+
+module.exports = sucursalConfiguracion;

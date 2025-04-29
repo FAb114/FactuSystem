@@ -10,12 +10,12 @@
  */
 
 const { ipcRenderer } = require('electron');
-const offlineSync = require('./offline');
-const conflictResolver = require('./conflict');
-const database = require('../../app/assets/js/utils/database');
-const logger = require('../../services/audit/logger');
-const backupService = require('../../services/backup/autoBackup');
-const connectionMonitor = require('../../app/assets/js/utils/connection');
+const offlineSync = require('./offline.js');
+const conflictResolver = require('./conflict.js');
+const database = require('../../app/assets/js/utils/database.js');
+const logger = require('../../services/audit/logger.js');
+const backupService = require('../../services/backup/autoBackup.js');
+const connectionMonitor = require('../../app/assets/js/utils/connection.js');
 
 // Configuración predeterminada del programador de sincronización
 const DEFAULT_CONFIG = {

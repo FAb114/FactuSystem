@@ -1,9 +1,9 @@
 // app/assets/js/modules/documentos/notasDebito.js
 
-import { mostrarNotificacion } from '../../../components/notifications.js';
-import { obtenerFiltros } from '../../../utils/validation.js';
-import { obtenerNotasDebito, anularNotaDebito, obtenerDetalleNotaDebito } from '../../../utils/database.js';
-import { renderEstado, renderAccionesDocumento } from './renderHelpers.js';
+const { mostrarNotificacion } = require('../../../components/notifications.js');
+const { obtenerFiltros } = require('../../../utils/validation.js');
+const { obtenerNotasDebito, anularNotaDebito, obtenerDetalleNotaDebito } = require('../../../utils/database.js');
+const { renderEstado, renderAccionesDocumento } = require('./renderHelpers.js');
 
 // Cargar todas las notas de débito
 export async function cargarNotasDebito() {
@@ -35,7 +35,8 @@ export async function cargarNotasDebito() {
 }
 
 // Filtrar notas de débito
-export function filtrarNotasDebito() {
+function filtrarNotasDebito
+module.exports.filtrarNotasDebito = filtrarNotasDebito() {
   cargarNotasDebito(); // se reutiliza con filtros aplicados
 }
 

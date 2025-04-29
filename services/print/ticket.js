@@ -13,9 +13,9 @@ const os = require('os');
 const { ipcMain } = require('electron');
 
 // Importaciones de servicios y utilidades
-const database = require('../../app/assets/js/utils/database');
-const logger = require('../../app/assets/js/utils/logger');
-const { getEmpresaInfo } = require('../../app/assets/js/modules/configuraciones/empresa');
+const database = require('../../app/assets/js/utils/database.js');
+const logger = require('../../app/assets/js/utils/logger.js');
+const { getEmpresaInfo } = require('../../app/assets/js/modules/configuraciones/empresa.js');
 
 class TicketPrinter {
   constructor() {

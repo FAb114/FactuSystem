@@ -19,11 +19,11 @@ const path = require('path');
 const axios = require('axios');
 const fs = require('fs');
 const { ipcMain } = require('electron');
-const logger = require('../../services/audit/logger');
-const configManager = require('../../app/assets/js/modules/configuraciones/integraciones/whatsapp');
-const { generarTextoFactura } = require('./templates');
-const { generarPDF } = require('../../services/print/pdf');
-const database = require('../../app/assets/js/utils/database');
+const logger = require('../../services/audit/logger.js');
+const configManager = require('../../app/assets/js/modules/configuraciones/integraciones/whatsapp.js');
+const { generarTextoFactura } = require('./templates.js');
+const { generarPDF } = require('../../services/print/pdf.js');
+const database = require('../../app/assets/js/utils/database.js');
 
 // Configuración de WhatsApp API
 let apiConfig = null;

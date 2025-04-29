@@ -13,16 +13,16 @@
  */
 
 // Importación de dependencias y utilidades
-import { Database } from '../../utils/database.js';
-import { Auth } from '../../utils/auth.js';
-import { Logger } from '../../utils/logger.js';
-import { Validation } from '../../utils/validation.js';
-import { Notifications } from '../../components/notifications.js';
+const { Database } = require('../../utils/database.js');
+const { Auth } = require('../../utils/auth.js');
+const { Logger } = require('../../utils/logger.js');
+const { Validation } = require('../../utils/validation.js');
+const { Notifications } = require('../../components/notifications.js');
 
 // Importación de submódulos específicos
-import { RolesManager } from './roles.js';
-import { PermisosManager } from './permisos.js';
-import { ActividadManager } from './actividad.js';
+const { RolesManager } = require('./roles.js');
+const { PermisosManager } = require('./permisos.js');
+const { ActividadManager } = require('./actividad.js');
 
 /**
  * Clase principal para la gestión de usuarios
@@ -1380,7 +1380,9 @@ class UsuariosManager {
 }
 
 // Exportar la clase UsuariosManager
-export default UsuariosManager;
+ UsuariosManager
+
+module.exports = UsuariosManager;
 
 // Inicializar el módulo al cargar el documento
 document.addEventListener('DOMContentLoaded', () => {

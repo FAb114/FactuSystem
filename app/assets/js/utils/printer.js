@@ -8,9 +8,9 @@
 
 // Importaciones necesarias
 const { ipcRenderer } = require('electron');
-const database = require('./database');
-const logger = require('./logger');
-const auth = require('./auth');
+const database = require('./database.js');
+const logger = require('./logger.js');
+const auth = require('./auth.js');
 
 // Importar servicios de impresión del proceso principal
 const printerService = window.electronAPI.printerService;

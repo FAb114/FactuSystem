@@ -11,17 +11,17 @@
  * preparar la información para la facturación electrónica.
  */
 
-import { ipcRenderer } from '../../../renderer.js';
-import { createLogger } from '../../../utils/logger.js';
-import { validatePaymentData } from '../../../utils/validation.js';
-import { showNotification } from '../../../components/notifications.js';
-import { getUserInfo } from '../../../utils/auth.js';
-import { getSucursalConfig } from '../../sucursales/configuracion.js';
-import { getDatabase } from '../../../utils/database.js';
+const { ipcRenderer } = require('../../../renderer.js');
+const { createLogger } = require('../../../utils/logger.js');
+const { validatePaymentData } = require('../../../utils/validation.js');
+const { showNotification } = require('../../../components/notifications.js');
+const { getUserInfo } = require('../../../utils/auth.js');
+const { getSucursalConfig } = require('../../sucursales/configuracion.js');
+const { getDatabase } = require('../../../utils/database.js');
 
 // Integraciones de pago
-import { verificarPagoQR, generarQRMercadoPago } from '../../../../integrations/mercadoPago/qr.js';
-import { registrarTransferencia } from '../../../../integrations/bancos/api.js';
+const { verificarPagoQR, generarQRMercadoPago } = require('../../../../integrations/mercadoPago/qr.js');
+const { registrarTransferencia } = require('../../../../integrations/bancos/api.js');
 
 // Configuración del logger
 const logger = createLogger('facturador-pagos');
@@ -59,7 +59,8 @@ export async function inicializarPagos(sucursalId, usuarioId) {
 /**
  * Establece el total a pagar y cliente
  */
-export function setTotalAPagar(total, clienteId) {
+function setTotalAPagar
+module.exports.setTotalAPagar = setTotalAPagar(total, clienteId) {
   estadoPagos.total = total;
   estadoPagos.clienteId = clienteId;
   estadoPagos.totalPagado = 0;

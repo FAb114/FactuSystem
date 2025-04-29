@@ -9,13 +9,13 @@
  * - Validación de datos fiscales
  */
 
-import { ipcRenderer } from 'electron';
-import { db } from '../../utils/database.js';
-import { validateCUIT, validateDNI } from '../../utils/validation.js';
-import { createLogger } from '../../utils/logger.js';
-import { showNotification } from '../../components/notifications.js';
-import { whatsappAPI } from '../../../integrations/whatsapp/api.js';
-import { emailSender } from '../../../integrations/email/sender.js';
+const { ipcRenderer } = require('electron');
+const { db } = require('../../utils/database.js');
+const { validateCUIT, validateDNI } = require('../../utils/validation.js');
+const { createLogger } = require('../../utils/logger.js');
+const { showNotification } = require('../../components/notifications.js');
+const { whatsappAPI } = require('../../../integrations/whatsapp/api.js');
+const { emailSender } = require('../../../integrations/email/sender.js');
 
 const logger = createLogger('facturador:cliente');
 
@@ -1284,4 +1284,6 @@ class ClienteManager {
 
 // Exportar una instancia única para uso en el módulo de facturación
 const clienteManager = new ClienteManager();
-export default clienteManager;
+ clienteManager
+
+module.exports = clienteManager;

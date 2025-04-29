@@ -16,11 +16,11 @@ const dayjs = require('dayjs');
 const cron = require('node-cron');
 const { app, dialog } = require('electron');
 const { ipcMain } = require('electron');
-const logger = require('../audit/logger');
-const cloudSync = require('./cloudSync');
-const database = require('../../app/assets/js/utils/database');
-const configManager = require('../../app/assets/js/modules/configuraciones/index');
-const { getConnection } = require('../../app/assets/js/utils/database');
+const logger = require('../audit/logger.js');
+const cloudSync = require('./cloudSync.js');
+const database = require('../../app/assets/js/utils/database.js');
+const configManager = require('../../app/assets/js/modules/configuraciones/index.js');
+const { getConnection } = require('../../app/assets/js/utils/database.js');
 
 // Carpeta por defecto para respaldos
 const DEFAULT_BACKUP_DIR = path.join(app.getPath('userData'), 'backups');

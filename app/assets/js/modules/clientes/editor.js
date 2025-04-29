@@ -1,9 +1,10 @@
-import { obtenerSucursales, obtenerUsuarios } from '../../utils/database.js';
-import { abrirModal, cerrarModal } from '../../components/modals.js';
-import { validarFormulario } from '../../utils/validation.js';
-import { mostrarNotificacion } from '../../components/notifications.js';
+const { obtenerSucursales, obtenerUsuarios } = require('../../utils/database.js');
+const { abrirModal, cerrarModal } = require('../../components/modals.js');
+const { validarFormulario } = require('../../utils/validation.js');
+const { mostrarNotificacion } = require('../../components/notifications.js');
 
-export function initEditorCliente() {
+function initEditorCliente
+module.exports.initEditorCliente = initEditorCliente() {
     document.querySelector('#btnCancelarCliente').addEventListener('click', () => cerrarModal('modalCliente'));
     document.querySelector('.modal .close').addEventListener('click', () => cerrarModal('modalCliente'));
     document.querySelectorAll('.form-tab').forEach(tab =>
@@ -57,7 +58,8 @@ async function cargarSelects() {
 }
 
 // Función para cargar los datos en el editor
-export function cargarClienteEnFormulario(cliente) {
+function cargarClienteEnFormulario
+module.exports.cargarClienteEnFormulario = cargarClienteEnFormulario(cliente) {
     document.getElementById('clienteId').value = cliente.id || '';
     document.getElementById('tipoCliente').value = cliente.tipo || 'persona';
     document.getElementById('categoriaCliente').value = cliente.categoria || 'regular';
@@ -93,7 +95,8 @@ export function cargarClienteEnFormulario(cliente) {
 }
 
 // Función para limpiar el formulario
-export function limpiarFormularioCliente() {
+function limpiarFormularioCliente
+module.exports.limpiarFormularioCliente = limpiarFormularioCliente() {
     document.getElementById('formCliente').reset();
     document.getElementById('clienteId').value = '';
     mostrarCamposTipo();

@@ -1,9 +1,9 @@
 // app/assets/js/modules/documentos/notasCredito.js
 
-import { mostrarNotificacion } from '../../../components/notifications.js';
-import { obtenerNotasCredito, anularNotaCredito, obtenerDetalleNotaCredito } from '../../../utils/database.js';
-import { renderEstado, renderAccionesDocumento } from './renderHelpers.js';
-import { obtenerFiltros } from '../../../utils/validation.js';
+const { mostrarNotificacion } = require('../../../components/notifications.js');
+const { obtenerNotasCredito, anularNotaCredito, obtenerDetalleNotaCredito } = require('../../../utils/database.js');
+const { renderEstado, renderAccionesDocumento } = require('./renderHelpers.js');
+const { obtenerFiltros } = require('../../../utils/validation.js');
 
 // Cargar todas las notas de crédito
 export async function cargarNotasCredito() {

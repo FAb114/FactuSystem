@@ -1,13 +1,13 @@
 // app/assets/js/modules/documentos/index.js
 
-import { cargarRemitos, cargarNotasCredito, cargarNotasDebito, filtrarDocumentos, anularDocumento } from './remitos.js';
-import { abrirModalCliente, seleccionarClienteDesdeModal } from '../clientes/index.js';
-import { abrirModalFactura, seleccionarFacturaDesdeModal } from '../ventas/index.js';
-import { abrirModalProducto, seleccionarProductoDesdeModal } from '../productos/index.js';
-import { imprimirDocumento, generarPDFDocumento } from '../../../utils/printer.js';
-import { enviarPorWhatsApp, enviarPorEmail } from '../../../utils/mensajeria.js';
-import { mostrarNotificacion } from '../../../components/notifications.js';
-import { validarFormulario, limpiarFormulario, obtenerFiltros } from '../../../utils/validation.js';
+const { cargarRemitos, cargarNotasCredito, cargarNotasDebito, filtrarDocumentos, anularDocumento } = require('./remitos.js');
+const { abrirModalCliente, seleccionarClienteDesdeModal } = require('../clientes/index.js');
+const { abrirModalFactura, seleccionarFacturaDesdeModal } = require('../ventas/index.js');
+const { abrirModalProducto, seleccionarProductoDesdeModal } = require('../productos/index.js');
+const { imprimirDocumento, generarPDFDocumento } = require('../../../utils/printer.js');
+const { enviarPorWhatsApp, enviarPorEmail } = require('../../../utils/mensajeria.js');
+const { mostrarNotificacion } = require('../../../components/notifications.js');
+const { validarFormulario, limpiarFormulario, obtenerFiltros } = require('../../../utils/validation.js');
 
 const electron = window.electron;
 

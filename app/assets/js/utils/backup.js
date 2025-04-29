@@ -2,12 +2,12 @@
 // Módulo de respaldo y restauración para FactuSystem
 // Incluye compresión, cifrado opcional, metadatos y políticas de retención
 
-const auth = require('./auth');
-const logger = require('./logger');
-const database = require('./database');
+const auth = require('./auth.js');
+const logger = require('./logger.js');
+const database = require('./database.js');
 const crypto = require('crypto');
 const zlib = require('zlib');
-const { createBackup, restoreBackup, getBackups, deleteBackup } = require('../../../../services/backup/autoBackup'); // Importa las funciones directamente
+const { createBackup, restoreBackup, getBackups, deleteBackup } = require('../../../../services/backup/autoBackup.js'); // Importa las funciones directamente
 
 class BackupManager {
     constructor(auth, logger, database, crypto, zlib, backupService) { // Inyección de dependencias

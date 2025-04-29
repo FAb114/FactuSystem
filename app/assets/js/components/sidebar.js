@@ -552,4 +552,6 @@ window.FactuSystem = window.FactuSystem || {};
 window.FactuSystem.Sidebar = new Sidebar();
 
 // También exportar para uso con ES modules
-export default window.FactuSystem.Sidebar;
+ window
+
+module.exports = window.FactuSystem.Sidebar;

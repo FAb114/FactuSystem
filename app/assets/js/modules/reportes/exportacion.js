@@ -5,15 +5,15 @@
  */
 
 // Importaciones de utilidades necesarias
-import { createPDF } from '../../../utils/printer.js';
-import { logger } from '../../../utils/logger.js';
-import { getConfiguracion } from '../../configuraciones/index.js';
-import { Database } from '../../../utils/database.js';
-import { formatearFecha, formatearMoneda } from '../../../utils/validation.js';
-import { ipcRenderer } from '../../../renderer.js';
+const { createPDF } = require('../../../utils/printer.js');
+const { logger } = require('../../../utils/logger.js');
+const { getConfiguracion } = require('../../configuraciones/index.js');
+const { Database } = require('../../../utils/database.js');
+const { formatearFecha, formatearMoneda } = require('../../../utils/validation.js');
+const { ipcRenderer } = require('../../../renderer.js');
 
 // Import templates
-import { loadTemplate } from '../../../utils/database.js';
+const { loadTemplate } = require('../../../utils/database.js');
 
 /**
  * Clase principal para gestionar la exportación de reportes
@@ -1434,11 +1434,18 @@ class ExportacionReportes {
 const exportacionReportes = new ExportacionReportes();
 
 // Exponer la API para uso desde otros módulos
-export default exportacionReportes;
+ exportacionReportes
+
+module.exports = exportacionReportes;
 
 // Exponer métodos específicos para uso público
-export const exportarReportePDF = (tipoReporte, filtros) => exportacionReportes.exportarPDF(tipoReporte, filtros);
-export const exportarReporteExcel = (tipoReporte, filtros) => exportacionReportes.exportarExcel(tipoReporte, filtros);
-export const exportarReporteCSV = (tipoReporte, filtros) => exportacionReportes.exportarCSV(tipoReporte, filtros);
-export const consultarDatosReporte = (tipoReporte, filtros) => exportacionReportes.consultarDatos(tipoReporte, filtros);
-export const programarReporte = (tipoReporte, config) => exportacionReportes.programarReporteAutomatico(tipoReporte, config);
+const exportarReportePDF
+module.exports.exportarReportePDF = exportarReportePDF = (tipoReporte, filtros) => exportacionReportes.exportarPDF(tipoReporte, filtros);
+const exportarReporteExcel
+module.exports.exportarReporteExcel = exportarReporteExcel = (tipoReporte, filtros) => exportacionReportes.exportarExcel(tipoReporte, filtros);
+const exportarReporteCSV
+module.exports.exportarReporteCSV = exportarReporteCSV = (tipoReporte, filtros) => exportacionReportes.exportarCSV(tipoReporte, filtros);
+const consultarDatosReporte
+module.exports.consultarDatosReporte = consultarDatosReporte = (tipoReporte, filtros) => exportacionReportes.consultarDatos(tipoReporte, filtros);
+const programarReporte
+module.exports.programarReporte = programarReporte = (tipoReporte, config) => exportacionReportes.programarReporteAutomatico(tipoReporte, config);

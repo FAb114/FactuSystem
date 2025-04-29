@@ -11,13 +11,13 @@
  */
 
 const { ipcRenderer } = require('electron');
-const database = require('../../utils/database');
-const logger = require('../../utils/logger');
-const auth = require('../../utils/auth');
-const sync = require('../../utils/sync');
-const notifications = require('../../components/notifications');
-const format = require('../../utils/format');
-const movimientos = require('./movimientos');
+const database = require('../../utils/database.js');
+const logger = require('../../utils/logger.js');
+const auth = require('../../utils/auth.js');
+const sync = require('../../utils/sync.js');
+const notifications = require('../../components/notifications.js');
+const format = require('../../utils/format.js');
+const movimientos = require('./movimientos.js');
 
 class CierreCaja {
     constructor() {

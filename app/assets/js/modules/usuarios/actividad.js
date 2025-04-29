@@ -5,13 +5,13 @@
  */
 
 // Importaciones de utilidades y servicios
-import { getCurrentUser } from '../../utils/auth.js';
-import { getDatabase } from '../../utils/database.js';
-import { formatDate, formatCurrency, formatTime } from '../../utils/format.js';
-import { showNotification } from '../../components/notifications.js';
-import { generatePDF } from '../../../services/print/pdf.js';
-import { createTab } from '../../components/tabs.js';
-import { checkPermission } from '../../../services/auth/permissions.js';
+const { getCurrentUser } = require('../../utils/auth.js');
+const { getDatabase } = require('../../utils/database.js');
+const { formatDate, formatCurrency, formatTime } = require('../../utils/format.js');
+const { showNotification } = require('../../components/notifications.js');
+const { generatePDF } = require('../../../services/print/pdf.js');
+const { createTab } = require('../../components/tabs.js');
+const { checkPermission } = require('../../../services/auth/permissions.js');
 
 // Clase principal para gestionar la actividad de usuarios
 class UserActivity {
@@ -1103,7 +1103,10 @@ class UserActivity {
 }
 
 // Exportar la clase para su uso en otros módulos
-export default UserActivity;
+ UserActivity
+
+module.exports = UserActivity;
 
 // También exportar el método estático para registrar actividades desde cualquier parte del sistema
-export const registrarActividad = UserActivity.registrarActividad;
+const registrarActividad
+module.exports.registrarActividad = registrarActividad = UserActivity.registrarActividad;

@@ -9,9 +9,9 @@
 
 // Importaciones
 const { ipcRenderer } = require('electron');
-const database = require('../../../../../../utils/database');
-const logger = require('../../../../../../utils/logger');
-const BancoAPI = require('../api');
+const database = require('../../../../../../utils/database.js');
+const logger = require('../../../../../../utils/logger.js');
+const BancoAPI = require('../api.js');
 
 /**
  * Clase para gestionar la integración con el Banco Galicia

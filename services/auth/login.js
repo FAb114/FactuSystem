@@ -14,11 +14,11 @@ const path = require('path');
 const fs = require('fs');
 
 // Importar utilidades de base de datos
-const database = require('../../app/assets/js/utils/database');
-const logger = require('../audit/logger');
-const permissionsService = require('./permissions');
-const twoFactorService = require('./twoFactor');
-const { getOfflineUsers } = require('../sync/offline');
+const database = require('../../app/assets/js/utils/database.js');
+const logger = require('../audit/logger.js');
+const permissionsService = require('./permissions.js');
+const twoFactorService = require('./twoFactor.js');
+const { getOfflineUsers } = require('../sync/offline.js');
 
 // Clave secreta para JWT - en producción esto debería estar en variables de entorno
 const JWT_SECRET = process.env.JWT_SECRET || 'factusystem-secret-key-change-in-production';

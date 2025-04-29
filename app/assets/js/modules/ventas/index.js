@@ -11,17 +11,17 @@ const moment = require('moment');
 const Chart = require('chart.js');
 
 // Importaciones de módulos internos
-const database = require('../../utils/database');
-const validation = require('../../utils/validation');
-const printer = require('../../utils/printer');
-const logger = require('../../utils/logger');
-const tabs = require('../../components/tabs');
-const notifications = require('../../components/notifications');
+const database = require('../../utils/database.js');
+const validation = require('../../utils/validation.js');
+const printer = require('../../utils/printer.js');
+const logger = require('../../utils/logger.js');
+const tabs = require('../../components/tabs.js');
+const notifications = require('../../components/notifications.js');
 
 // Importaciones de submódulos de ventas
-const historial = require('./historial');
-const estadisticas = require('./estadisticas');
-const reportes = require('./reportes');
+const historial = require('./historial.js');
+const estadisticas = require('./estadisticas.js');
+const reportes = require('./reportes.js');
 
 // Configuración del módulo
 const config = {

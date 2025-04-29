@@ -8,9 +8,9 @@ const axios = require('axios');
 const fs = require('fs');
 const path = require('path');
 const { ipcMain } = require('electron');
-const logger = require('../../services/audit/logger');
-const { getConfiguracion } = require('../../db/schema');
-const { generarPDF } = require('../../services/print/pdf');
+const logger = require('../../services/audit/logger.js');
+const { getConfiguracion } = require('../../db/schema.js');
+const { generarPDF } = require('../../services/print/pdf.js');
 
 // Configuración por defecto
 let config = {

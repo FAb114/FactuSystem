@@ -15,13 +15,13 @@
  */
 
 // Importación de dependencias
-import { Database } from '../../../utils/database.js';
-import { validarFechas, validarFiltros } from '../../../utils/validation.js';
-import { verificarPermiso } from '../../../utils/auth.js';
-import { imprimirTicket, imprimirA4 } from '../../../utils/printer.js';
-import { enviarMensajeWhatsapp } from '../../../../integrations/whatsapp/mensajes.js';
-import { enviarEmail } from '../../../../integrations/email/sender.js';
-import { generarPDF } from '../../../../services/print/pdf.js';
+const { Database } = require('../../../utils/database.js');
+const { validarFechas, validarFiltros } = require('../../../utils/validation.js');
+const { verificarPermiso } = require('../../../utils/auth.js');
+const { imprimirTicket, imprimirA4 } = require('../../../utils/printer.js');
+const { enviarMensajeWhatsapp } = require('../../../../integrations/whatsapp/mensajes.js');
+const { enviarEmail } = require('../../../../integrations/email/sender.js');
+const { generarPDF } = require('../../../../services/print/pdf.js');
 
 // Variables globales
 const db = new Database();

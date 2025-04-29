@@ -5,11 +5,11 @@
  */
 
 // Importaciones de utilidades y servicios
-import { database } from '../../../../../utils/database.js';
-import { logger } from '../../../../../utils/logger.js';
-import { validateApiCredentials } from '../../../../../utils/validation.js';
-import { notificaciones } from '../../../../../components/notifications.js';
-import { loadEncryptedCredentials, saveEncryptedCredentials } from '../../seguridad.js';
+const { database } = require('../../../../../utils/database.js');
+const { logger } = require('../../../../../utils/logger.js');
+const { validateApiCredentials } = require('../../../../../utils/validation.js');
+const { notificaciones } = require('../../../../../components/notifications.js');
+const { loadEncryptedCredentials, saveEncryptedCredentials } = require('../../seguridad.js');
 
 // Constantes
 const PAYWAY_API_URL = {
@@ -1173,4 +1173,6 @@ const paywayAPI = {
 // Exponer la API como propiedad global para poder usarla desde cualquier componente
 window.paywayIntegration = paywayAPI;
 
-export default paywayAPI;
+ paywayAPI
+
+module.exports = paywayAPI;

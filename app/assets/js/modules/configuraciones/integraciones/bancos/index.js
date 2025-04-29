@@ -5,14 +5,14 @@
  */
 
 // Importamos las integraciones específicas de cada banco
-const galiciaIntegration = require('./galicia');
-const getnetIntegration = require('./getnet');
-const bbvaIntegration = require('./bbva');
-const paywayIntegration = require('./payway');
+const galiciaIntegration = require('./galicia.js');
+const getnetIntegration = require('./getnet.js');
+const bbvaIntegration = require('./bbva.js');
+const paywayIntegration = require('./payway.js');
 const { ipcRenderer } = require('electron');
-const dbManager = require('../../../../utils/database');
-const logger = require('../../../../utils/logger');
-const notification = require('../../../../components/notifications');
+const dbManager = require('../../../../utils/database.js');
+const logger = require('../../../../utils/logger.js');
+const notification = require('../../../../components/notifications.js');
 
 // Mapa de integraciones disponibles
 const bankIntegrations = {

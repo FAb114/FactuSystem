@@ -5,18 +5,18 @@
  */
 
 // Importaciones de módulos relacionados
-import { createTab, activateTab, closeTab } from '../../components/tabs.js';
-import { showNotification } from '../../components/notifications.js';
-import { validateSucursalData } from '../../utils/validation.js';
-import { getCurrentUser } from '../../utils/auth.js';
-import { updateSyncStatus } from '../../utils/sync.js';
-import { logActivity } from '../../utils/logger.js';
-import { database } from '../../utils/database.js';
-import { exportToPDF } from '../../utils/printer.js';
-import { syncSucursales } from './sincronizacion.js';
-import { editSucursal } from './editor.js';
-import { configureSucursal } from './configuracion.js';
-import * as backupService from '../../../services/backup/autoBackup.js';
+const { createTab, activateTab, closeTab } = require('../../components/tabs.js');
+const { showNotification } = require('../../components/notifications.js');
+const { validateSucursalData } = require('../../utils/validation.js');
+const { getCurrentUser } = require('../../utils/auth.js');
+const { updateSyncStatus } = require('../../utils/sync.js');
+const { logActivity } = require('../../utils/logger.js');
+const { database } = require('../../utils/database.js');
+const { exportToPDF } = require('../../utils/printer.js');
+const { syncSucursales } = require('./sincronizacion.js');
+const { editSucursal } = require('./editor.js');
+const { configureSucursal } = require('./configuracion.js');
+const backupService = require('../../../services/backup/autoBackup.js');
 
 // Estado global del módulo
 const state = {
@@ -764,7 +764,8 @@ export async function updateSucursalesModule(data = {}) {
  * Maneja los cambios en el estado de conectividad online/offline
  * @param {Boolean} isOnline - Estado de conectividad
  */
-export function handleConnectivityChange(isOnline) {
+function handleConnectivityChange
+module.exports.handleConnectivityChange = handleConnectivityChange(isOnline) {
     const syncControls = document.getElementById('sync-controls');
     const offlineIndicator = document.getElementById('offline-indicator');
     
@@ -905,7 +906,8 @@ async function checkServerConnection() {
 /**
  * Inicia un intervalo para comprobar la sincronización automáticamente
  */
-export function startSyncCheckInterval() {
+function startSyncCheckInterval
+module.exports.startSyncCheckInterval = startSyncCheckInterval() {
     // Comprobar cada 5 minutos
     setInterval(() => {
         if (document.visibilityState === 'visible') {
@@ -1322,9 +1324,7 @@ function collectMergedData(modalElement, conflict) {
 }
 
 // Exportar funciones adicionales para uso externo
-export {
-    checkSynchronizationStatus,
-    updateSyncStatusIndicators,
-    handleConnectivityChange,
-    resolverConflictosSincronizacion
-};
+module.exports.checkSynchronizationStatus = checkSynchronizationStatus;
+module.exports.updateSyncStatusIndicators = updateSyncStatusIndicators;
+module.exports.handleConnectivityChange = handleConnectivityChange;
+module.exports.resolverConflictosSincronizacion = resolverConflictosSincronizacion;

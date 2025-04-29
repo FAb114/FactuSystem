@@ -15,13 +15,13 @@ const axios = require('axios');
 const { EventEmitter } = require('events');
 
 // Importamos los módulos específicos de cada banco
-const galiciaAPI = require('./galicia');
-const getnetAPI = require('./getnet');
-const bbvaAPI = require('./bbva');
-const paywayAPI = require('./payway');
+const galiciaAPI = require('./galicia.js');
+const getnetAPI = require('./getnet.js');
+const bbvaAPI = require('./bbva.js');
+const paywayAPI = require('./payway.js');
 
 // Logger para auditoría
-const logger = require('../../services/audit/logger');
+const logger = require('../../services/audit/logger.js');
 
 // Clase para manejar errores específicos de la API bancaria
 class BankAPIError extends Error {

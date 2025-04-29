@@ -1,9 +1,10 @@
-import { obtenerFidelizacionStats, obtenerTopClientesPuntos, obtenerProximosCumpleanos, obtenerMovimientosPuntos, obtenerBeneficiosDisponibles, registrarCanjePuntos, ajustarPuntosCliente, obtenerConfigFidelizacion, guardarConfigFidelizacion } from '../../utils/database.js';
-import { abrirModal, cerrarModal } from '../../components/modals.js';
-import { mostrarNotificacion } from '../../components/notifications.js';
+const { obtenerFidelizacionStats, obtenerTopClientesPuntos, obtenerProximosCumpleanos, obtenerMovimientosPuntos, obtenerBeneficiosDisponibles, registrarCanjePuntos, ajustarPuntosCliente, obtenerConfigFidelizacion, guardarConfigFidelizacion } = require('../../utils/database.js');
+const { abrirModal, cerrarModal } = require('../../components/modals.js');
+const { mostrarNotificacion } = require('../../components/notifications.js');
 
 // Inicializa toda la sección de fidelización
-export function inicializarFidelizacion() {
+function inicializarFidelizacion
+module.exports.inicializarFidelizacion = inicializarFidelizacion() {
     cargarDashboardFidelizacion();
     configurarEventosFidelizacion();
 }

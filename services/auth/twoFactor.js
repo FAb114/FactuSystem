@@ -12,8 +12,8 @@ const qrcode = require('qrcode');
 const speakeasy = require('speakeasy');
 const path = require('path');
 const fs = require('fs');
-const database = require('../../app/assets/js/utils/database');
-const logger = require('../audit/logger');
+const database = require('../../app/assets/js/utils/database.js');
+const logger = require('../audit/logger.js');
 
 // Tiempo de validez de un código OTP en segundos (por defecto: 30 segundos)
 const OTP_STEP = process.env.OTP_STEP || 30;

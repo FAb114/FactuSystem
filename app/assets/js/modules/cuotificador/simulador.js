@@ -5,13 +5,13 @@
  */
 
 // Importaciones
-import { getTasasInteres } from './tasas.js'; 
-import { agregarProductosFacturador } from '../facturador/facturador.js';
-import { showNotification } from '../../components/notifications.js';
-import { createTab } from '../../components/tabs.js';
-import { getProductById, searchProducts } from '../productos/index.js';
-import { formatCurrency, calculateInterest } from '../../utils/validation.js';
-import { saveSimulacion } from '../../utils/database.js';
+const { getTasasInteres } = require('./tasas.js'); 
+const { agregarProductosFacturador } = require('../facturador/facturador.js');
+const { showNotification } = require('../../components/notifications.js');
+const { createTab } = require('../../components/tabs.js');
+const { getProductById, searchProducts } = require('../productos/index.js');
+const { formatCurrency, calculateInterest } = require('../../utils/validation.js');
+const { saveSimulacion } = require('../../utils/database.js');
 
 // Estado local del simulador
 let simuladorState = {
@@ -29,7 +29,8 @@ let simuladorState = {
 /**
  * Inicializa el simulador de cuotas
  */
-export function initSimulador() {
+function initSimulador
+module.exports.initSimulador = initSimulador() {
     // Agregar listeners a los elementos del DOM
     document.getElementById('buscador-productos').addEventListener('input', handleBusquedaProductos);
     document.getElementById('lista-resultados').addEventListener('click', handleSeleccionProducto);
@@ -475,7 +476,7 @@ async function cargarOpcionesBancosYTarjetas() {
  */
 function abrirModalClientes() {
     // Importar dinámicamente el módulo de clientes
-    import('../clientes/index.js').then(clientesModule => {
+    Promise.resolve(require('../clientes/index.js')).then(clientesModule => {
         clientesModule.abrirSelectorClientes(seleccionarCliente);
     }).catch(error => {
         console.error('Error al cargar el módulo de clientes:', error);
@@ -638,12 +639,12 @@ export async function exportarSimulacionPDF() {
     
     try {
         // Importar dinámicamente el servicio de PDF
-        const { generarPDFSimulacion } = await import('../../utils/pdf.js');
+        const { generarPDFSimulacion } = await Promise.resolve(require('../../utils/pdf.js'));
         
         // Obtener datos del cliente si existe
         let clienteData = null;
         if (simuladorState.clienteId) {
-            const { getClienteById } = await import('../clientes/index.js');
+            const { getClienteById } = await Promise.resolve(require('../clientes/index.js'));
             clienteData = await getClienteById(simuladorState.clienteId);
         }
         
@@ -664,7 +665,8 @@ export async function exportarSimulacionPDF() {
  * Carga una simulación guardada
  * @param {Object} simulacion - Datos de la simulación guardada
  */
-export function cargarSimulacion(simulacion) {
+function cargarSimulacion
+module.exports.cargarSimulacion = cargarSimulacion(simulacion) {
     // Restaurar el estado desde la simulación guardada
     simuladorState = {
         productosSeleccionados: [...simulacion.productos],
@@ -692,7 +694,7 @@ export function cargarSimulacion(simulacion) {
     
     // Si hay cliente, cargar sus datos
     if (simuladorState.clienteId) {
-        import('../clientes/index.js').then(async clientesModule => {
+        Promise.resolve(require('../clientes/index.js')).then(async clientesModule => {
             const cliente = await clientesModule.getClienteById(simuladorState.clienteId);
             seleccionarCliente(cliente);
         });

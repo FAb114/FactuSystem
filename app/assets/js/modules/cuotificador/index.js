@@ -5,10 +5,10 @@
  */
 
 // Importar utilidades necesarias
-import { database } from '../../../utils/database.js';
-import { validateForm } from '../../../utils/validation.js';
-import { auth } from '../../../utils/auth.js';
-import { logger } from '../../../utils/logger.js';
+const { database } = require('../../../utils/database.js');
+const { validateForm } = require('../../../utils/validation.js');
+const { auth } = require('../../../utils/auth.js');
+const { logger } = require('../../../utils/logger.js');
 
 // Definir clase principal del Cuotificador
 class Cuotificador {
@@ -1072,7 +1072,7 @@ class Cuotificador {
     async generateReportPDF(reportData) {
         try {
             // Importar servicio de generación de PDF
-            const { pdf } = await import('../../../services/print/pdf.js');
+            const { pdf } = await Promise.resolve(require('../../../services/print/pdf.js'));
             
             // Construir contenido del PDF
             const content = {
@@ -1183,7 +1183,7 @@ class Cuotificador {
             actionsModal.querySelector('.print-pdf-btn').addEventListener('click', async () => {
                 try {
                     // Importar servicio de impresión
-                    const { printer } = await import('../../../services/print/printer.js');
+                    const { printer } = await Promise.resolve(require('../../../services/print/printer.js'));
                     printer.printPDF(pdfBlob);
                 } catch (error) {
                     console.error('Error al imprimir PDF:', error);
@@ -1297,7 +1297,7 @@ class Cuotificador {
             
             try {
                 // Importar servicio de email
-                const { email } = await import('../../../integrations/email/sender.js');
+                const { email } = await Promise.resolve(require('../../../integrations/email/sender.js'));
                 
                 // Enviar email
                 await email.sendWithAttachment(recipient, subject, message, pdfBlob, 'Simulacion_Cuotas.pdf');
@@ -1371,7 +1371,7 @@ class Cuotificador {
             
             try {
                 // Importar servicio de WhatsApp
-                const { whatsapp } = await import('../../../integrations/whatsapp/api.js');
+                const { whatsapp } = await Promise.resolve(require('../../../integrations/whatsapp/api.js'));
                 
                 // Enviar por WhatsApp
                 await whatsapp.sendFile(phoneNumber, message, pdfBlob, 'Simulacion_Cuotas.pdf');
@@ -1455,4 +1455,6 @@ document.addEventListener('DOMContentLoaded', () => {
 });
 
 // Exportar la clase para uso en otros módulos
-export default Cuotificador;
+ Cuotificador
+
+module.exports = Cuotificador;

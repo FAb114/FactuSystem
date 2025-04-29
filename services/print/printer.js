@@ -18,9 +18,9 @@ escpos.Network = require('escpos-network');
 escpos.Serial = require('escpos-serialport');
 
 // Importar servicios relacionados
-const pdfService = require('./pdf');
-const ticketService = require('./ticket');
-const logger = require('../audit/logger');
+const pdfService = require('./pdf.js');
+const ticketService = require('./ticket.js');
+const logger = require('../audit/logger.js');
 
 // Configuración de rutas
 const TEMPLATES_DIR = path.join(__dirname, '../../app/templates');

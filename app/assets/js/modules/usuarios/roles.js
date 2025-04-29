@@ -4,13 +4,13 @@
  */
 
 // Importación de utilidades y servicios necesarios
-import { showNotification } from '../../components/notifications.js';
-import { validatePermission } from '../../utils/auth.js';
-import { database } from '../../utils/database.js';
-import { logger } from '../../utils/logger.js';
-import { openTab } from '../../components/tabs.js';
-import { loadingOverlay } from '../../components/dashboard.js';
-import { showConfirmDialog, showModalForm } from '../../components/notifications.js';
+const { showNotification } = require('../../components/notifications.js');
+const { validatePermission } = require('../../utils/auth.js');
+const { database } = require('../../utils/database.js');
+const { logger } = require('../../utils/logger.js');
+const { openTab } = require('../../components/tabs.js');
+const { loadingOverlay } = require('../../components/dashboard.js');
+const { showConfirmDialog, showModalForm } = require('../../components/notifications.js');
 
 // Definición de módulo para gestión de roles
 const RolesModule = (() => {
@@ -874,4 +874,6 @@ const RolesModule = (() => {
     };
 })();
 
-export default RolesModule;
+ RolesModule
+
+module.exports = RolesModule;

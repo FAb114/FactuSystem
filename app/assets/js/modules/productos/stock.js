@@ -1,19 +1,21 @@
-import { obtenerStockPorProducto, ajustarStockProducto, obtenerHistorialStock } from '../../utils/database.js';
-import { abrirModal, cerrarModal } from '../../components/modals.js';
-import { mostrarNotificacion } from '../../components/notifications.js';
+const { obtenerStockPorProducto, ajustarStockProducto, obtenerHistorialStock } = require('../../utils/database.js');
+const { abrirModal, cerrarModal } = require('../../components/modals.js');
+const { mostrarNotificacion } = require('../../components/notifications.js');
 
 let stockActual = [];
 let productoActivo = null;
 
 // Inicializa eventos y componentes del módulo de stock
-export function inicializarStock() {
+function inicializarStock
+module.exports.inicializarStock = inicializarStock() {
     document.getElementById('btn-ajustar-stock').addEventListener('click', abrirModalAjusteStock);
     document.getElementById('form-ajuste-stock').addEventListener('submit', realizarAjusteStock);
     document.getElementById('btn-cerrar-historial-stock').addEventListener('click', () => cerrarModal('modalHistorialStock'));
 }
 
 // Carga el resumen de stock en la vista principal
-export function cargarResumenStock(productos) {
+function cargarResumenStock
+module.exports.cargarResumenStock = cargarResumenStock(productos) {
     const total = productos.length;
     const sinStock = productos.filter(p => p.stock <= 0).length;
     const bajoStock = productos.filter(p => p.stock > 0 && p.stock < 5).length;

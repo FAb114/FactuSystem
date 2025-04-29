@@ -6,23 +6,23 @@
  */
 
 // Importación de submódulos de reportes
-import ventasReportes from './ventas.js';
-import comprasReportes from './compras.js';
-import cajaReportes from './caja.js';
-import stockReportes from './stock.js';
-import fiscalesReportes from './fiscales.js';
-import exportacionReportes from './exportacion.js';
+const ventasReportes = require('./ventas.js');
+const comprasReportes = require('./compras.js');
+const cajaReportes = require('./caja.js');
+const stockReportes = require('./stock.js');
+const fiscalesReportes = require('./fiscales.js');
+const exportacionReportes = require('./exportacion.js');
 
 // Importación de utilidades necesarias
-import { database } from '../../utils/database.js';
-import { auth } from '../../utils/auth.js';
-import { logger } from '../../utils/logger.js';
-import { validation } from '../../utils/validation.js';
-import { backup } from '../../utils/backup.js';
+const { database } = require('../../utils/database.js');
+const { auth } = require('../../utils/auth.js');
+const { logger } = require('../../utils/logger.js');
+const { validation } = require('../../utils/validation.js');
+const { backup } = require('../../utils/backup.js');
 
 // Componentes compartidos de UI
-import { notifications } from '../../components/notifications.js';
-import { tabs } from '../../components/tabs.js';
+const { notifications } = require('../../components/notifications.js');
+const { tabs } = require('../../components/tabs.js');
 
 /**
  * Clase principal del módulo de Reportes
@@ -672,4 +672,6 @@ class ReportesModule {
 
 // Crear y exportar la instancia del módulo
 const reportesModule = new ReportesModule();
-export default reportesModule;
+ reportesModule
+
+module.exports = reportesModule;

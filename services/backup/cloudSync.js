@@ -18,10 +18,10 @@ const { ipcMain } = require('electron');
 const axios = require('axios');
 const FormData = require('form-data');
 const { promisify } = require('util');
-const { getAppDataPath } = require('../auth/login');
-const logger = require('../audit/logger');
-const { getStoreValue, setStoreValue } = require('../../app/assets/js/utils/database');
-const { isOnline } = require('../../app/assets/js/utils/sync');
+const { getAppDataPath } = require('../auth/login.js');
+const logger = require('../audit/logger.js');
+const { getStoreValue, setStoreValue } = require('../../app/assets/js/utils/database.js');
+const { isOnline } = require('../../app/assets/js/utils/sync.js');
 
 // Promisificar operaciones de fs
 const readFileAsync = promisify(fs.readFile);
@@ -1563,7 +1563,7 @@ async function restoreBackupFromCloud(backupInfo) {
     }
     
     // Delegar la restauración al módulo específico
-    const recovery = require('./recovery');
+    const recovery = require('./recovery.js');
     const result = await recovery.restoreFromBackup(backupPath);
     
     if (result.success) {

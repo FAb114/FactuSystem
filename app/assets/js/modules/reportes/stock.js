@@ -8,16 +8,16 @@
  */
 
 // Importaciones de módulos y utilidades
-import { Database } from '../../../utils/database.js';
-import { ValidationUtils } from '../../../utils/validation.js';
-import { exportToPDF } from '../../../utils/printer.js';
-import { getAuthenticatedUser, checkPermission } from '../../../utils/auth.js';
-import { logger } from '../../../utils/logger.js';
-import { DateUtils } from '../../../utils/dateUtils.js';
-import { ChartUtils } from '../../../utils/chartUtils.js';
-import { SyncManager } from '../../../utils/sync.js';
-import { NotificationManager } from '../../../components/notifications.js';
-import { TabManager } from '../../../components/tabs.js';
+const { Database } = require('../../../utils/database.js');
+const { ValidationUtils } = require('../../../utils/validation.js');
+const { exportToPDF } = require('../../../utils/printer.js');
+const { getAuthenticatedUser, checkPermission } = require('../../../utils/auth.js');
+const { logger } = require('../../../utils/logger.js');
+const { DateUtils } = require('../../../utils/dateUtils.js');
+const { ChartUtils } = require('../../../utils/chartUtils.js');
+const { SyncManager } = require('../../../utils/sync.js');
+const { NotificationManager } = require('../../../components/notifications.js');
+const { TabManager } = require('../../../components/tabs.js');
 
 class StockReportModule {
     constructor() {
@@ -1395,7 +1395,8 @@ class StockReportModule {
 }
 
 // Registrar el módulo para su uso
-export const initStockReportModule = () => {
+const initStockReportModule
+module.exports.initStockReportModule = initStockReportModule = () => {
     // Verificar si el contenedor existe antes de inicializar
     if (document.getElementById('stock-report-container')) {
         return new StockReportModule();
@@ -1406,4 +1407,6 @@ export const initStockReportModule = () => {
 };
 
 // Exportar la clase para su uso en otros módulos
-export default StockReportModule;
+ StockReportModule
+
+module.exports = StockReportModule;

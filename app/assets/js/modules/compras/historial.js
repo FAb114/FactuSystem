@@ -1,13 +1,14 @@
 // /app/assets/js/modules/compras/historial.js
 
-import { obtenerDeDB, eliminarDeDB } from '../../utils/database.js';
-import { logEvent } from '../../utils/logger.js';
+const { obtenerDeDB, eliminarDeDB } = require('../../utils/database.js');
+const { logEvent } = require('../../utils/logger.js');
 
 let compras = [];
 let paginaActual = 1;
 const comprasPorPagina = 10;
 
-export function initHistorialCompras() {
+function initHistorialCompras
+module.exports.initHistorialCompras = initHistorialCompras() {
     document.getElementById('btn-aplicar-filtros')?.addEventListener('click', aplicarFiltros);
     document.getElementById('btn-limpiar-filtros')?.addEventListener('click', limpiarFiltros);
     document.getElementById('btn-exportar-excel')?.addEventListener('click', exportarExcel);
@@ -16,7 +17,8 @@ export function initHistorialCompras() {
     cargarCompras();
 }
 
-export function cargarCompras() {
+function cargarCompras
+module.exports.cargarCompras = cargarCompras() {
     obtenerDeDB('compras')
         .then(data => {
             compras = data;

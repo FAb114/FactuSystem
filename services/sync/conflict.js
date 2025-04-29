@@ -9,10 +9,10 @@
 
 const path = require('path');
 const { ipcRenderer } = require('electron');
-const logger = require('../../services/audit/logger');
-const db = require('../../app/assets/js/utils/database');
-const offlineSync = require('./offline');
-const { getAppConfig } = require('../../app/assets/js/utils/config');
+const logger = require('../../services/audit/logger.js');
+const db = require('../../app/assets/js/utils/database.js');
+const offlineSync = require('./offline.js');
+const { getAppConfig } = require('../../app/assets/js/utils/config.js');
 
 /**
  * Tipos de conflictos que pueden ocurrir durante la sincronización
@@ -877,7 +877,7 @@ async function applyCustomVersion(conflict, customData) {
   function getEntitySchema(entityType) {
     try {
       // Importar esquemas desde db/schema.js
-      const schemaModule = require('../../db/schema');
+      const schemaModule = require('../../db/schema.js');
       return schemaModule[entityType] || null;
     } catch (error) {
       logger.error(`Error al cargar esquema para ${entityType}:`, error);

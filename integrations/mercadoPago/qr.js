@@ -9,8 +9,8 @@ const axios = require('axios');
 const fs = require('fs');
 const path = require('path');
 const { v4: uuidv4 } = require('uuid');
-const logger = require('../../services/audit/logger');
-const database = require('../../app/assets/js/utils/database');
+const logger = require('../../services/audit/logger.js');
+const database = require('../../app/assets/js/utils/database.js');
 const qrcode = require('qrcode');
 const EventEmitter = require('events');
 

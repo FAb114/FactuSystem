@@ -5,17 +5,17 @@
  */
 
 // Importaciones de utilidades y servicios
-import { Database } from '../../../utils/database.js';
-import { exportToPDF } from '../../../utils/exportPDF.js';
-import { formatCurrency, formatDate, parseDate } from '../../../utils/formatters.js';
-import { showNotification } from '../../../components/notifications.js';
-import { validateDateRange } from '../../../utils/validation.js';
-import { printDocument } from '../../../../services/print/printer.js';
-import { openModal, closeModal } from '../../../components/modal.js';
-import { ARCAService } from '../../../../integrations/arca/api.js';
-import { addTabToView } from '../../../components/tabs.js';
-import { getCurrentSucursal } from '../../../utils/auth.js';
-import { Logger } from '../../../utils/logger.js';
+const { Database } = require('../../../utils/database.js');
+const { exportToPDF } = require('../../../utils/exportPDF.js');
+const { formatCurrency, formatDate, parseDate } = require('../../../utils/formatters.js');
+const { showNotification } = require('../../../components/notifications.js');
+const { validateDateRange } = require('../../../utils/validation.js');
+const { printDocument } = require('../../../../services/print/printer.js');
+const { openModal, closeModal } = require('../../../components/modal.js');
+const { ARCAService } = require('../../../../integrations/arca/api.js');
+const { addTabToView } = require('../../../components/tabs.js');
+const { getCurrentSucursal } = require('../../../utils/auth.js');
+const { Logger } = require('../../../utils/logger.js');
 
 // Constantes para tipos de libros e informes
 const TIPO_LIBRO = {
@@ -1103,7 +1103,7 @@ class ReportesFiscales {
                 }
                 
                 // Utilizar el módulo exportExcel que debe ser implementado en utils
-                const { exportToExcel } = await import('../../../utils/exportExcel.js');
+                const { exportToExcel } = await Promise.resolve(require('../../../utils/exportExcel.js'));
                 await exportToExcel(datos, encabezados, nombreArchivo);
             }
         

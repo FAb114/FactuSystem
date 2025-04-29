@@ -6,26 +6,26 @@
  */
 
 // Importaciones de utilidades y servicios
-import { db } from '../../../utils/database.js';
-import { validateForm } from '../../../utils/validation.js';
-import { printTicket, printInvoice } from '../../../../services/print/printer.js';
-import { generatePDF } from '../../../../services/print/pdf.js';
-import { logger } from '../../../utils/logger.js';
-import { authCheck } from '../../../utils/auth.js';
-import { syncData } from '../../../utils/sync.js';
-import { createBackup } from '../../../utils/backup.js';
+const { db } = require('../../../utils/database.js');
+const { validateForm } = require('../../../utils/validation.js');
+const { printTicket, printInvoice } = require('../../../../services/print/printer.js');
+const { generatePDF } = require('../../../../services/print/pdf.js');
+const { logger } = require('../../../utils/logger.js');
+const { authCheck } = require('../../../utils/auth.js');
+const { syncData } = require('../../../utils/sync.js');
+const { createBackup } = require('../../../utils/backup.js');
 
 // Importaciones de servicios para integraciones externas
-import { mercadoPagoQR, checkMPPayment } from '../../../../integrations/mercadoPago/api.js';
-import { generateInvoice as arcaGenerateInvoice } from '../../../../integrations/arca/facturacion.js';
-import { sendWhatsApp } from '../../../../integrations/whatsapp/mensajes.js';
-import { sendEmail } from '../../../../integrations/email/sender.js';
-import { bankPayment } from '../../../../integrations/bancos/api.js';
+const { mercadoPagoQR, checkMPPayment } = require('../../../../integrations/mercadoPago/api.js');
+const { generateInvoice as arcaGenerateInvoice } = require('../../../../integrations/arca/facturacion.js');
+const { sendWhatsApp } = require('../../../../integrations/whatsapp/mensajes.js');
+const { sendEmail } = require('../../../../integrations/email/sender.js');
+const { bankPayment } = require('../../../../integrations/bancos/api.js');
 
 // Importaciones de módulos relacionados
-import { getClienteData, createCliente } from './cliente.js';
-import { getProductData, updateStock } from './productos.js';
-import { registerPayment } from './pagos.js';
+const { getClienteData, createCliente } = require('./cliente.js');
+const { getProductData, updateStock } = require('./productos.js');
+const { registerPayment } = require('./pagos.js');
 
 // Constantes y configuraciones
 const TIPOS_COMPROBANTE = {
@@ -62,7 +62,8 @@ let facturadorState = {
 /**
  * Inicializa el módulo de facturación
  */
-export function initFacturador() {
+function initFacturador
+module.exports.initFacturador = initFacturador() {
     // Comprobar autenticación y permisos
     if (!authCheck('facturador:access')) {
         showMessage('No tiene permisos para acceder al facturador', 'error');

@@ -12,32 +12,23 @@
  */
 
 // Importaciones de los submódulos de caja
-import { abrirCaja, verificarCajaAbierta, obtenerCajaActual } from './apertura.js';
-import { cerrarCaja, verificarDiferencias } from './cierre.js';
-import { 
-    registrarMovimiento, 
-    obtenerMovimientos, 
-    filtrarMovimientos,
-    obtenerTotalesPorTipo
-} from './movimientos.js';
-import { 
-    generarReporteCaja, 
-    exportarReportePDF, 
-    exportarReporteExcel 
-} from './reportes.js';
+const { abrirCaja, verificarCajaAbierta, obtenerCajaActual } = require('./apertura.js');
+const { cerrarCaja, verificarDiferencias } = require('./cierre.js');
+const { registrarMovimiento, obtenerMovimientos, filtrarMovimientos, obtenerTotalesPorTipo } = require('./movimientos.js');
+const { generarReporteCaja, exportarReportePDF, exportarReporteExcel } = require('./reportes.js');
 
 // Importaciones de utilidades
-import { showNotification } from '../../components/notifications.js';
-import { createTab, switchToTab } from '../../components/tabs.js';
-import { formatCurrency, formatDate, getCurrentDateTime } from '../../utils/format.js';
-import { validateNumericInput } from '../../utils/validation.js';
-import { getCurrentUser } from '../../utils/auth.js';
-import { getSucursalActual } from '../../modules/sucursales/index.js';
-import { logAuditEvent } from '../../utils/logger.js';
-import { chartColors } from '../../utils/constants.js';
+const { showNotification } = require('../../components/notifications.js');
+const { createTab, switchToTab } = require('../../components/tabs.js');
+const { formatCurrency, formatDate, getCurrentDateTime } = require('../../utils/format.js');
+const { validateNumericInput } = require('../../utils/validation.js');
+const { getCurrentUser } = require('../../utils/auth.js');
+const { getSucursalActual } = require('../../modules/sucursales/index.js');
+const { logAuditEvent } = require('../../utils/logger.js');
+const { chartColors } = require('../../utils/constants.js');
 
 // Bibliotecas para gráficos
-import Chart from 'chart.js/auto';
+const Chart = require('chart.js/auto.js');
 
 // Cache de datos
 let cajaActual = null;

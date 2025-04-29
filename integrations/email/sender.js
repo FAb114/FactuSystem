@@ -10,11 +10,11 @@ const nodemailer = require('nodemailer');
 const fs = require('fs');
 const path = require('path');
 const handlebars = require('handlebars');
-const { convertHtmlToPdf } = require('../../services/print/pdf');
+const { convertHtmlToPdf } = require('../../services/print/pdf.js');
 const { ipcMain } = require('electron');
-const logger = require('../../services/audit/logger');
-const { getCompanyInfo } = require('../../app/assets/js/utils/database');
-const { encryptPassword, decryptPassword } = require('../../services/auth/twoFactor');
+const logger = require('../../services/audit/logger.js');
+const { getCompanyInfo } = require('../../app/assets/js/utils/database.js');
+const { encryptPassword, decryptPassword } = require('../../services/auth/twoFactor.js');
 const os = require('os');
 
 class EmailSender {

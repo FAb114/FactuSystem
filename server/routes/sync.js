@@ -1,7 +1,7 @@
 const express = require('express');
 const router = express.Router();
-const syncController = require('../controllers/syncController');
-const { authenticateToken, checkSyncPermission } = require('../config/security');
+const syncController = require('../controllers/syncController.js');
+const { authenticateToken, checkSyncPermission } = require('../config/security.js');
 
 /**
  * Rutas para la sincronización entre sucursales

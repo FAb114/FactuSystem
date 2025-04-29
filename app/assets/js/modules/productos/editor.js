@@ -1,10 +1,11 @@
-import { guardarProducto, obtenerCategorias, obtenerProveedores, obtenerGrupos, obtenerSubgrupos, obtenerFamilias, obtenerTipos } from '../../utils/database.js';
-import { cerrarModal, abrirModal } from '../../components/modals.js';
-import { mostrarNotificacion } from '../../components/notifications.js';
+const { guardarProducto, obtenerCategorias, obtenerProveedores, obtenerGrupos, obtenerSubgrupos, obtenerFamilias, obtenerTipos } = require('../../utils/database.js');
+const { cerrarModal, abrirModal } = require('../../components/modals.js');
+const { mostrarNotificacion } = require('../../components/notifications.js');
 
 let productoActual = null;
 
-export function initEditorProducto() {
+function initEditorProducto
+module.exports.initEditorProducto = initEditorProducto() {
     document.getElementById('form-producto').addEventListener('submit', guardarProductoDesdeFormulario);
     document.getElementById('btn-cancelar-producto').addEventListener('click', () => cerrarModal('modalProducto'));
 
@@ -80,7 +81,8 @@ async function guardarProductoDesdeFormulario(e) {
 }
 
 // Cargar producto en el formulario (para edición)
-export function cargarProductoEnFormulario(prod) {
+function cargarProductoEnFormulario
+module.exports.cargarProductoEnFormulario = cargarProductoEnFormulario(prod) {
     productoActual = prod;
 
     document.getElementById('producto-id').value = prod.id || '';

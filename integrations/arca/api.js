@@ -11,8 +11,8 @@ const axios = require('axios');
 const fs = require('fs');
 const path = require('path');
 const { ipcMain } = require('electron');
-const logger = require('../../services/audit/logger');
-const database = require('../../app/assets/js/utils/database');
+const logger = require('../../services/audit/logger.js');
+const database = require('../../app/assets/js/utils/database.js');
 
 // Configuraciones y endpoints
 const ARCA_CONFIG = {

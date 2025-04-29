@@ -7,24 +7,24 @@
 const path = require('path');
 const fs = require('fs');
 const { validationResult } = require('express-validator');
-const database = require('../config/database');
-const securityConfig = require('../config/security');
-const syncUtil = require('../utils/syncUtil');
-const logger = require('../../services/audit/logger');
+const database = require('../config/database.js');
+const securityConfig = require('../config/security.js');
+const syncUtil = require('../utils/syncUtil.js');
+const logger = require('../../services/audit/logger.js');
 
 // Módulos para las diferentes entidades del sistema
 const entitiesMap = {
-  'ventas': require('../models/ventas'),
-  'compras': require('../models/compras'),
-  'productos': require('../models/productos'),
-  'clientes': require('../models/clientes'),
-  'proveedores': require('../models/proveedores'),
-  'usuarios': require('../models/usuarios'),
-  'caja': require('../models/caja'),
-  'sucursales': require('../models/sucursales'),
-  'configuraciones': require('../models/configuraciones'),
-  'documentos': require('../models/documentos'),
-  'cuotificador': require('../models/cuotificador')
+  'ventas': require('../models/ventas.js'),
+  'compras': require('../models/compras.js'),
+  'productos': require('../models/productos.js'),
+  'clientes': require('../models/clientes.js'),
+  'proveedores': require('../models/proveedores.js'),
+  'usuarios': require('../models/usuarios.js'),
+  'caja': require('../models/caja.js'),
+  'sucursales': require('../models/sucursales.js'),
+  'configuraciones': require('../models/configuraciones.js'),
+  'documentos': require('../models/documentos.js'),
+  'cuotificador': require('../models/cuotificador.js')
 };
 
 /**

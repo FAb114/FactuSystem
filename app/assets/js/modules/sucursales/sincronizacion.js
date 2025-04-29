@@ -13,56 +13,23 @@
  */
 
 // Importar utilidades necesarias
-import { getDatabase, saveTransaction } from '../../../utils/database.js';
-import { 
-  isOnline, 
-  getSyncQueue, 
-  clearSyncQueue, 
-  handleConflict, 
-  getLastSyncDate 
-} from '../../../utils/sync.js';
-import { logEvent, logError, SYNC_EVENT } from '../../../utils/logger.js';
-import { getCurrentSucursal, getAllSucursales } from '../configuraciones/empresa.js';
+const { getDatabase, saveTransaction } = require('../../../utils/database.js');
+const { isOnline, getSyncQueue, clearSyncQueue, handleConflict, getLastSyncDate } = require('../../../utils/sync.js');
+const { logEvent, logError, SYNC_EVENT } = require('../../../utils/logger.js');
+const { getCurrentSucursal, getAllSucursales } = require('../configuraciones/empresa.js');
 
 // Importar modelos de datos que necesitan sincronización
-import { 
-  getVentasPendientes, 
-  updateVentasSincronizadas 
-} from '../../modules/ventas/index.js';
-import { 
-  getComprasPendientes, 
-  updateComprasSincronizadas 
-} from '../../modules/compras/index.js';
-import { 
-  getStockUpdates, 
-  applyStockUpdates 
-} from '../../modules/productos/stock.js';
-import { 
-  getClientesUpdates, 
-  applyClientesUpdates 
-} from '../../modules/clientes/index.js';
-import { 
-  getProveedoresUpdates, 
-  applyProveedoresUpdates 
-} from '../../modules/proveedores/index.js';
-import { 
-  getCajaMovimientos, 
-  updateCajaSincronizada 
-} from '../../modules/caja/movimientos.js';
+const { getVentasPendientes, updateVentasSincronizadas } = require('../../modules/ventas/index.js');
+const { getComprasPendientes, updateComprasSincronizadas } = require('../../modules/compras/index.js');
+const { getStockUpdates, applyStockUpdates } = require('../../modules/productos/stock.js');
+const { getClientesUpdates, applyClientesUpdates } = require('../../modules/clientes/index.js');
+const { getProveedoresUpdates, applyProveedoresUpdates } = require('../../modules/proveedores/index.js');
+const { getCajaMovimientos, updateCajaSincronizada } = require('../../modules/caja/movimientos.js');
 
 // Importar el servicio de sincronización offline
-import { 
-  storeOfflineChanges, 
-  processPendingChanges 
-} from '../../../services/sync/offline.js';
-import { 
-  resolveConflicts, 
-  detectConflicts 
-} from '../../../services/sync/conflict.js';
-import { 
-  scheduleSync, 
-  cancelScheduledSync 
-} from '../../../services/sync/scheduler.js';
+const { storeOfflineChanges, processPendingChanges } = require('../../../services/sync/offline.js');
+const { resolveConflicts, detectConflicts } = require('../../../services/sync/conflict.js');
+const { scheduleSync, cancelScheduledSync } = require('../../../services/sync/scheduler.js');
 
 // Configuración por defecto para sincronización
 const DEFAULT_CONFIG = {
@@ -621,7 +588,8 @@ function updateSyncStatus(status, progress) {
  * Obtiene el estado actual de sincronización
  * @returns {Object} - Estado actual
  */
-export function getSyncStatus() {
+function getSyncStatus
+module.exports.getSyncStatus = getSyncStatus() {
   return lastSyncStatus;
 }
 
@@ -661,7 +629,8 @@ export async function updateSyncConfig(newConfig) {
  * Obtiene la configuración actual de sincronización
  * @returns {Object} - Configuración actual
  */
-export function getSyncConfig() {
+function getSyncConfig
+module.exports.getSyncConfig = getSyncConfig() {
   return { ...syncConfig };
 }
 
@@ -860,7 +829,8 @@ export async function syncSpecificEntities(entityType, entityIds = []) {
  * @param {Function} callback - Función a llamar cuando cambie el estado
  * @returns {Function} - Función para remover el listener
  */
-export function addSyncStatusListener(callback) {
+function addSyncStatusListener
+module.exports.addSyncStatusListener = addSyncStatusListener(callback) {
   if (typeof callback !== 'function') return () => {};
   
   const handler = (event) => {

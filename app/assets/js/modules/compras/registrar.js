@@ -1,12 +1,13 @@
 // /app/assets/js/modules/compras/registrar.js
 
-import { guardarEnDB } from '../../utils/database.js';
-import { logEvent } from '../../utils/logger.js';
-import { validarCampos } from '../../utils/validation.js';
+const { guardarEnDB } = require('../../utils/database.js');
+const { logEvent } = require('../../utils/logger.js');
+const { validarCampos } = require('../../utils/validation.js');
 
 let productos = [];
 
-export function initRegistrarCompra() {
+function initRegistrarCompra
+module.exports.initRegistrarCompra = initRegistrarCompra() {
     console.log('[Compras] Registro inicializado');
 
     document.getElementById('btn-guardar-compra')?.addEventListener('click', guardarCompra);
@@ -23,7 +24,8 @@ export function initRegistrarCompra() {
     });
 }
 
-export function resetFormularioCompra() {
+function resetFormularioCompra
+module.exports.resetFormularioCompra = resetFormularioCompra() {
     productos = [];
     const form = document.querySelector('.form-compra');
     form?.reset();
@@ -49,7 +51,8 @@ function calcularTotal() {
     document.getElementById('total').value = total.toFixed(2);
 }
 
-export function cargarProveedores() {
+function cargarProveedores
+module.exports.cargarProveedores = cargarProveedores() {
     const contenedor = document.getElementById('proveedores-list');
     contenedor.innerHTML = `
         <tr>
@@ -62,7 +65,8 @@ export function cargarProveedores() {
     `;
 }
 
-export function seleccionarProveedor(nombre) {
+function seleccionarProveedor
+module.exports.seleccionarProveedor = seleccionarProveedor(nombre) {
     document.getElementById('proveedor').value = nombre;
     document.getElementById('modal-proveedor').style.display = 'none';
 }
@@ -80,7 +84,8 @@ function guardarProveedor() {
     document.getElementById('modal-nuevo-proveedor').style.display = 'none';
 }
 
-export function cargarProductos() {
+function cargarProductos
+module.exports.cargarProductos = cargarProductos() {
     const contenedor = document.getElementById('productos-list');
     contenedor.innerHTML = `
         <tr>
@@ -94,7 +99,8 @@ export function cargarProductos() {
     `;
 }
 
-export function agregarProductoDesdeModal(nombre, cantidad, precio) {
+function agregarProductoDesdeModal
+module.exports.agregarProductoDesdeModal = agregarProductoDesdeModal(nombre, cantidad, precio) {
     productos.push({ nombre, cantidad, precio });
     renderizarProductos();
     document.getElementById('modal-producto').style.display = 'none';

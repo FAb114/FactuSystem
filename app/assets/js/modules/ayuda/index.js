@@ -498,4 +498,6 @@ const AyudaModule = {
 };
 
 // Exportar el módulo para uso en otros archivos si es necesario
-export default AyudaModule;
+ AyudaModule
+
+module.exports = AyudaModule;

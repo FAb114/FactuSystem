@@ -1,11 +1,11 @@
 // app/assets/js/components/dashboard.js
 
-import { getVentasDelDia } from '../../modules/ventas/estadisticas.js';
-import { getTotalesCaja } from '../../modules/caja/index.js';
-import { getComprasDelDia } from '../../modules/compras/analisis.js';
-import { getProductosBajoStock } from '../../modules/productos/stock.js';
-import { showToast } from '../../utils/notifications.js';
-import { logger } from '../../utils/logger.js';
+const { getVentasDelDia } = require('../../modules/ventas/estadisticas.js');
+const { getTotalesCaja } = require('../../modules/caja/index.js');
+const { getComprasDelDia } = require('../../modules/compras/analisis.js');
+const { getProductosBajoStock } = require('../../modules/productos/stock.js');
+const { showToast } = require('../../utils/notifications.js');
+const { logger } = require('../../utils/logger.js');
 
 export async function cargarEstadisticas() {
   try {

@@ -13,9 +13,9 @@
 
 const axios = require('axios');
 const crypto = require('crypto');
-const logger = require('../../app/assets/js/utils/logger');
-const configManager = require('../../app/assets/js/modules/configuraciones/index');
-const { getInterestRates } = require('../../app/assets/js/modules/cuotificador/tasas');
+const logger = require('../../app/assets/js/utils/logger.js');
+const configManager = require('../../app/assets/js/modules/configuraciones/index.js');
+const { getInterestRates } = require('../../app/assets/js/modules/cuotificador/tasas.js');
 
 // Constantes para la API
 const API_ENDPOINTS = {

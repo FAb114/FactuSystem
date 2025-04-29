@@ -7,11 +7,11 @@
  */
 
 // Importaciones
-import { database } from '../../../utils/database.js';
-import { auth } from '../../../utils/auth.js';
-import { printer } from '../../../utils/printer.js';
-import { validation } from '../../../utils/validation.js';
-import { logger } from '../../../utils/logger.js';
+const { database } = require('../../../utils/database.js');
+const { auth } = require('../../../utils/auth.js');
+const { printer } = require('../../../utils/printer.js');
+const { validation } = require('../../../utils/validation.js');
+const { logger } = require('../../../utils/logger.js');
 
 class CajaReportes {
     constructor() {
@@ -807,7 +807,7 @@ class CajaReportes {
         chartsContainer.appendChild(paymentMethodChartContainer);
         
         // Importar Chart.js dinámicamente
-        import('https://cdnjs.cloudflare.com/ajax/libs/Chart.js/3.7.0/chart.min.js')
+        Promise.resolve(require('https://cdnjs.cloudflare.com/ajax/libs/Chart.js/3.7.0/chart.min.js'))
             .then(Chart => {
                 // Crear gráfico de balance (ingresos/egresos)
                 this.createBalanceChart(balanceCanvas, totales);
@@ -2641,4 +2641,6 @@ formatCurrency(value) {
 }
 
 // Exportar la clase
-export default CajaReportes;
+ CajaReportes
+
+module.exports = CajaReportes;

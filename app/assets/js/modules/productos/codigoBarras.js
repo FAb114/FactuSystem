@@ -1,11 +1,12 @@
-import JsBarcode from 'jsbarcode';
-import { obtenerProductos, guardarCodigoBarras } from '../../utils/database.js';
-import { abrirModal, cerrarModal } from '../../components/modals.js';
-import { mostrarNotificacion } from '../../components/notifications.js';
+const JsBarcode = require('jsbarcode');
+const { obtenerProductos, guardarCodigoBarras } = require('../../utils/database.js');
+const { abrirModal, cerrarModal } = require('../../components/modals.js');
+const { mostrarNotificacion } = require('../../components/notifications.js');
 
 let productosSeleccionados = [];
 
-export function inicializarCodigosDeBarras() {
+function inicializarCodigosDeBarras
+module.exports.inicializarCodigosDeBarras = inicializarCodigosDeBarras() {
     document.getElementById('btn-generar-codigo').addEventListener('click', generarCodigoAleatorio);
     document.getElementById('btn-ver-codigos').addEventListener('click', mostrarModalCodigosBarras);
     document.getElementById('btn-imprimir-etiquetas').addEventListener('click', imprimirEtiquetasSeleccionadas);

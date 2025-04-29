@@ -1,7 +1,7 @@
-import { obtenerProveedores, guardarProveedor, eliminarProveedor, obtenerCategoriasProveedores, exportarProveedoresExcel, importarProveedoresDesdeExcel } from '../../utils/database.js';
-import { abrirModal, cerrarModal } from '../../components/modals.js';
-import { mostrarNotificacion } from '../../components/notifications.js';
-import { cargarProveedorEnFormulario } from './editor.js';
+const { obtenerProveedores, guardarProveedor, eliminarProveedor, obtenerCategoriasProveedores, exportarProveedoresExcel, importarProveedoresDesdeExcel } = require('../../utils/database.js');
+const { abrirModal, cerrarModal } = require('../../components/modals.js');
+const { mostrarNotificacion } = require('../../components/notifications.js');
+const { cargarProveedorEnFormulario } = require('./editor.js');
 
 let proveedores = [];
 

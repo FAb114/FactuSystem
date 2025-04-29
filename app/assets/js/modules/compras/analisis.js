@@ -1,19 +1,21 @@
 // /app/assets/js/modules/compras/analisis.js
 
-import { obtenerDeDB } from '../../utils/database.js';
-import { logEvent } from '../../utils/logger.js';
+const { obtenerDeDB } = require('../../utils/database.js');
+const { logEvent } = require('../../utils/logger.js');
 
 let compras = [];
 let chartCompras = null;
 let chartDistribucion = null;
 
-export function initAnalisisCompras() {
+function initAnalisisCompras
+module.exports.initAnalisisCompras = initAnalisisCompras() {
     document.getElementById('btn-generar-analisis')?.addEventListener('click', generarAnalisisCompras);
     document.getElementById('btn-exportar-analisis')?.addEventListener('click', exportarInformeAnalisis);
     generarAnalisisCompras();
 }
 
-export function generarAnalisisCompras() {
+function generarAnalisisCompras
+module.exports.generarAnalisisCompras = generarAnalisisCompras() {
     obtenerDeDB('compras')
         .then(data => {
             compras = data || [];

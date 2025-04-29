@@ -1160,7 +1160,8 @@ class NotificationSystem {
 const notifications = new NotificationSystem();
 
 // Exportar la instancia y la clase
-export { notifications as default, NotificationSystem };
+module.exports.notifications as default = notifications as default;
+module.exports.NotificationSystem = NotificationSystem;
 
 // Para compatibilidad con otros módulos que no usen ES modules
 if (typeof window !== 'undefined') {

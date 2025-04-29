@@ -5,16 +5,16 @@
  */
 
 // Importaciones de utilidades y servicios necesarios
-import { ipcRenderer } from '../../renderer.js';
-import { Database } from '../../utils/database.js';
-import { auth } from '../../utils/auth.js';
-import { formatCurrency, formatDate, getFiscalPeriod } from '../../utils/validation.js';
-import { showNotification } from '../../components/notifications.js';
-import { printDocument } from '../../utils/printer.js';
+const { ipcRenderer } = require('../../renderer.js');
+const { Database } = require('../../utils/database.js');
+const { auth } = require('../../utils/auth.js');
+const { formatCurrency, formatDate, getFiscalPeriod } = require('../../utils/validation.js');
+const { showNotification } = require('../../components/notifications.js');
+const { printDocument } = require('../../utils/printer.js');
 
 // Importaciones de componentes específicos para reportes
-import { exportToPdf } from '../../../services/print/pdf.js';
-import { exportToExcel } from '../reportes/exportacion.js';
+const { exportToPdf } = require('../../../services/print/pdf.js');
+const { exportToExcel } = require('../reportes/exportacion.js');
 
 class VentasReportes {
   constructor() {
@@ -2077,4 +2077,6 @@ ${auth.getSucursalActual().nombre}</textarea>
 }
 
 // Exportar la clase para su uso en el módulo principal
-export default VentasReportes;
+ VentasReportes
+
+module.exports = VentasReportes;

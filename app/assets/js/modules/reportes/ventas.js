@@ -6,14 +6,14 @@
  */
 
 // Importaciones de dependencias
-const { getDatabase } = require('../../../utils/database');
-const { getCurrentUser } = require('../../../utils/auth');
-const { formatCurrency, formatDate, formatDateTime } = require('../../../utils/formatting');
-const { generatePDF } = require('../../../../services/print/pdf');
-const { getPermissions } = require('../../../utils/auth');
+const { getDatabase } = require('../../../utils/database.js');
+const { getCurrentUser } = require('../../../utils/auth.js');
+const { formatCurrency, formatDate, formatDateTime } = require('../../../utils/formatting.js');
+const { generatePDF } = require('../../../../services/print/pdf.js');
+const { getPermissions } = require('../../../utils/auth.js');
 const { ipcRenderer } = require('electron');
-const { getSucursalData } = require('../../../modules/sucursales/index');
-const notificaciones = require('../../../components/notifications');
+const { getSucursalData } = require('../../../modules/sucursales/index.js');
+const notificaciones = require('../../../components/notifications.js');
 const chartjs = require('chart.js');
 
 // Variables globales

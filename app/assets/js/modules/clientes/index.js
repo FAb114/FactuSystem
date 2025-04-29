@@ -1,10 +1,10 @@
-import { obtenerClientes, buscarClientes, guardarCliente, eliminarCliente, importarClientes, exportarClientes } from '../../utils/database.js';
-import { validarFormulario } from '../../utils/validation.js';
-import { mostrarNotificacion } from '../../components/notifications.js';
-import { abrirModal, cerrarModal } from '../../components/modals.js';
-import { actualizarGrafico, initGraficosClientes } from './estadisticas.js';
-import { cargarHistorialCliente } from './historial.js';
-import { inicializarFidelizacion, cargarStatsFidelizacion } from './fidelizacion.js';
+const { obtenerClientes, buscarClientes, guardarCliente, eliminarCliente, importarClientes, exportarClientes } = require('../../utils/database.js');
+const { validarFormulario } = require('../../utils/validation.js');
+const { mostrarNotificacion } = require('../../components/notifications.js');
+const { abrirModal, cerrarModal } = require('../../components/modals.js');
+const { actualizarGrafico, initGraficosClientes } = require('./estadisticas.js');
+const { cargarHistorialCliente } = require('./historial.js');
+const { inicializarFidelizacion, cargarStatsFidelizacion } = require('./fidelizacion.js');
 
 // Estado global
 let clientes = [];

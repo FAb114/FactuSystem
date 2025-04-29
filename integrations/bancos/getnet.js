@@ -9,7 +9,7 @@ const crypto = require('crypto');
 const fs = require('fs');
 const path = require('path');
 const { ipcMain } = require('electron');
-const logger = require('../../services/audit/logger');
+const logger = require('../../services/audit/logger.js');
 
 // Configuración base para la API de Getnet
 class GetnetAPI {

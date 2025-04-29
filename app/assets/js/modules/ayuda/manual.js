@@ -6,8 +6,8 @@
  * @copyright FactuSystem
  */
 
-import { showAlert } from '../../helpers/alerts.js';
-import { fetchData } from '../../helpers/api.js';
+const { showAlert } = require('../../helpers/alerts.js');
+const { fetchData } = require('../../helpers/api.js');
 
 /**
  * Clase que maneja toda la funcionalidad del manual de usuario
@@ -367,7 +367,9 @@ class Manual {
 }
 
 // Exportar la clase principal
-export default Manual;
+ Manual
+
+module.exports = Manual;
 
 // Inicializar el módulo cuando el DOM esté listo
 document.addEventListener('DOMContentLoaded', () => {

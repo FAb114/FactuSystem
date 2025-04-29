@@ -1,7 +1,7 @@
-import { db } from "../../utils/database.js";
-import { validarFormulario } from "../../utils/validation.js";
-import { mostrarNotificacion } from "../../components/notifications.js";
-import { auditoria } from "../../utils/logger.js";
+const { db } = require('../../utils/database.js');
+const { validarFormulario } = require('../../utils/validation.js');
+const { mostrarNotificacion } = require('../../components/notifications.js');
+const { auditoria } = require('../../utils/logger.js');
 
 const formProveedor = document.getElementById("form-proveedor");
 const btnGuardar = document.getElementById("btn-guardar-proveedor");

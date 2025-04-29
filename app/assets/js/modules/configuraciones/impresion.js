@@ -5,13 +5,13 @@
 
 // Importaciones
 const { ipcRenderer } = require('electron');
-const database = require('../../utils/database');
-const validation = require('../../utils/validation');
-const logger = require('../../utils/logger');
-const auth = require('../../utils/auth');
+const database = require('../../utils/database.js');
+const validation = require('../../utils/validation.js');
+const logger = require('../../utils/logger.js');
+const auth = require('../../utils/auth.js');
 
 // Servicios de impresión
-const printerService = require('../../../../services/print/printer');
+const printerService = require('../../../../services/print/printer.js');
 
 // Estado inicial de configuración
 let configState = {

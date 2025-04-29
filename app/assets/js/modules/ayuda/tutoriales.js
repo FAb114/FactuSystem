@@ -9,8 +9,8 @@
 'use strict';
 
 // Importaciones necesarias (si hay algún módulo común requerido)
-import { Notificacion } from '../../common/notificacion.js';
-import { Helpers } from '../../common/helpers.js';
+const { Notificacion } = require('../../common/notificacion.js');
+const { Helpers } = require('../../common/helpers.js');
 
 /**
  * Clase para gestionar los tutoriales del sistema
@@ -402,7 +402,7 @@ class Tutoriales {
         
         // Ejemplo de uso de una biblioteca de PDF (simulado)
         /*
-        import { generarPDF } from '../../common/pdf-generator.js';
+        const { generarPDF } = require('../../common/pdf-generator.js');
         
         generarPDF({
             titulo: tutorial.titulo,
@@ -414,7 +414,9 @@ class Tutoriales {
 }
 
 // Exportar la clase Tutoriales
-export default Tutoriales;
+ Tutoriales
+
+module.exports = Tutoriales;
 
 // Inicializar automáticamente cuando se cargue el DOM
 document.addEventListener('DOMContentLoaded', () => {

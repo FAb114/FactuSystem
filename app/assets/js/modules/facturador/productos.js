@@ -10,11 +10,11 @@
  */
 
 // Importaciones de utilidades y servicios necesarios
-import { ipcRenderer } from '../../renderer.js';
-import * as database from '../../utils/database.js';
-import * as validation from '../../utils/validation.js';
-import * as notifications from '../../components/notifications.js';
-import * as tabsManager from '../../components/tabs.js';
+const { ipcRenderer } = require('../../renderer.js');
+const database = require('../../utils/database.js');
+const validation = require('../../utils/validation.js');
+const notifications = require('../../components/notifications.js');
+const tabsManager = require('../../components/tabs.js');
 
 // Variables globales para el módulo
 let productosEnFactura = [];
@@ -30,7 +30,8 @@ let lastBarcodeTime = 0;
  * Inicializa el módulo de productos en el facturador
  * @param {Object} options - Opciones de configuración
  */
-export function init(options = {}) {
+function init
+module.exports.init = init(options = {}) {
     loadEventListeners();
     cargarCacheProductos();
     
@@ -1522,7 +1523,8 @@ function closeModal(modal) {
  * Obtiene la lista de productos en la factura actual
  * @returns {Array} - Lista de productos
  */
-export function getProductosEnFactura() {
+function getProductosEnFactura
+module.exports.getProductosEnFactura = getProductosEnFactura() {
     return productosEnFactura;
 }
 
@@ -1530,7 +1532,8 @@ export function getProductosEnFactura() {
  * Obtiene la lista de productos en la factura actual
  * @returns {Array} - Lista de productos
  */
-export function getProductosEnFactura() {
+function getProductosEnFactura
+module.exports.getProductosEnFactura = getProductosEnFactura() {
     return productosEnFactura;
 }
 
@@ -1538,7 +1541,8 @@ export function getProductosEnFactura() {
  * Establece la lista de productos en la factura
  * @param {Array} productos - Nueva lista de productos
  */
-export function setProductosEnFactura(productos) {
+function setProductosEnFactura
+module.exports.setProductosEnFactura = setProductosEnFactura(productos) {
     productosEnFactura = productos || [];
     actualizarTablaProductos();
     calcularTotales();
@@ -1547,7 +1551,8 @@ export function setProductosEnFactura(productos) {
 /**
  * Limpia todos los productos de la factura actual
  */
-export function limpiarFactura() {
+function limpiarFactura
+module.exports.limpiarFactura = limpiarFactura() {
     productosEnFactura = [];
     actualizarTablaProductos();
     calcularTotales();
@@ -1597,7 +1602,8 @@ function confirmarIngresoManual(codigo) {
 /**
  * Inicializa el módulo de facturación
  */
-export function inicializar() {
+function inicializar
+module.exports.inicializar = inicializar() {
     // Cargar caché de productos
     cargarCacheProductos();
     

@@ -11,11 +11,11 @@ const { ipcRenderer } = require('electron');
 const localforage = require('localforage');
 const axios = require('axios');
 const { v4: uuidv4 } = require('uuid');
-const logger = require('../audit/logger');
-const conflictResolver = require('./conflict');
-const syncScheduler = require('./scheduler');
-const config = require('../../app/assets/js/utils/config');
-const db = require('../../app/assets/js/utils/database');
+const logger = require('../audit/logger.js');
+const conflictResolver = require('./conflict.js');
+const syncScheduler = require('./scheduler.js');
+const config = require('../../app/assets/js/utils/config.js');
+const db = require('../../app/assets/js/utils/database.js');
 
 // Configuración de los almacenamientos
 const syncQueueStore = localforage.createInstance({

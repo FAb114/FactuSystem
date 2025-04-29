@@ -1,5 +1,5 @@
-import { obtenerHistorialComprasCliente, obtenerEstadisticasHistorialCliente } from '../../utils/database.js';
-import { renderChartLine, renderChartBar } from '../../components/charts.js'; // Utilidad para gráficos con Chart.js
+const { obtenerHistorialComprasCliente, obtenerEstadisticasHistorialCliente } = require('../../utils/database.js');
+const { renderChartLine, renderChartBar } = require('../../components/charts.js'); // Utilidad para gráficos con Chart.js
 
 // Función principal para cargar el historial de compras de un cliente específico
 export async function cargarHistorialCliente(clienteId) {

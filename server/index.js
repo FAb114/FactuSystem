@@ -18,18 +18,18 @@ const mongoose = require('mongoose');
 const winston = require('winston');
 
 // Configuración
-const config = require('./config/config');
-const dbConfig = require('./config/database');
-const securityConfig = require('./config/security');
+const config = require('./config/config.js');
+const dbConfig = require('./config/database.js');
+const securityConfig = require('./config/security.js');
 
 // Rutas
-const apiRoutes = require('./routes/api');
-const authRoutes = require('./routes/auth');
-const syncRoutes = require('./routes/sync');
+const apiRoutes = require('./routes/api.js');
+const authRoutes = require('./routes/auth.js');
+const syncRoutes = require('./routes/sync.js');
 
 // Controladores para WebSockets
-const syncController = require('./controllers/syncController');
-const backupController = require('./controllers/backupController');
+const syncController = require('./controllers/syncController.js');
+const backupController = require('./controllers/backupController.js');
 
 // Configuración de logger
 const logger = winston.createLogger({
@@ -315,7 +315,7 @@ io.on('connection', (socket) => {
 });
 
 // Programador de tareas para sincronización periódica
-const syncScheduler = require('./services/sync/scheduler');
+const syncScheduler = require('./services/sync/scheduler.js');
 syncScheduler.initScheduledJobs();
 
 // Iniciar el servidor

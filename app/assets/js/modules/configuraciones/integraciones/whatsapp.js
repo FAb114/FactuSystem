@@ -9,11 +9,11 @@
  */
 
 // Importaciones de utilidades y servicios
-import { saveConfiguration, getConfiguration } from '../../../../utils/database.js';
-import { showNotification } from '../../../../components/notifications.js';
-import { validatePhoneNumber } from '../../../../utils/validation.js';
-import { logger } from '../../../../utils/logger.js';
-import { whatsappApi } from '../../../../../../integrations/whatsapp/api.js';
+const { saveConfiguration, getConfiguration } = require('../../../../utils/database.js');
+const { showNotification } = require('../../../../components/notifications.js');
+const { validatePhoneNumber } = require('../../../../utils/validation.js');
+const { logger } = require('../../../../utils/logger.js');
+const { whatsappApi } = require('../../../../../../integrations/whatsapp/api.js');
 
 // Constantes
 const CONFIG_KEY = 'whatsapp_integration';
@@ -1507,7 +1507,10 @@ class WhatsAppConfig {
 
 // Exportar una instancia singleton
 const whatsappConfig = new WhatsAppConfig();
-export default whatsappConfig;
+ whatsappConfig
+
+module.exports = whatsappConfig;
 
 // Exportar constantes y tipos para uso en otros módulos
-export const WhatsAppTemplateTypes = TEMPLATE_TYPES;
+const WhatsAppTemplateTypes
+module.exports.WhatsAppTemplateTypes = WhatsAppTemplateTypes = TEMPLATE_TYPES;

@@ -1,6 +1,6 @@
-import * as XLSX from 'xlsx';
-import { guardarProducto } from '../../utils/database.js';
-import { mostrarNotificacion } from '../../components/notifications.js';
+const XLSX = require('xlsx');
+const { guardarProducto } = require('../../utils/database.js');
+const { mostrarNotificacion } = require('../../components/notifications.js');
 
 // Botones principales
 document.getElementById('btn-descargar-plantilla').addEventListener('click', descargarPlantillaExcel);

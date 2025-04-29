@@ -14,30 +14,30 @@ if (!isDev) {
 }
 
 // Servicios de la aplicación
-const authService = require('./services/auth/login');
-const permissionsService = require('./services/auth/permissions');
-const twoFactorService = require('./services/auth/twoFactor');
-const backupService = require('./services/backup/autoBackup');
-const cloudSyncService = require('./services/backup/cloudSync');
-const recoveryService = require('./services/backup/recovery');
-const printerService = require('./services/print/printer');
-const pdfService = require('./services/print/pdf');
-const ticketService = require('./services/print/ticket');
-const syncService = require('./services/sync/offline');
-const conflictService = require('./services/sync/conflict');
-const schedulerService = require('./services/sync/scheduler');
-const auditLogger = require('./services/audit/logger');
-const auditReporter = require('./services/audit/reporter');
+const authService = require('./services/auth/login.js');
+const permissionsService = require('./services/auth/permissions.js');
+const twoFactorService = require('./services/auth/twoFactor.js');
+const backupService = require('./services/backup/autoBackup.js');
+const cloudSyncService = require('./services/backup/cloudSync.js');
+const recoveryService = require('./services/backup/recovery.js');
+const printerService = require('./services/print/printer.js');
+const pdfService = require('./services/print/pdf.js');
+const ticketService = require('./services/print/ticket.js');
+const syncService = require('./services/sync/offline.js');
+const conflictService = require('./services/sync/conflict.js');
+const schedulerService = require('./services/sync/scheduler.js');
+const auditLogger = require('./services/audit/logger.js');
+const auditReporter = require('./services/audit/reporter.js');
 
 // Integraciones
-const mercadoPagoApi = require('./integrations/mercadoPago/api');
-const arcaApi = require('./integrations/arca/api');
-const whatsappApi = require('./integrations/whatsapp/api');
-const emailSender = require('./integrations/email/sender');
-const bancosApi = require('./integrations/bancos/api');
+const mercadoPagoApi = require('./integrations/mercadoPago/api.js');
+const arcaApi = require('./integrations/arca/api.js');
+const whatsappApi = require('./integrations/whatsapp/api.js');
+const emailSender = require('./integrations/email/sender.js');
+const bancosApi = require('./integrations/bancos/api.js');
 
 // Esquema de la base de datos
-const dbSchema = require('./db/schema');
+const dbSchema = require('./db/schema.js');
 
 // Configuración de Store para almacenamiento persistente
 const store = new Store({
@@ -391,7 +391,7 @@ async function initializeServices() {
     const serverConfig = store.get('serverConfig');
     if (serverConfig.syncEnabled && (serverConfig.branchMode === 'main' || serverConfig.branchMode === 'standalone')) {
       log.info('Iniciando servidor local para sincronización...');
-      serverProcess = require('./server/index');
+      serverProcess = require('./server/index.js');
       await serverProcess.start();
     }
 
@@ -636,7 +636,7 @@ function setupIPC() {
     
     // Si es servidor principal o standalone, iniciar el servidor
     if (serverConfig.branchMode === 'main' || serverConfig.branchMode === 'standalone') {
-      serverProcess = require('./server/index');
+      serverProcess = require('./server/index.js');
       await serverProcess.start();
     }
     

@@ -3,13 +3,13 @@ const router = express.Router();
 const jwt = require('jsonwebtoken');
 const bcrypt = require('bcrypt');
 const { check, validationResult } = require('express-validator');
-const authController = require('../controllers/authController');
-const authMiddleware = require('../middleware/auth');
+const authController = require('../controllers/authController.js');
+const authMiddleware = require('../middleware/auth.js');
 const rateLimit = require('express-rate-limit');
-const twoFactorService = require('../../services/auth/twoFactor');
-const permissionsService = require('../../services/auth/permissions');
-const auditLogger = require('../../services/audit/logger');
-const config = require('../config/security');
+const twoFactorService = require('../../services/auth/twoFactor.js');
+const permissionsService = require('../../services/auth/permissions.js');
+const auditLogger = require('../../services/audit/logger.js');
+const config = require('../config/security.js');
 
 // Limitar intentos de inicio de sesión para prevenir ataques de fuerza bruta
 const loginLimiter = rateLimit({

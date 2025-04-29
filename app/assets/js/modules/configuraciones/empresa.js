@@ -9,10 +9,10 @@
 
 // Importaciones
 const { ipcRenderer } = require('electron');
-const database = require('../../utils/database');
-const validation = require('../../utils/validation');
-const logger = require('../../utils/logger');
-const arcaAPI = require('../../../../../integrations/arca/api');
+const database = require('../../utils/database.js');
+const validation = require('../../utils/validation.js');
+const logger = require('../../utils/logger.js');
+const arcaAPI = require('../../../../../integrations/arca/api.js');
 
 // Variables globales del módulo
 let currentConfig = null;

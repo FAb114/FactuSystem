@@ -6,9 +6,9 @@
 
 // Importaciones
 const { ipcRenderer } = require('electron');
-const validator = require('../../../utils/validation');
-const logger = require('../../../utils/logger');
-const database = require('../../../utils/database');
+const validator = require('../../../utils/validation.js');
+const logger = require('../../../utils/logger.js');
+const database = require('../../../utils/database.js');
 
 // Configuración por defecto
 const DEFAULT_CONFIG = {

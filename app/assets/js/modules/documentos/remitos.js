@@ -1,9 +1,9 @@
 // app/assets/js/modules/documentos/remitos.js
 
-import { mostrarNotificacion } from '../../../components/notifications.js';
-import { obtenerRemitos, anularRemito, obtenerDetalleRemito } from '../../../utils/database.js';
-import { renderEstado, renderAccionesDocumento } from './renderHelpers.js';
-import { obtenerFiltros } from '../../../utils/validation.js';
+const { mostrarNotificacion } = require('../../../components/notifications.js');
+const { obtenerRemitos, anularRemito, obtenerDetalleRemito } = require('../../../utils/database.js');
+const { renderEstado, renderAccionesDocumento } = require('./renderHelpers.js');
+const { obtenerFiltros } = require('../../../utils/validation.js');
 
 // Cargar todos los remitos
 export async function cargarRemitos() {

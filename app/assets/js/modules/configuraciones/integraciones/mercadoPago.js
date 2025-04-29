@@ -6,11 +6,11 @@
 
 // Importaciones necesarias
 const { ipcRenderer } = require('electron');
-const database = require('../../../../utils/database');
-const validation = require('../../../../utils/validation');
-const notifications = require('../../../../components/notifications');
-const logger = require('../../../../utils/logger');
-const qrGenerator = require('../../../../../../integrations/mercadoPago/qr');
+const database = require('../../../../utils/database.js');
+const validation = require('../../../../utils/validation.js');
+const notifications = require('../../../../components/notifications.js');
+const logger = require('../../../../utils/logger.js');
+const qrGenerator = require('../../../../../../integrations/mercadoPago/qr.js');
 
 /**
  * Clase principal para la gestión de la integración con Mercado Pago

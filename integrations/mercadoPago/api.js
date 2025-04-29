@@ -12,8 +12,8 @@ const axios = require('axios');
 const fs = require('fs');
 const path = require('path');
 const { ipcMain } = require('electron');
-const logger = require('../../app/assets/js/utils/logger');
-const database = require('../../app/assets/js/utils/database');
+const logger = require('../../app/assets/js/utils/logger.js');
+const database = require('../../app/assets/js/utils/database.js');
 const configPath = path.join(__dirname, '../../config/mercadopago.json');
 
 // Constantes para la API de Mercado Pago

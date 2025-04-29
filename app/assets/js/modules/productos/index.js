@@ -1,10 +1,10 @@
-import { obtenerProductos, guardarProducto, eliminarProducto, importarProductosExcel, exportarProductosExcel, obtenerCategorias, obtenerStockBajo, obtenerGrupos, obtenerSubgrupos, obtenerFamilias, obtenerTipos, obtenerProveedores } from '../../utils/database.js';
-import { abrirModal, cerrarModal } from '../../components/modals.js';
-import { mostrarNotificacion } from '../../components/notifications.js';
-import { initEditorProducto, cargarProductoEnFormulario } from './editor.js';
-import { inicializarCodigosDeBarras } from './codigosBarras.js';
-import { inicializarStock, cargarResumenStock, renderizarHistorialStock } from './stock.js';
-import JsBarcode from 'jsbarcode';
+const { obtenerProductos, guardarProducto, eliminarProducto, importarProductosExcel, exportarProductosExcel, obtenerCategorias, obtenerStockBajo, obtenerGrupos, obtenerSubgrupos, obtenerFamilias, obtenerTipos, obtenerProveedores } = require('../../utils/database.js');
+const { abrirModal, cerrarModal } = require('../../components/modals.js');
+const { mostrarNotificacion } = require('../../components/notifications.js');
+const { initEditorProducto, cargarProductoEnFormulario } = require('./editor.js');
+const { inicializarCodigosDeBarras } = require('./codigosBarras.js');
+const { inicializarStock, cargarResumenStock, renderizarHistorialStock } = require('./stock.js');
+const JsBarcode = require('jsbarcode');
 
 let productos = [];
 

@@ -9,11 +9,11 @@
  * - Auditoría de cada movimiento
  */
 
-const database = require('../../utils/database');
-const auth = require('../../utils/auth');
-const sync = require('../../utils/sync');
-const logger = require('../../utils/logger');
-const format = require('../../utils/format');
+const database = require('../../utils/database.js');
+const auth = require('../../utils/auth.js');
+const sync = require('../../utils/sync.js');
+const logger = require('../../utils/logger.js');
+const format = require('../../utils/format.js');
 
 /**
  * Registra un nuevo movimiento de caja

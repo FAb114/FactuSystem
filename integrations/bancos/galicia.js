@@ -9,8 +9,8 @@ const crypto = require('crypto');
 const fs = require('fs');
 const path = require('path');
 const { ipcMain } = require('electron');
-const logger = require('../../services/audit/logger');
-const { getConfiguracion } = require('../../app/assets/js/modules/configuraciones/integraciones/bancos/galicia');
+const logger = require('../../services/audit/logger.js');
+const { getConfiguracion } = require('../../app/assets/js/modules/configuraciones/integraciones/bancos/galicia.js');
 
 // Configuración base para la API de Galicia
 const BASE_URL = 'https://api.bancogalicia.com.ar/api/v1';

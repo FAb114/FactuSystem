@@ -13,9 +13,9 @@ const { ipcRenderer } = require('electron');
 const axios = require('axios');
 const fs = require('fs');
 const path = require('path');
-const logger = require('../../services/audit/logger');
-const api = require('./api');
-const { getConfiguracion } = require('../../app/assets/js/modules/configuraciones/empresa');
+const logger = require('../../services/audit/logger.js');
+const api = require('./api.js');
+const { getConfiguracion } = require('../../app/assets/js/modules/configuraciones/empresa.js');
 
 // Definición de constantes para tipos de comprobantes
 const TIPOS_COMPROBANTE = {

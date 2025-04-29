@@ -10,10 +10,10 @@ const fs = require('fs');
 const crypto = require('crypto');
 
 // Importaciones de modelos y servicios
-const db = require('../../db/schema');
-const logger = require('../../services/audit/logger');
-const conflictResolver = require('../../services/sync/conflict');
-const securityConfig = require('../config/security');
+const db = require('../../db/schema.js');
+const logger = require('../../services/audit/logger.js');
+const conflictResolver = require('../../services/sync/conflict.js');
+const securityConfig = require('../config/security.js');
 
 /**
  * Clase principal del controlador de sincronización

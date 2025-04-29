@@ -15,8 +15,8 @@ const os = require('os');
 const PDFDocument = require('pdfkit');
 const bwipjs = require('bwip-js');
 const QRCode = require('qrcode');
-const logger = require('../audit/logger');
-const { formatCurrency, formatDate } = require('../../app/assets/js/utils/formatter');
+const logger = require('../audit/logger.js');
+const { formatCurrency, formatDate } = require('../../app/assets/js/utils/formatter.js');
 
 // Configuración de rutas para las plantillas
 const TEMPLATES_DIR = path.join(__dirname, '../../app/templates');

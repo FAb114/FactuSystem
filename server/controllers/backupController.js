@@ -22,15 +22,15 @@ const axios = require('axios');
 const crypto = require('crypto');
 const schedule = require('node-schedule');
 const { checkDiskSpace } = require('check-disk-space');
-const { S3Client, PutObjectCommand, GetObjectCommand, ListObjectsCommand } = require('@aws-sdk/client-s3');
+const { S3Client, PutObjectCommand, GetObjectCommand, ListObjectsCommand } = require('@aws-sdk/client-s3.js');
 const { Dropbox } = require('dropbox');
 const { google } = require('googleapis');
-const logger = require('../config/logger');
+const logger = require('../config/logger.js');
 
 // Configuraciones
-const config = require('../config/backup.config');
-const dbConfig = require('../config/database');
-const securityConfig = require('../config/security');
+const config = require('../config/backup.config.js');
+const dbConfig = require('../config/database.js');
+const securityConfig = require('../config/security.js');
 
 // Conexiones a bases de datos
 let centralDB = null;
@@ -1312,7 +1312,7 @@ const restoreCentralDatabase = async (restoreDir, metadata, options = {}) => {
     if (options.notifyAdmin && config.adminEmail) {
       try {
         // Importar servicio de correo
-        const emailService = require('../../services/email');
+        const emailService = require('../../services/email.js');
         
         await emailService.send({
           to: config.adminEmail,
@@ -1863,7 +1863,7 @@ const setupBackupSchedule = () => {
             
             // Enviar notificación si está configurado
             if (config.autoBackup.notifyOnComplete && config.adminEmail) {
-              const emailService = require('../../services/email');
+              const emailService = require('../../services/email.js');
               
               await emailService.send({
                 to: config.adminEmail,
@@ -1882,7 +1882,7 @@ const setupBackupSchedule = () => {
             
             // Enviar notificación de error si está configurado
             if (config.autoBackup.notifyOnError && config.adminEmail) {
-              const emailService = require('../../services/email');
+              const emailService = require('../../services/email.js');
               
               await emailService.send({
                 to: config.adminEmail,

@@ -8,12 +8,12 @@
  * - Registro de auditoría
  */
 
-const database = require('../../utils/database');
-const logger = require('../../utils/logger');
-const sync = require('../../utils/sync');
-const format = require('../../utils/format');
-const printer = require('../../utils/printer');
-const auth = require('../../utils/auth');
+const database = require('../../utils/database.js');
+const logger = require('../../utils/logger.js');
+const sync = require('../../utils/sync.js');
+const format = require('../../utils/format.js');
+const printer = require('../../utils/printer.js');
+const auth = require('../../utils/auth.js');
 const fs = require('fs');
 const path = require('path');
 

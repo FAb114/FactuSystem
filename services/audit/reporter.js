@@ -12,10 +12,10 @@ const path = require('path');
 const PDFDocument = require('pdfkit');
 const ExcelJS = require('exceljs');
 const moment = require('moment');
-const logger = require('./logger');
-const { getDatabase } = require('../../app/assets/js/utils/database');
-const { getUserSettings } = require('../../app/assets/js/utils/auth');
-const { getCompanyInfo } = require('../../app/assets/js/modules/configuraciones/empresa');
+const logger = require('./logger.js');
+const { getDatabase } = require('../../app/assets/js/utils/database.js');
+const { getUserSettings } = require('../../app/assets/js/utils/auth.js');
+const { getCompanyInfo } = require('../../app/assets/js/modules/configuraciones/empresa.js');
 
 /**
  * Clase principal para el sistema de reportes de auditoría

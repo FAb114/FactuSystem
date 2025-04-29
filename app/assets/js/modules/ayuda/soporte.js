@@ -7,11 +7,12 @@
  * @version 1.0
  */
 
-import { showLoading, hideLoading, showMessage } from '../../utils/ui.js';
-import { API } from '../../services/api.js';
-import { Validation } from '../../utils/validation.js';
+const { showLoading, hideLoading, showMessage } = require('../../utils/ui.js');
+const { API } = require('../../services/api.js');
+const { Validation } = require('../../utils/validation.js');
 
-export class Soporte {
+class Soporte
+module.exports.Soporte = Soporte {
     constructor() {
         this.api = new API();
         this.validation = new Validation();
@@ -513,7 +514,9 @@ export class Soporte {
 }
 
 // Exportamos la clase para su uso
-export default Soporte;
+ Soporte
+
+module.exports = Soporte;
 
 // Inicializamos cuando el DOM esté listo
 document.addEventListener('DOMContentLoaded', Soporte.init);

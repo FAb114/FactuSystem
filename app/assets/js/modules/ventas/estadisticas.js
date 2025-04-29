@@ -9,13 +9,13 @@
  */
 
 // Importar dependencias y utilidades
-import { formatCurrency, formatDate, formatNumber } from '../../utils/formatters.js';
-import { showNotification } from '../../components/notifications.js';
-import { getDatabase } from '../../utils/database.js';
-import { getUserPermissions } from '../../utils/auth.js';
-import { exportToPDF } from '../../utils/export.js';
-import { getCurrentSucursal, getAllSucursales } from '../../modules/sucursales/index.js';
-import { createChart, updateChart } from '../../utils/charts.js';
+const { formatCurrency, formatDate, formatNumber } = require('../../utils/formatters.js');
+const { showNotification } = require('../../components/notifications.js');
+const { getDatabase } = require('../../utils/database.js');
+const { getUserPermissions } = require('../../utils/auth.js');
+const { exportToPDF } = require('../../utils/export.js');
+const { getCurrentSucursal, getAllSucursales } = require('../../modules/sucursales/index.js');
+const { createChart, updateChart } = require('../../utils/charts.js');
 
 // Elementos del DOM
 let ventasChart, productsChart, paymentMethodsChart, comparativeChart;

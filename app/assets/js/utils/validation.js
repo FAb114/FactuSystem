@@ -2,8 +2,8 @@
 // Módulo de validación de datos y formularios para FactuSystem
 // Asegura integridad antes de persistir y sincronizar datos
 
-const database = require('./database');
-const logger = require('./logger');
+const database = require('./database.js');
+const logger = require('./logger.js');
 
 class Validation {
   constructor() {}

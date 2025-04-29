@@ -9,9 +9,9 @@
  */
 
 // Importamos módulos necesarios
-const database = require('../../../utils/database');
-const logger = require('../../../utils/logger');
-const auth = require('../../../utils/auth');
+const database = require('../../../utils/database.js');
+const logger = require('../../../utils/logger.js');
+const auth = require('../../../utils/auth.js');
 const { ipcRenderer } = require('electron');
 
 // Definimos la clase principal para gestión de tasas

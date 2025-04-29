@@ -7,12 +7,12 @@
  * @module reportes/compras
  */
 
-import { getDB } from '../../utils/database.js';
-import { validateDateRange } from '../../utils/validation.js';
-import { logAction } from '../../utils/logger.js';
-import { createPDF } from '../../../services/print/pdf.js';
-import { getCurrentUser } from '../../utils/auth.js';
-import { formatCurrency, formatDate } from '../../utils/helpers.js';
+const { getDB } = require('../../utils/database.js');
+const { validateDateRange } = require('../../utils/validation.js');
+const { logAction } = require('../../utils/logger.js');
+const { createPDF } = require('../../../services/print/pdf.js');
+const { getCurrentUser } = require('../../utils/auth.js');
+const { formatCurrency, formatDate } = require('../../utils/helpers.js');
 
 class ComprasReportes {
     constructor() {
@@ -1071,7 +1071,7 @@ class ComprasReportes {
             const printContent = await this.generarHTMLImpresion(compra);
             
             // Enviar a imprimir
-            const { printDocument } = await import('../../../services/print/printer.js');
+            const { printDocument } = await Promise.resolve(require('../../../services/print/printer.js'));
             
             await printDocument({
                 content: printContent,
@@ -1115,7 +1115,7 @@ class ComprasReportes {
             const htmlContent = await this.generarHTMLImpresion(compra);
             
             // Generar PDF
-            const { generatePDF } = await import('../../../services/print/pdf.js');
+            const { generatePDF } = await Promise.resolve(require('../../../services/print/pdf.js'));
             
             const fecha = new Date(compra.fecha);
             const fechaFormateada = formatDate(fecha, 'yyyy-MM-dd');
@@ -1482,7 +1482,7 @@ class ComprasReportes {
             const htmlContent = await this.generarHTMLReporteCompleto(compras, empresa);
             
             // Generar PDF
-            const { generatePDF } = await import('../../../services/print/pdf.js');
+            const { generatePDF } = await Promise.resolve(require('../../../services/print/pdf.js'));
             
             // Formatear fechas para el nombre del archivo
             const dateFrom = formatDate(this.currentFilters.dateFrom, 'yyyy-MM-dd');
@@ -1777,7 +1777,7 @@ class ComprasReportes {
             }
             
             // Importar librería para Excel
-            const { generateExcel } = await import('../../../services/export/excel.js');
+            const { generateExcel } = await Promise.resolve(require('../../../services/export/excel.js'));
             
             // Formatear fechas para el nombre del archivo
             const dateFrom = formatDate(this.currentFilters.dateFrom, 'yyyy-MM-dd');
@@ -1869,7 +1869,7 @@ class ComprasReportes {
             const htmlContent = await this.generarHTMLReporteCompleto(compras, empresa);
             
             // Enviar a imprimir
-            const { printDocument } = await import('../../../services/print/printer.js');
+            const { printDocument } = await Promise.resolve(require('../../../services/print/printer.js'));
             
             await printDocument({
                 content: htmlContent,
@@ -1952,5 +1952,7 @@ class ComprasReportes {
 }
 
 // Exportar clase para uso en otros módulos
-export default ComprasReportes;
+ ComprasReportes
+
+module.exports = ComprasReportes;
                 

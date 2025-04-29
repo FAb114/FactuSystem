@@ -8,7 +8,7 @@ const { Sequelize, DataTypes } = require('sequelize');
 
 // Configuración de la conexión con la base de datos
 // La configuración real se importa del archivo de configuración
-const config = require('../server/config/database');
+const config = require('../server/config/database.js');
 
 // Inicializar Sequelize con la configuración
 const sequelize = new Sequelize(config.database, config.username, config.password, {

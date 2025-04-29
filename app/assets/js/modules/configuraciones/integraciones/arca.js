@@ -10,15 +10,15 @@
  */
 
 // Importaciones de módulos del sistema
-const database = require('../../../../utils/database');
-const auth = require('../../../../utils/auth');
-const logger = require('../../../../utils/logger');
-const sync = require('../../../../utils/sync');
-const validation = require('../../../../utils/validation');
+const database = require('../../../../utils/database.js');
+const auth = require('../../../../utils/auth.js');
+const logger = require('../../../../utils/logger.js');
+const sync = require('../../../../utils/sync.js');
+const validation = require('../../../../utils/validation.js');
 
 // API principal de integración con ARCA
-const arcaApi = require('../../../../../integrations/arca/api');
-const arcaFacturacion = require('../../../../../integrations/arca/facturacion');
+const arcaApi = require('../../../../../integrations/arca/api.js');
+const arcaFacturacion = require('../../../../../integrations/arca/facturacion.js');
 
 // Estado de la configuración y conexión
 let configStatus = {

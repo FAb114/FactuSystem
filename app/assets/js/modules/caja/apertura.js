@@ -11,12 +11,12 @@
 
 // Importamos dependencias necesarias
 const { ipcRenderer } = require('electron');
-const database = require('../../utils/database');
-const auth = require('../../utils/auth');
-const validation = require('../../utils/validation');
-const sync = require('../../utils/sync');
-const logger = require('../../utils/logger');
-const notifications = require('../../components/notifications');
+const database = require('../../utils/database.js');
+const auth = require('../../utils/auth.js');
+const validation = require('../../utils/validation.js');
+const sync = require('../../utils/sync.js');
+const logger = require('../../utils/logger.js');
+const notifications = require('../../components/notifications.js');
 
 // Clase principal para la gestión de apertura de caja
 class AperturaCaja {

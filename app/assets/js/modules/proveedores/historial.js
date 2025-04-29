@@ -1,6 +1,6 @@
-import { db } from "../../utils/database.js";
-import { mostrarNotificacion } from "../../components/notifications.js";
-import { auditoria } from "../../utils/logger.js";
+const { db } = require('../../utils/database.js');
+const { mostrarNotificacion } = require('../../components/notifications.js');
+const { auditoria } = require('../../utils/logger.js');
 
 const tablaCompras = new DataTable("#tabla-compras");
 const tablaContactos = new DataTable("#tabla-contactos");

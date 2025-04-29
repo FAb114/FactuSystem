@@ -6,10 +6,10 @@
 
 // Importaciones necesarias
 const { ipcRenderer } = require('electron');
-const database = require('../../../../utils/database');
-const validation = require('../../../../utils/validation');
-const logger = require('../../../../utils/logger');
-const notificaciones = require('../../../../components/notifications');
+const database = require('../../../../utils/database.js');
+const validation = require('../../../../utils/validation.js');
+const logger = require('../../../../utils/logger.js');
+const notificaciones = require('../../../../components/notifications.js');
 
 // Clase principal para la integración con Getnet
 class GetnetIntegration {

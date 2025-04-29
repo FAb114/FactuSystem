@@ -9,10 +9,10 @@ const axios = require('axios');
 const { ipcMain } = require('electron');
 const path = require('path');
 const fs = require('fs');
-const logger = require('../../services/audit/logger');
-const database = require('../../app/assets/js/utils/database');
-const notificaciones = require('../../app/assets/js/components/notifications');
-const configHandler = require('../../app/assets/js/modules/configuraciones/integraciones/mercadoPago');
+const logger = require('../../services/audit/logger.js');
+const database = require('../../app/assets/js/utils/database.js');
+const notificaciones = require('../../app/assets/js/components/notifications.js');
+const configHandler = require('../../app/assets/js/modules/configuraciones/integraciones/mercadoPago.js');
 
 // Constantes para estados de pagos
 const PAYMENT_STATUS = {

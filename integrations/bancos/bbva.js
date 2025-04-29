@@ -11,8 +11,8 @@ const axios = require('axios');
 const crypto = require('crypto');
 const fs = require('fs');
 const path = require('path');
-const logger = require('../../services/audit/logger');
-const { getConfig, saveConfig } = require('../../app/assets/js/modules/configuraciones/integraciones/bancos/bbva');
+const logger = require('../../services/audit/logger.js');
+const { getConfig, saveConfig } = require('../../app/assets/js/modules/configuraciones/integraciones/bancos/bbva.js');
 
 // Configuración base para BBVA
 let config = {

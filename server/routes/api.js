@@ -1,8 +1,8 @@
 const express = require('express');
 const router = express.Router();
-const { authenticateToken, checkPermission } = require('../config/security');
-const dataController = require('../controllers/dataController');
-const backupController = require('../controllers/backupController');
+const { authenticateToken, checkPermission } = require('../config/security.js');
+const dataController = require('../controllers/dataController.js');
+const backupController = require('../controllers/backupController.js');
 
 /**
  * Rutas principales de la API de FactuSystem

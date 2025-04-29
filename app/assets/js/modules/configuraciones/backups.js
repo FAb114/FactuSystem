@@ -6,11 +6,11 @@
  * almacenamiento y restaurar datos desde copias previas.
  */
 
-import { ipcRenderer } from 'electron';
-import { showNotification } from '../../components/notifications.js';
-import { getCurrentUser } from '../../utils/auth.js';
-import { getDbConnection } from '../../utils/database.js';
-import { logger } from '../../utils/logger.js';
+const { ipcRenderer } = require('electron');
+const { showNotification } = require('../../components/notifications.js');
+const { getCurrentUser } = require('../../utils/auth.js');
+const { getDbConnection } = require('../../utils/database.js');
+const { logger } = require('../../utils/logger.js');
 
 // Servicios de backup
 const backupService = {
@@ -2160,4 +2160,6 @@ class BackupsUIController {
 }
 
 // Exportar la clase
-export default BackupManager;
+ BackupManager
+
+module.exports = BackupManager;

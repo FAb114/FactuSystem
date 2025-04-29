@@ -9,12 +9,12 @@
 
 // Importaciones necesarias
 const { ipcRenderer } = require('electron');
-const apiCommon = require('../../../../../integrations/bancos/api');
-const apiSpecific = require('../../../../../integrations/bancos/bbva');
-const database = require('../../../../utils/database');
-const logger = require('../../../../utils/logger');
-const validation = require('../../../../utils/validation');
-const notification = require('../../../../components/notifications');
+const apiCommon = require('../../../../../integrations/bancos/api.js');
+const apiSpecific = require('../../../../../integrations/bancos/bbva.js');
+const database = require('../../../../utils/database.js');
+const logger = require('../../../../utils/logger.js');
+const validation = require('../../../../utils/validation.js');
+const notification = require('../../../../components/notifications.js');
 
 /**
  * Clase que maneja la configuración e integración con BBVA

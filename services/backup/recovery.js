@@ -14,14 +14,14 @@ const archiver = require('archiver');
 const extract = require('extract-zip');
 const { ipcMain } = require('electron');
 const axios = require('axios');
-const { dialog } = require('electron').remote || require('@electron/remote');
+const { dialog } = require('electron').remote || require('@electron/remote.js');
 
 // Importaciones internas
-const db = require('../../app/assets/js/utils/database');
-const logger = require('../audit/logger');
-const dbSchema = require('../../db/schema');
-const cloudSync = require('./cloudSync');
-const { getAppDataPath, getCurrentVersion } = require('../../app/assets/js/utils/app');
+const db = require('../../app/assets/js/utils/database.js');
+const logger = require('../audit/logger.js');
+const dbSchema = require('../../db/schema.js');
+const cloudSync = require('./cloudSync.js');
+const { getAppDataPath, getCurrentVersion } = require('../../app/assets/js/utils/app.js');
 
 // Configuración
 const BACKUP_EXTENSION = '.factubackup';
