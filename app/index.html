@@ -1009,5 +1009,80 @@
             });
         }
     </script>
+// Añade este código al final de index.html justo antes de </body>
+<script>
+    // Capturar errores globales y mostrarlos
+    window.addEventListener('error', function(event) {
+        console.error('Error capturado:', event.error);
+        
+        // Crear un elemento visible con el error
+        const errorDiv = document.createElement('div');
+        errorDiv.style.position = 'fixed';
+        errorDiv.style.top = '0';
+        errorDiv.style.left = '0';
+        errorDiv.style.right = '0';
+        errorDiv.style.backgroundColor = 'red';
+        errorDiv.style.color = 'white';
+        errorDiv.style.padding = '20px';
+        errorDiv.style.zIndex = '9999';
+        errorDiv.innerHTML = `
+            <h2>Error en la aplicación:</h2>
+            <pre>${event.error?.stack || event.message || 'Error desconocido'}</pre>
+        `;
+        document.body.appendChild(errorDiv);
+    });
+
+    // Verificar carga de recursos críticos
+    window.addEventListener('DOMContentLoaded', function() {
+        console.log('DOM completamente cargado');
+        
+        // Verificar archivos CSS principales
+        const cssFiles = [
+            'assets/css/main.css',
+            'assets/css/components/sidebar.css',
+            'assets/css/components/dashboard.css',
+            'assets/css/components/facturador.css',
+            'assets/css/components/modal.css',
+            'assets/css/components/tables.css'
+        ];
+        
+        cssFiles.forEach(file => {
+            const link = document.createElement('link');
+            link.href = file;
+            link.rel = 'stylesheet';
+            link.onload = () => console.log(`CSS cargado: ${file}`);
+            link.onerror = () => console.error(`Error al cargar CSS: ${file}`);
+            document.head.appendChild(link);
+        });
+        
+        // Verificar si los scripts principales existen
+        const criticalScripts = [
+            'assets/js/app.js',
+            'assets/js/utils/database.js',
+            'assets/js/components/sidebar.js',
+            'assets/js/components/dashboard.js'
+        ];
+        
+        criticalScripts.forEach(script => {
+            fetch(script)
+                .then(response => {
+                    if (!response.ok) {
+                        throw new Error(`No se pudo cargar ${script}`);
+                    }
+                    console.log(`Script verificado: ${script}`);
+                })
+                .catch(error => {
+                    console.error(`Error con script: ${script}`, error);
+                    const errorDiv = document.createElement('div');
+                    errorDiv.style.backgroundColor = 'orange';
+                    errorDiv.style.color = 'black';
+                    errorDiv.style.padding = '10px';
+                    errorDiv.style.margin = '5px 0';
+                    errorDiv.textContent = `No se pudo cargar: ${script}`;
+                    document.body.insertBefore(errorDiv, document.body.firstChild);
+                });
+        });
+    });
+</script>
 </body>
 </html>

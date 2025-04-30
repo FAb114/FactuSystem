@@ -1,16 +1,37 @@
 const { app, BrowserWindow, ipcMain, dialog } = require('electron');
 const path = require('path');
-const url = require('url');
 const fs = require('fs');
 
-// Mantener una referencia global del objeto window
+// Habilitar registro detallado
+const log = (...args) => {
+  console.log(new Date().toISOString(), ...args);
+  
+  // También guardar logs en un archivo para depuración
+  try {
+    const logPath = path.join(app.getPath('userData'), 'logs');
+    if (!fs.existsSync(logPath)) {
+      fs.mkdirSync(logPath, { recursive: true });
+    }
+    
+    fs.appendFileSync(
+      path.join(logPath, `factusystem-${new Date().toISOString().split('T')[0]}.log`),
+      `${new Date().toISOString()} ${args.join(' ')}\n`
+    );
+  } catch (e) {
+    console.error('Error al guardar log:', e);
+  }
+};
+
 let mainWindow;
 
 function createWindow() {
-  // Crear la ventana del navegador
+  log('Iniciando creación de ventana principal');
+
+  // Crear la ventana del navegador.
   mainWindow = new BrowserWindow({
     width: 1200,
     height: 800,
+    icon: path.join(__dirname, 'assets/img/icon.png'),
     webPreferences: {
       nodeIntegration: false,
       contextIsolation: true,
@@ -19,191 +40,186 @@ function createWindow() {
     }
   });
 
-  // Cargar el archivo index.html
-  mainWindow.loadURL(url.format({
-    pathname: path.join(__dirname, 'app/views/index.html'),
-    protocol: 'file:',
-    slashes: true
-  }));
+  log('Configuración de BrowserWindow completada');
 
-  // Configurar menú y otras opciones del navegador
-  mainWindow.setMenu(null);
-  
-  // Abrir DevTools en desarrollo (comentar en producción)
-  // mainWindow.webContents.openDevTools();
+  // Verificar que el archivo index.html existe
+  const indexPath = path.join(__dirname, 'app', 'index.html');
+  try {
+    if (fs.existsSync(indexPath)) {
+      log(`Archivo index.html encontrado en: ${indexPath}`);
+    } else {
+      log(`ADVERTENCIA: index.html no encontrado en: ${indexPath}`);
+      
+      // Intentar detectar la ubicación correcta de index.html
+      const possiblePaths = [
+        path.join(__dirname, 'index.html'),
+        path.join(__dirname, 'src', 'index.html'),
+        path.join(__dirname, 'public', 'index.html')
+      ];
+      
+      let foundAlternative = false;
+      for (const p of possiblePaths) {
+        if (fs.existsSync(p)) {
+          log(`Alternativa encontrada: ${p}`);
+          mainWindow.loadFile(p);
+          foundAlternative = true;
+          break;
+        }
+      }
+      
+      if (!foundAlternative) {
+        // Crear una página HTML de error básica
+        const errorHTML = `
+          <!DOCTYPE html>
+          <html>
+          <head>
+            <meta charset="UTF-8">
+            <title>FactuSystem - Error</title>
+            <style>
+              body { font-family: Arial, sans-serif; padding: 20px; background-color: #f0f0f0; }
+              .error-container { max-width: 800px; margin: 0 auto; background: white; padding: 20px; border-radius: 5px; box-shadow: 0 2px 10px rgba(0,0,0,0.1); }
+              h1 { color: #d9534f; }
+              pre { background: #f8f8f8; padding: 10px; border-radius: 3px; overflow: auto; }
+              .btn { display: inline-block; padding: 10px 15px; background: #0275d8; color: white; border-radius: 3px; text-decoration: none; margin-top: 20px; }
+            </style>
+          </head>
+          <body>
+            <div class="error-container">
+              <h1>Error al iniciar FactuSystem</h1>
+              <p>No se ha podido encontrar el archivo principal de la aplicación (index.html).</p>
+              <h2>Ubicaciones verificadas:</h2>
+              <pre>${possiblePaths.join('\n')}</pre>
+              <p>Comprueba la estructura de archivos de tu proyecto y asegúrate de que index.html esté en la ubicación correcta.</p>
+              <button class="btn" onclick="window.electronAPI.openDevTools()">Abrir DevTools</button>
+              <button class="btn" onclick="window.electronAPI.restart()">Reiniciar aplicación</button>
+            </div>
+            <script>
+              // Informar al proceso principal del error
+              if (window.electronAPI) {
+                window.electronAPI.reportError('INDEX_NOT_FOUND');
+              }
+            </script>
+          </body>
+          </html>
+        `;
+        
+        const errorPath = path.join(app.getPath('temp'), 'factusystem-error.html');
+        fs.writeFileSync(errorPath, errorHTML);
+        mainWindow.loadFile(errorPath);
+      }
+      return;
+    }
+  } catch (error) {
+    log(`Error al verificar archivo index.html: ${error.message}`);
+    dialog.showErrorBox('Error en FactuSystem', 
+      'Ha ocurrido un error al iniciar la aplicación. Por favor, contacte con soporte.\n\n' + error.message);
+  }
 
-  mainWindow.on('closed', function() {
+  // Cargar el archivo index.html de la aplicación.
+  try {
+    log(`Intentando cargar: ${indexPath}`);
+    mainWindow.loadFile(indexPath);
+  } catch (error) {
+    log(`Error al cargar index.html: ${error.message}`);
+    dialog.showErrorBox('Error en FactuSystem', 
+      'Ha ocurrido un error al cargar la interfaz de la aplicación.\n\n' + error.message);
+  }
+
+  // Abrir las herramientas de desarrollo.
+  mainWindow.webContents.openDevTools();
+
+  mainWindow.webContents.on('did-finish-load', () => {
+    log('La ventana ha terminado de cargar');
+  });
+
+  mainWindow.webContents.on('did-fail-load', (event, errorCode, errorDescription) => {
+    log(`Error al cargar la ventana: ${errorCode} - ${errorDescription}`);
+    
+    // Mostrar página de error
+    const errorHTML = `
+      <!DOCTYPE html>
+      <html>
+      <head>
+        <meta charset="UTF-8">
+        <title>FactuSystem - Error</title>
+        <style>
+          body { font-family: Arial, sans-serif; padding: 20px; background-color: #f0f0f0; }
+          .error-container { max-width: 800px; margin: 0 auto; background: white; padding: 20px; border-radius: 5px; box-shadow: 0 2px 10px rgba(0,0,0,0.1); }
+          h1 { color: #d9534f; }
+          pre { background: #f8f8f8; padding: 10px; border-radius: 3px; overflow: auto; }
+          .btn { display: inline-block; padding: 10px 15px; background: #0275d8; color: white; border-radius: 3px; text-decoration: none; margin-top: 20px; }
+        </style>
+      </head>
+      <body>
+        <div class="error-container">
+          <h1>Error al cargar FactuSystem</h1>
+          <p>No se ha podido cargar correctamente la aplicación.</p>
+          <h2>Detalles del error:</h2>
+          <pre>Código: ${errorCode}\nDescripción: ${errorDescription}</pre>
+          <button class="btn" onclick="window.electronAPI.reload()">Intentar de nuevo</button>
+        </div>
+      </body>
+      </html>
+    `;
+    
+    const errorPath = path.join(app.getPath('temp'), 'factusystem-error.html');
+    fs.writeFileSync(errorPath, errorHTML);
+    mainWindow.loadFile(errorPath);
+  });
+
+  mainWindow.on('closed', function () {
+    log('Ventana principal cerrada');
     mainWindow = null;
   });
 }
 
-app.on('ready', createWindow);
+// Este método se llamará cuando Electron haya terminado
+// la inicialización y esté listo para crear ventanas del navegador.
+app.whenReady().then(() => {
+  log('Aplicación lista - Electron inicializado');
+  createWindow();
 
-app.on('window-all-closed', function() {
-  if (process.platform !== 'darwin') {
-    app.quit();
-  }
-});
-
-app.on('activate', function() {
-  if (mainWindow === null) {
-    createWindow();
-  }
-});
-
-// Asegúrate de que los directorios de datos existan
-function ensureDirectoriesExist() {
-  const dataDir = path.join(__dirname, 'app/data');
-  if (!fs.existsSync(dataDir)) {
-    fs.mkdirSync(dataDir, { recursive: true });
-  }
-}
-
-// Crear directorios al inicio
-ensureDirectoriesExist();
-
-// Manejadores de IPC para comunicación entre procesos
-ipcMain.on('guardar-cliente', (event, clienteData) => {
-  try {
-    const clientesPath = path.join(__dirname, 'app/data/clientes.json');
-    let clientes = [];
-    
-    // Leer archivo existente si existe
-    if (fs.existsSync(clientesPath)) {
-      const data = fs.readFileSync(clientesPath, 'utf8');
-      clientes = JSON.parse(data);
-    }
-    
-    // Añadir nuevo cliente con ID único
-    const nuevoCliente = {
-      id: Date.now().toString(),
-      ...clienteData
-    };
-    
-    clientes.push(nuevoCliente);
-    
-    // Guardar datos actualizados
-    fs.writeFileSync(clientesPath, JSON.stringify(clientes, null, 2));
-    
-    event.reply('cliente-guardado', { success: true, cliente: nuevoCliente });
-  } catch (error) {
-    console.error('Error al guardar cliente:', error);
-    event.reply('cliente-guardado', { success: false, error: error.message });
-  }
-});
-
-ipcMain.on('cargar-clientes', (event) => {
-  try {
-    const clientesPath = path.join(__dirname, 'app/data/clientes.json');
-    
-    if (fs.existsSync(clientesPath)) {
-      const data = fs.readFileSync(clientesPath, 'utf8');
-      const clientes = JSON.parse(data);
-      event.reply('clientes-cargados', { success: true, clientes });
-    } else {
-      event.reply('clientes-cargados', { success: true, clientes: [] });
-    }
-  } catch (error) {
-    console.error('Error al cargar clientes:', error);
-    event.reply('clientes-cargados', { success: false, error: error.message });
-  }
-});
-
-ipcMain.on('guardar-producto', (event, productoData) => {
-  try {
-    const productosPath = path.join(__dirname, 'app/data/productos.json');
-    let productos = [];
-    
-    if (fs.existsSync(productosPath)) {
-      const data = fs.readFileSync(productosPath, 'utf8');
-      productos = JSON.parse(data);
-    }
-    
-    const nuevoProducto = {
-      id: Date.now().toString(),
-      ...productoData
-    };
-    
-    productos.push(nuevoProducto);
-    fs.writeFileSync(productosPath, JSON.stringify(productos, null, 2));
-    
-    event.reply('producto-guardado', { success: true, producto: nuevoProducto });
-  } catch (error) {
-    console.error('Error al guardar producto:', error);
-    event.reply('producto-guardado', { success: false, error: error.message });
-  }
-});
-
-ipcMain.on('cargar-productos', (event) => {
-  try {
-    const productosPath = path.join(__dirname, 'app/data/productos.json');
-    
-    if (fs.existsSync(productosPath)) {
-      const data = fs.readFileSync(productosPath, 'utf8');
-      const productos = JSON.parse(data);
-      event.reply('productos-cargados', { success: true, productos });
-    } else {
-      event.reply('productos-cargados', { success: true, productos: [] });
-    }
-  } catch (error) {
-    console.error('Error al cargar productos:', error);
-    event.reply('productos-cargados', { success: false, error: error.message });
-  }
-});
-
-ipcMain.on('guardar-factura', (event, facturaData) => {
-  try {
-    const facturasPath = path.join(__dirname, 'app/data/facturas.json');
-    let facturas = [];
-    
-    if (fs.existsSync(facturasPath)) {
-      const data = fs.readFileSync(facturasPath, 'utf8');
-      facturas = JSON.parse(data);
-    }
-    
-    const nuevaFactura = {
-      id: Date.now().toString(),
-      fecha: new Date().toISOString(),
-      ...facturaData
-    };
-    
-    facturas.push(nuevaFactura);
-    fs.writeFileSync(facturasPath, JSON.stringify(facturas, null, 2));
-    
-    event.reply('factura-guardada', { success: true, factura: nuevaFactura });
-  } catch (error) {
-    console.error('Error al guardar factura:', error);
-    event.reply('factura-guardada', { success: false, error: error.message });
-  }
-});
-
-ipcMain.on('cargar-facturas', (event) => {
-  try {
-    const facturasPath = path.join(__dirname, 'app/data/facturas.json');
-    
-    if (fs.existsSync(facturasPath)) {
-      const data = fs.readFileSync(facturasPath, 'utf8');
-      const facturas = JSON.parse(data);
-      event.reply('facturas-cargadas', { success: true, facturas });
-    } else {
-      event.reply('facturas-cargadas', { success: true, facturas: [] });
-    }
-  } catch (error) {
-    console.error('Error al cargar facturas:', error);
-    event.reply('facturas-cargadas', { success: false, error: error.message });
-  }
-});
-
-// Manejador para seleccionar directorios
-ipcMain.on('seleccionar-directorio', (event) => {
-  dialog.showOpenDialog(mainWindow, {
-    properties: ['openDirectory']
-  }).then(result => {
-    if (!result.canceled) {
-      event.reply('directorio-seleccionado', result.filePaths[0]);
-    }
-  }).catch(err => {
-    console.error(err);
-    event.reply('directorio-seleccionado', null);
+  app.on('activate', function () {
+    // En macOS es común volver a crear una ventana en la aplicación cuando el
+    // icono del dock es clicado y no hay otras ventanas abiertas.
+    if (mainWindow === null) createWindow();
   });
 });
+
+// Salir cuando todas las ventanas estén cerradas.
+app.on('window-all-closed', function () {
+  log('Todas las ventanas cerradas, saliendo de la aplicación');
+  // En macOS es común que las aplicaciones y su barra de menú
+  // permanezcan activas hasta que el usuario salga explícitamente con Cmd + Q
+  if (process.platform !== 'darwin') app.quit();
+});
+
+// Configurar canales IPC para comunicación con el proceso de renderizado
+ipcMain.handle('app:getPath', (event, name) => {
+  log(`Solicitada ruta: ${name}`);
+  return app.getPath(name);
+});
+
+ipcMain.handle('app:restart', () => {
+  log('Reiniciando aplicación...');
+  app.relaunch();
+  app.exit();
+});
+
+ipcMain.handle('app:showDialog', async (event, options) => {
+  log('Mostrando diálogo:', options.type);
+  return await dialog.show(options);
+});
+
+// Manejo de errores no capturados en el proceso principal
+process.on('uncaughtException', (error) => {
+  log(`Error no capturado: ${error.message}`);
+  log(error.stack);
+  
+  dialog.showErrorBox(
+    'Error en FactuSystem',
+    `Ha ocurrido un error inesperado en la aplicación.\n\n${error.message}\n\nPor favor, contacte con soporte técnico.`
+  );
+});
+
+log('Archivo main.js cargado completamente');

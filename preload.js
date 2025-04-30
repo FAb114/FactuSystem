@@ -59,3 +59,50 @@ contextBridge.exposeInMainWorld(
     }
   }
 );
+// Añade este código al final de preload.js
+
+// Comprobar si estamos en un entorno Electron
+const isElectron = () => {
+  return window && window.process && window.process.type === 'renderer';
+};
+
+// Exponer funciones de diagnóstico al proceso de renderizado
+if (isElectron()) {
+  // Asegurarse de que las API de Electron están disponibles
+  try {
+      window.electronAPI = {
+          isElectronAvailable: true,
+          nodeVersion: process.versions.node,
+          electronVersion: process.versions.electron,
+          chromeVersion: process.versions.chrome,
+          diagnostics: {
+              checkFS: async (path) => {
+                  try {
+                      const fs = require('fs');
+                      const result = await fs.promises.readdir(path);
+                      return { success: true, files: result };
+                  } catch (error) {
+                      return { success: false, error: error.message };
+                  }
+              }
+          }
+      };
+      
+      console.log('Electron API expuesta en preload.js:', window.electronAPI);
+  } catch (error) {
+      console.error('Error al configurar API de Electron:', error);
+      window.electronAPI = {
+          isElectronAvailable: false,
+          error: error.message
+      };
+  }
+} else {
+  console.warn('No estamos en un entorno Electron');
+  window.electronAPI = {
+      isElectronAvailable: false
+  };
+}
+
+// Notificar que preload.js se ha ejecutado completamente
+console.log('preload.js cargado completamente');
+window.preloadComplete = true;
