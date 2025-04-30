@@ -1,5 +1,8 @@
 /* sidebar.css - Estilos para la barra lateral de FactuSystem */
-
+.logo-sidebar {
+  width: 150px; /* Ajusta este valor al ancho deseado para tu logo */
+  height: auto; /* Mantiene la proporción de aspecto */
+}
 :root {
     --sidebar-bg-color: #2a3042;
     --sidebar-hover-color: #343b4e;

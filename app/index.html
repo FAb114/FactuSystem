@@ -3,15 +3,16 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta http-equiv="Content-Security-Policy" content="script-src 'self' 'unsafe-inline' https://cdnjs.cloudflare.com">
     <title>FactuSystem - Dashboard</title>
     
     <!-- Estilos CSS principales -->
-    <link rel="stylesheet" href="assets/css/main.css">
-    <link rel="stylesheet" href="assets/css/components/sidebar.css">
-    <link rel="stylesheet" href="assets/css/components/dashboard.css">
-    <link rel="stylesheet" href="assets/css/components/facturador.css">
-    <link rel="stylesheet" href="assets/css/components/modal.css">
-    <link rel="stylesheet" href="assets/css/components/tables.css">
+    <link rel="stylesheet" href="app/assets/css/main.css">
+    <link rel="stylesheet" href="app/assets/css/components/sidebar.css">
+    <link rel="stylesheet" href="app/assets/css/components/dashboard.css">
+    <link rel="stylesheet" href="app/assets/css/components/facturador.css">
+    <link rel="stylesheet" href="app/assets/css/components/modal.css">
+    <link rel="stylesheet" href="app/assets/css/components/tables.css">
     
     <!-- Librerías externas CSS -->
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
@@ -24,1065 +25,482 @@
     <!-- Notificaciones -->
     <div id="notifications-container" class="notifications-container"></div>
     
-    <!-- Contenedor principal de la aplicación -->
-    <div class="app-container">
-        <!-- Sidebar izquierdo -->
-        <div class="sidebar">
-            <!-- Logo de la empresa -->
-            <div class="sidebar-logo">
-                <img src="assets/img/logo.png" alt="FactuSystem Logo" id="company-logo">
-            </div>
-            
-            <!-- Información del usuario -->
-            <div class="user-info">
-                <div class="user-avatar">
-                    <i class="fas fa-user-circle"></i>
-                </div>
-                <div class="user-details">
-                    <span id="user-name">Usuario</span>
-                    <span id="user-role">Rol</span>
-                </div>
-            </div>
-            
-            <!-- Menú de navegación -->
-            <nav class="sidebar-nav">
-                <ul>
-                    <li data-module="facturador" class="nav-item">
-                        <i class="fas fa-file-invoice"></i>
-                        <span>Facturar</span>
-                    </li>
-                    <li data-module="ventas" class="nav-item">
-                        <i class="fas fa-shopping-cart"></i>
-                        <span>Ventas</span>
-                    </li>
-                    <li data-module="compras" class="nav-item">
-                        <i class="fas fa-truck"></i>
-                        <span>Compras</span>
-                    </li>
-                    <li data-module="productos" class="nav-item">
-                        <i class="fas fa-box"></i>
-                        <span>Productos</span>
-                    </li>
-                    <li data-module="caja" class="nav-item">
-                        <i class="fas fa-cash-register"></i>
-                        <span>Caja</span>
-                    </li>
-                    <li data-module="clientes" class="nav-item">
-                        <i class="fas fa-users"></i>
-                        <span>Clientes</span>
-                    </li>
-                    <li data-module="proveedores" class="nav-item">
-                        <i class="fas fa-handshake"></i>
-                        <span>Proveedores</span>
-                    </li>
-                    <li data-module="usuarios" class="nav-item">
-                        <i class="fas fa-user-cog"></i>
-                        <span>Usuarios</span>
-                    </li>
-                    <li data-module="cuotificador" class="nav-item">
-                        <i class="fas fa-calculator"></i>
-                        <span>Cuotificador</span>
-                    </li>
-                    <li data-module="configuraciones" class="nav-item">
-                        <i class="fas fa-cogs"></i>
-                        <span>Configuraciones</span>
-                    </li>
-                    <li data-module="reportes" class="nav-item">
-                        <i class="fas fa-chart-bar"></i>
-                        <span>Reportes</span>
-                    </li>
-                    <li data-module="documentos" class="nav-item">
-                        <i class="fas fa-copy"></i>
-                        <span>Documentos</span>
-                    </li>
-                    <li data-module="ayuda" class="nav-item">
-                        <i class="fas fa-question-circle"></i>
-                        <span>Ayuda</span>
-                    </li>
-                    <li data-module="sucursales" class="nav-item">
-                        <i class="fas fa-store"></i>
-                        <span>Sucursales</span>
-                    </li>
-                </ul>
-            </nav>
-            
-            <!-- Info de Sucursal y Caja -->
-            <div class="sidebar-footer">
-                <div class="sucursal-info">
-                    <i class="fas fa-store"></i>
-                    <span id="current-sucursal">Sucursal Central</span>
-                </div>
-                <div class="caja-info">
-                    <i class="fas fa-cash-register"></i>
-                    <span id="current-caja-status">Caja Abierta</span>
-                </div>
-                <div class="user-actions">
-                    <button id="logout-btn" title="Cerrar Sesión">
-                        <i class="fas fa-sign-out-alt"></i>
-                    </button>
-                </div>
-            </div>
-        </div>
+    <!-- Barra lateral -->
+    <div class="sidebar-header">
+        <img src="app/assets/img/icons/logo.png" alt="Logo de Facturación" class="logo-sidebar">
+      </div>
         
-        <!-- Área principal de contenido -->
-        <div class="main-content">
-            <!-- Barra superior -->
-            <div class="top-bar">
-                <div class="tabs-container">
-                    <!-- Aquí se generarán las pestañas dinámicamente -->
-                </div>
-                <div class="top-bar-actions">
-                    <button id="sync-status" title="Estado de sincronización">
-                        <i class="fas fa-sync-alt"></i>
-                    </button>
-                    <button id="notifications-btn" title="Notificaciones">
-                        <i class="fas fa-bell"></i>
-                        <span class="badge" id="notifications-count">0</span>
-                    </button>
-                    <button id="minimize-all-tabs" title="Minimizar todas las pestañas">
-                        <i class="fas fa-window-minimize"></i>
-                    </button>
-                </div>
-            </div>
-            
-            <!-- Contenedor de pestañas activas -->
-            <div class="tabs-content-container">
-                <!-- Contenido de bienvenida que se muestra por defecto -->
-                <div id="welcome-screen" class="tab-content active">
-                    <div class="welcome-container">
-                        <h1>Bienvenido a FactuSystem</h1>
-                        <div class="dashboard-overview">
-                            <div class="dashboard-card" id="ventas-hoy">
-                                <h3>Ventas de Hoy</h3>
-                                <div class="dashboard-value">$0.00</div>
-                                <div class="dashboard-change positive">+0% <i class="fas fa-arrow-up"></i></div>
-                            </div>
-                            <div class="dashboard-card" id="stock-critico">
-                                <h3>Stock Crítico</h3>
-                                <div class="dashboard-value">0</div>
-                                <div class="dashboard-change neutral">0 <i class="fas fa-minus"></i></div>
-                            </div>
-                            <div class="dashboard-card" id="caja-actual">
-                                <h3>Caja Actual</h3>
-                                <div class="dashboard-value">$0.00</div>
-                                <div class="dashboard-change negative">-0% <i class="fas fa-arrow-down"></i></div>
-                            </div>
-                            <div class="dashboard-card" id="clientes-nuevos">
-                                <h3>Clientes Nuevos</h3>
-                                <div class="dashboard-value">0</div>
-                                <div class="dashboard-change positive">+0 <i class="fas fa-arrow-up"></i></div>
-                            </div>
-                        </div>
-                        <div class="quick-actions">
-                            <h2>Acciones Rápidas</h2>
-                            <div class="quick-actions-grid">
-                                <button class="quick-action" data-module="facturador">
-                                    <i class="fas fa-file-invoice"></i>
-                                    <span>Nueva Factura</span>
-                                </button>
-                                <button class="quick-action" data-module="productos">
-                                    <i class="fas fa-box"></i>
-                                    <span>Nuevo Producto</span>
-                                </button>
-                                <button class="quick-action" data-module="clientes">
-                                    <i class="fas fa-user-plus"></i>
-                                    <span>Nuevo Cliente</span>
-                                </button>
-                                <button class="quick-action" data-module="caja">
-                                    <i class="fas fa-money-bill"></i>
-                                    <span>Ver Caja</span>
-                                </button>
-                                <button class="quick-action" data-module="reportes">
-                                    <i class="fas fa-chart-line"></i>
-                                    <span>Reportes</span>
-                                </button>
-                                <button class="quick-action" data-module="configuraciones">
-                                    <i class="fas fa-cog"></i>
-                                    <span>Configuración</span>
-                                </button>
-                            </div>
-                        </div>
-                    </div>
-                </div>
-                
-                <!-- Aquí se cargarán dinámicamente los contenidos de las pestañas -->
+        <ul class="sidebar-menu">
+            <li class="active" data-module="dashboard">
+                <i class="fas fa-tachometer-alt"></i>
+                <span>Dashboard</span>
+            </li>
+            <li data-module="facturador">
+                <i class="fas fa-file-invoice"></i>
+                <span>Facturas</span>
+            </li>
+            <li data-module="clientes">
+                <i class="fas fa-users"></i>
+                <span>Clientes</span>
+            </li>
+            <li data-module="productos">
+                <i class="fas fa-box"></i>
+                <span>Inventario</span>
+            </li>
+            <li data-module="caja">
+                <i class="fas fa-cash-register"></i>
+                <span>Caja</span>
+            </li>
+            <li data-module="reportes">
+                <i class="fas fa-chart-bar"></i>
+                <span>Reportes</span>
+            </li>
+            <li data-module="cuotificador">
+                <i class="fas fa-calculator"></i>
+                <span>Cuotificador</span>
+            </li>
+            <li data-module="configuraciones">
+                <i class="fas fa-cogs"></i>
+                <span>Configuración</span>
+            </li>
+        </ul>
+        
+        <div class="sidebar-footer" style="position: absolute; bottom: 0; width: 100%; padding: 15px; background-color: var(--darker-bg);">
+            <div class="sucursal-info">
+                <i class="fas fa-store"></i>
+                <span id="current-sucursal">Sucursal Central</span>
             </div>
         </div>
+    </div>
+    
+    <!-- Contenedor principal para cargar vistas dinámicamente -->
+    <div class="main-content">
+        <!-- Los contenedores de vistas se cargarán dinámicamente -->
+        <div id="view-dashboard" class="view-container active"></div>
+        <div id="view-facturador" class="view-container"></div>
+        <div id="view-clientes" class="view-container"></div>
+        <div id="view-productos" class="view-container"></div>
+        <div id="view-caja" class="view-container"></div>
+        <div id="view-reportes" class="view-container"></div>
+        <div id="view-cuotificador" class="view-container"></div>
+        <div id="view-configuraciones" class="view-container"></div>
     </div>
     
     <!-- Modales del sistema -->
+    <!-- Estos se cargarán dinámicamente desde sus respectivos archivos cuando sean necesarios -->
     
-    <!-- Modal de apertura de caja -->
-    <div id="modal-apertura-caja" class="modal">
-        <div class="modal-content">
-            <div class="modal-header">
-                <h2>Apertura de Caja</h2>
-                <button class="modal-close">&times;</button>
-            </div>
-            <div class="modal-body">
-                <form id="form-apertura-caja">
-                    <div class="form-group">
-                        <label for="monto-inicial">Monto Inicial en Efectivo:</label>
-                        <div class="input-currency">
-                            <span>$</span>
-                            <input type="number" id="monto-inicial" name="monto-inicial" step="0.01" required>
-                        </div>
-                    </div>
-                    <div class="form-group">
-                        <label for="nota-apertura">Observaciones (opcional):</label>
-                        <textarea id="nota-apertura" name="nota-apertura"></textarea>
-                    </div>
-                    <div class="form-actions">
-                        <button type="submit" class="btn btn-primary">Confirmar Apertura</button>
-                    </div>
-                </form>
-            </div>
-        </div>
-    </div>
-    
-    <!-- Modal de búsqueda de clientes -->
-    <div id="modal-buscar-cliente" class="modal">
-        <div class="modal-content">
-            <div class="modal-header">
-                <h2>Buscar Cliente</h2>
-                <button class="modal-close">&times;</button>
-            </div>
-            <div class="modal-body">
-                <div class="search-container">
-                    <input type="text" id="buscar-cliente-input" placeholder="Buscar por nombre, DNI o CUIT...">
-                    <button id="buscar-cliente-btn"><i class="fas fa-search"></i></button>
-                </div>
-                <div class="search-results">
-                    <table id="tabla-resultados-clientes">
-                        <thead>
-                            <tr>
-                                <th>DNI/CUIT</th>
-                                <th>Nombre</th>
-                                <th>Teléfono</th>
-                                <th>Acciones</th>
-                            </tr>
-                        </thead>
-                        <tbody>
-                            <!-- Resultados dinámicos aquí -->
-                        </tbody>
-                    </table>
-                </div>
-                <div class="form-actions">
-                    <button id="nuevo-cliente-btn" class="btn btn-secondary">Nuevo Cliente</button>
-                </div>
-            </div>
-        </div>
-    </div>
-    
-    <!-- Modal para nuevo cliente -->
-    <div id="modal-nuevo-cliente" class="modal">
-        <div class="modal-content">
-            <div class="modal-header">
-                <h2>Nuevo Cliente</h2>
-                <button class="modal-close">&times;</button>
-            </div>
-            <div class="modal-body">
-                <form id="form-nuevo-cliente">
-                    <div class="form-group">
-                        <label for="tipo-documento">Tipo:</label>
-                        <select id="tipo-documento" name="tipo-documento" required>
-                            <option value="dni">DNI</option>
-                            <option value="cuit">CUIT</option>
-                        </select>
-                    </div>
-                    <div class="form-group">
-                        <label for="numero-documento">Número:</label>
-                        <input type="text" id="numero-documento" name="numero-documento" required>
-                    </div>
-                    <div class="form-group">
-                        <label for="nombre-cliente">Nombre/Razón Social:</label>
-                        <input type="text" id="nombre-cliente" name="nombre-cliente" required>
-                    </div>
-                    <div class="form-group">
-                        <label for="direccion-cliente">Dirección:</label>
-                        <input type="text" id="direccion-cliente" name="direccion-cliente">
-                    </div>
-                    <div class="form-group">
-                        <label for="condicion-iva">Condición frente al IVA:</label>
-                        <select id="condicion-iva" name="condicion-iva" required>
-                            <option value="consumidor-final">Consumidor Final</option>
-                            <option value="responsable-inscripto">Responsable Inscripto</option>
-                            <option value="monotributo">Monotributo</option>
-                            <option value="exento">Exento</option>
-                        </select>
-                    </div>
-                    <div class="form-group">
-                        <label for="telefono-cliente">Teléfono:</label>
-                        <input type="tel" id="telefono-cliente" name="telefono-cliente">
-                    </div>
-                    <div class="form-group">
-                        <label for="email-cliente">Email:</label>
-                        <input type="email" id="email-cliente" name="email-cliente">
-                    </div>
-                    <div class="form-group">
-                        <label for="sucursal-cliente">Sucursal Asignada:</label>
-                        <select id="sucursal-cliente" name="sucursal-cliente">
-                            <!-- Opciones cargadas dinámicamente -->
-                        </select>
-                    </div>
-                    <div class="form-actions">
-                        <button type="submit" class="btn btn-primary">Guardar Cliente</button>
-                    </div>
-                </form>
-            </div>
-        </div>
-    </div>
-    
-    <!-- Modal para buscar productos -->
-    <div id="modal-buscar-producto" class="modal">
-        <div class="modal-content">
-            <div class="modal-header">
-                <h2>Buscar Producto</h2>
-                <button class="modal-close">&times;</button>
-            </div>
-            <div class="modal-body">
-                <div class="search-container">
-                    <input type="text" id="buscar-producto-input" placeholder="Buscar por nombre, código...">
-                    <button id="buscar-producto-btn"><i class="fas fa-search"></i></button>
-                </div>
-                <div class="filter-container">
-                    <select id="filtro-grupo">
-                        <option value="">Todos los grupos</option>
-                        <!-- Opciones cargadas dinámicamente -->
-                    </select>
-                    <select id="filtro-tipo">
-                        <option value="">Todos los tipos</option>
-                        <!-- Opciones cargadas dinámicamente -->
-                    </select>
-                </div>
-                <div class="search-results">
-                    <table id="tabla-resultados-productos">
-                        <thead>
-                            <tr>
-                                <th>Código</th>
-                                <th>Nombre</th>
-                                <th>Precio</th>
-                                <th>Stock</th>
-                                <th>Acciones</th>
-                            </tr>
-                        </thead>
-                        <tbody>
-                            <!-- Resultados dinámicos aquí -->
-                        </tbody>
-                    </table>
-                </div>
-                <div class="form-actions">
-                    <button id="nuevo-producto-btn" class="btn btn-secondary">Nuevo Producto</button>
-                </div>
-            </div>
-        </div>
-    </div>
-    
-    <!-- Modal para editar producto en factura -->
-    <div id="modal-editar-producto-factura" class="modal">
-        <div class="modal-content">
-            <div class="modal-header">
-                <h2>Editar Producto</h2>
-                <button class="modal-close">&times;</button>
-            </div>
-            <div class="modal-body">
-                <form id="form-editar-producto-factura">
-                    <input type="hidden" id="producto-id-edit">
-                    <div class="form-group">
-                        <label for="producto-nombre-edit">Producto:</label>
-                        <input type="text" id="producto-nombre-edit" disabled>
-                    </div>
-                    <div class="form-group">
-                        <label for="producto-cantidad-edit">Cantidad:</label>
-                        <input type="number" id="producto-cantidad-edit" min="1" step="1" required>
-                    </div>
-                    <div class="form-group">
-                        <label for="producto-precio-edit">Precio Unitario:</label>
-                        <div class="input-currency">
-                            <span>$</span>
-                            <input type="number" id="producto-precio-edit" step="0.01" required>
-                        </div>
-                    </div>
-                    <div class="form-group">
-                        <label for="producto-descuento-edit">Descuento (%):</label>
-                        <input type="number" id="producto-descuento-edit" min="0" max="100" step="0.01" value="0">
-                    </div>
-                    <div class="form-actions">
-                        <button type="submit" class="btn btn-primary">Actualizar</button>
-                    </div>
-                </form>
-            </div>
-        </div>
-    </div>
-    
-    <!-- Modal para pago con efectivo -->
-    <div id="modal-pago-efectivo" class="modal">
-        <div class="modal-content">
-            <div class="modal-header">
-                <h2>Pago en Efectivo</h2>
-                <button class="modal-close">&times;</button>
-            </div>
-            <div class="modal-body">
-                <form id="form-pago-efectivo">
-                    <div class="form-group">
-                        <label for="total-a-pagar-efectivo">Total a Pagar:</label>
-                        <div class="input-currency">
-                            <span>$</span>
-                            <input type="number" id="total-a-pagar-efectivo" disabled>
-                        </div>
-                    </div>
-                    <div class="form-group">
-                        <label for="monto-recibido-efectivo">Monto Recibido:</label>
-                        <div class="input-currency">
-                            <span>$</span>
-                            <input type="number" id="monto-recibido-efectivo" step="0.01" required>
-                        </div>
-                    </div>
-                    <div class="form-group">
-                        <label for="cambio-efectivo">Cambio a Devolver:</label>
-                        <div class="input-currency">
-                            <span>$</span>
-                            <input type="number" id="cambio-efectivo" disabled>
-                        </div>
-                    </div>
-                    <div class="form-actions">
-                        <button type="submit" class="btn btn-primary">Confirmar Pago</button>
-                    </div>
-                </form>
-            </div>
-        </div>
-    </div>
-    
-    <!-- Modal para pago con tarjeta -->
-    <div id="modal-pago-tarjeta" class="modal">
-        <div class="modal-content">
-            <div class="modal-header">
-                <h2>Pago con Tarjeta</h2>
-                <button class="modal-close">&times;</button>
-            </div>
-            <div class="modal-body">
-                <form id="form-pago-tarjeta">
-                    <div class="form-group">
-                        <label for="total-a-pagar-tarjeta">Total a Pagar:</label>
-                        <div class="input-currency">
-                            <span>$</span>
-                            <input type="number" id="total-a-pagar-tarjeta" disabled>
-                        </div>
-                    </div>
-                    <div class="form-group">
-                        <label for="tipo-tarjeta">Tipo de Tarjeta:</label>
-                        <div class="radio-group">
-                            <label>
-                                <input type="radio" name="tipo-tarjeta" value="debito" checked> Débito
-                            </label>
-                            <label>
-                                <input type="radio" name="tipo-tarjeta" value="credito"> Crédito
-                            </label>
-                        </div>
-                    </div>
-                    <div class="form-group credito-options" style="display: none;">
-                        <label for="cuotas-tarjeta">Cuotas:</label>
-                        <select id="cuotas-tarjeta">
-                            <option value="1">1 cuota</option>
-                            <option value="3">3 cuotas</option>
-                            <option value="6">6 cuotas</option>
-                            <option value="12">12 cuotas</option>
-                        </select>
-                    </div>
-                    <div class="form-group">
-                        <label for="numero-tarjeta">Últimos 4 dígitos (opcional):</label>
-                        <input type="text" id="numero-tarjeta" maxlength="4" pattern="\d{4}">
-                    </div>
-                    <div class="form-actions">
-                        <button type="submit" class="btn btn-primary">Confirmar Pago</button>
-                    </div>
-                </form>
-            </div>
-        </div>
-    </div>
-    
-    <!-- Modal para pago con transferencia -->
-    <div id="modal-pago-transferencia" class="modal">
-        <div class="modal-content">
-            <div class="modal-header">
-                <h2>Pago con Transferencia</h2>
-                <button class="modal-close">&times;</button>
-            </div>
-            <div class="modal-body">
-                <form id="form-pago-transferencia">
-                    <div class="form-group">
-                        <label for="total-a-pagar-transferencia">Total a Pagar:</label>
-                        <div class="input-currency">
-                            <span>$</span>
-                            <input type="number" id="total-a-pagar-transferencia" disabled>
-                        </div>
-                    </div>
-                    <div class="form-group">
-                        <label for="banco-transferencia">Banco:</label>
-                        <select id="banco-transferencia" required>
-                            <option value="">Seleccione un banco</option>
-                            <option value="galicia">Galicia</option>
-                            <option value="bbva">BBVA</option>
-                            <option value="santander">Santander</option>
-                            <option value="otro">Otro</option>
-                        </select>
-                    </div>
-                    <div class="form-group">
-                        <label for="comprobante-transferencia">Número de Comprobante (opcional):</label>
-                        <input type="text" id="comprobante-transferencia">
-                    </div>
-                    <div class="form-actions">
-                        <button type="submit" class="btn btn-primary">Confirmar Pago</button>
-                    </div>
-                </form>
-            </div>
-        </div>
-    </div>
-    
-    <!-- Modal para QR de Mercado Pago -->
-    <div id="modal-pago-qr" class="modal">
-        <div class="modal-content">
-            <div class="modal-header">
-                <h2>Pago con QR</h2>
-                <button class="modal-close">&times;</button>
-            </div>
-            <div class="modal-body">
-                <div class="qr-container">
-                    <img id="mercado-pago-qr" src="" alt="QR de Mercado Pago">
-                </div>
-                <div class="qr-instructions">
-                    <p>El cliente debe escanear el código QR con la aplicación de Mercado Pago.</p>
-                    <p>Una vez que el cliente realice el pago, se verificará automáticamente.</p>
-                </div>
-                <div class="qr-status">
-                    <div id="qr-loading" class="loading-spinner">
-                        <i class="fas fa-spinner fa-spin"></i> Esperando pago...
-                    </div>
-                    <div id="qr-success" class="payment-success hidden">
-                        <i class="fas fa-check-circle"></i> Pago recibido
-                    </div>
-                </div>
-                <div class="form-actions">
-                    <button id="qr-check-payment" class="btn btn-secondary">Verificar Pago</button>
-                    <button id="qr-confirm-payment" class="btn btn-primary hidden">Confirmar</button>
-                </div>
-            </div>
-        </div>
-    </div>
-    
-    <!-- Modal para ARCA (AFIP) -->
-    <div id="modal-arca-afip" class="modal">
-        <div class="modal-content">
-            <div class="modal-header">
-                <h2>Facturación Electrónica AFIP</h2>
-                <button class="modal-close">&times;</button>
-            </div>
-            <div class="modal-body">
-                <div class="arca-status">
-                    <div id="arca-loading" class="loading-spinner">
-                        <i class="fas fa-spinner fa-spin"></i> Conectando con ARCA...
-                    </div>
-                    <div id="arca-processing" class="loading-spinner hidden">
-                        <i class="fas fa-spinner fa-spin"></i> Procesando factura...
-                    </div>
-                    <div id="arca-success" class="arca-success hidden">
-                        <i class="fas fa-check-circle"></i> Factura enviada exitosamente
-                        <p>CAE: <span id="arca-cae">00000000000000</span></p>
-                        <p>Vencimiento: <span id="arca-vencimiento">00/00/0000</span></p>
-                    </div>
-                    <div id="arca-error" class="arca-error hidden">
-                        <i class="fas fa-exclamation-triangle"></i> 
-                        <p>Error al conectar con AFIP</p>
-                        <p id="arca-error-message"></p>
-                    </div>
-                </div>
-                <div class="form-actions">
-                    <button id="arca-retry" class="btn btn-secondary hidden">Reintentar</button>
-                    <button id="arca-continue" class="btn btn-primary hidden">Continuar</button>
-                </div>
-            </div>
-        </div>
-    </div>
-    
-    <!-- Modal para finalizar factura -->
-    <div id="modal-finalizar-factura" class="modal">
-        <div class="modal-content">
-            <div class="modal-header">
-                <h2>Factura Generada</h2>
-                <button class="modal-close">&times;</button>
-            </div>
-            <div class="modal-body">
-                <div class="factura-success">
-                    <i class="fas fa-check-circle"></i>
-                    <p>La factura se ha generado correctamente</p>
-                    <div class="factura-details">
-                        <p>Número: <span id="factura-numero">0000-00000000</span></p>
-                        <p>Total: <span id="factura-total">$0.00</span></p>
-                        <p>Cliente: <span id="factura-cliente">Consumidor Final</span></p>
-                    </div>
-                </div>
-                <div class="factura-actions">
-                    <h3>¿Qué deseas hacer ahora?</h3>
-                    <div class="action-buttons">
-                        <button id="imprimir-ticket" class="action-btn">
-                            <i class="fas fa-receipt"></i>
-                            <span>Imprimir Ticket</span>
-                        </button>
-                        <button id="imprimir-factura" class="action-btn">
-                            <i class="fas fa-file-invoice"></i>
-                            <span>Imprimir Factura A4</span>
-                        </button>
-                        <button id="enviar-email" class="action-btn">
-                            <i class="fas fa-envelope"></i>
-                            <span>Enviar por Email</span>
-                        </button>
-                        <button id="enviar-whatsapp" class="action-btn">
-                            <i class="fab fa-whatsapp"></i>
-                            <span>Enviar por WhatsApp</span>
-                        </button>
-                    </div>
-                </div>
-                <div class="form-actions">
-                    <button id="nueva-factura-btn" class="btn btn-primary">Nueva Factura</button>
-                    <button id="volver-dashboard-btn" class="btn btn-secondary">Volver al Dashboard</button>
-                </div>
-            </div>
-        </div>
-    </div>
-    
-    <!-- Modal para envío por email -->
-    <div id="modal-enviar-email" class="modal">
-        <div class="modal-content">
-            <div class="modal-header">
-                <h2>Enviar por Email</h2>
-                <button class="modal-close">&times;</button>
-            </div>
-            <div class="modal-body">
-                <form id="form-enviar-email">
-                    <div class="form-group">
-                        <label for="email-destinatario">Email Destinatario:</label>
-                        <input type="email" id="email-destinatario" required>
-                    </div>
-                    <div class="form-group">
-                        <label for="email-asunto">Asunto:</label>
-                        <input type="text" id="email-asunto" value="Factura de Compra" required>
-                    </div>
-                    <div class="form-group">
-                        <label for="email-mensaje">Mensaje:</label>
-                        <textarea id="email-mensaje">Estimado cliente, adjuntamos su factura de compra. Gracias por su preferencia.</textarea>
-                    </div>
-                    <div class="form-group">
-                        <label class="checkbox-label">
-                            <input type="checkbox" id="adjuntar-pdf" checked>
-                            Adjuntar PDF de la factura
-                        </label>
-                    </div>
-                    <div class="form-actions">
-                        <button type="submit" class="btn btn-primary">Enviar Email</button>
-                    </div>
-                </form>
-            </div>
-        </div>
-    </div>
-    
-    <!-- Modal para envío por WhatsApp -->
-    <div id="modal-enviar-whatsapp" class="modal">
-        <div class="modal-content">
-            <div class="modal-header">
-                <h2>Enviar por WhatsApp</h2>
-                <button class="modal-close">&times;</button>
-            </div>
-            <div class="modal-body">
-                <form id="form-enviar-whatsapp">
-                    <div class="form-group">
-                        <label for="whatsapp-numero">Número de Teléfono:</label>
-                        <input type="tel" id="whatsapp-numero" placeholder="Ejemplo: 5491122334455" required>
-                    </div>
-                    <div class="form-group">
-                        <label for="whatsapp-mensaje">Mensaje:</label>
-                        <textarea id="whatsapp-mensaje">Estimado cliente, adjuntamos su factura de compra. Gracias por su preferencia.</textarea>
-                    </div>
-                    <div class="form-group">
-                        <label class="checkbox-label">
-                            <input type="checkbox" id="adjuntar-pdf-whatsapp" checked>
-                            Adjuntar PDF de la factura
-                        </label>
-                    </div>
-                    <div class="form-actions">
-                        <button type="submit" class="btn btn-primary">Enviar WhatsApp</button>
-                    </div>
-                </form>
-            </div>
-        </div>
-    </div>
-    
-    <!-- Modal de notificaciones -->
-    <div id="modal-notificaciones" class="modal">
-        <div class="modal-content">
-            <div class="modal-header">
-                <h2>Notificaciones</h2>
-                <button class="modal-close">&times;</button>
-            </div>
-            <div class="modal-body">
-                <div class="notifications-list" id="notifications-list">
-                    <!-- Las notificaciones se cargarán aquí dinámicamente -->
-                </div>
-                <div class="form-actions">
-                    <button id="clear-notifications" class="btn btn-secondary">Limpiar Todo</button>
-                </div>
-            </div>
-        </div>
-    </div>
-    
-    <!-- Modal de estado de sincronización -->
-    <div id="modal-sync-status" class="modal">
-        <div class="modal-content">
-            <div class="modal-header">
-                <h2>Estado de Sincronización</h2>
-                <button class="modal-close">&times;</button>
-            </div>
-            <div class="modal-body">
-                <div class="sync-status-info">
-                    <div class="sync-item">
-                        <div class="sync-label">Estado de conexión:</div>
-                        <div class="sync-value" id="sync-connection-status">
-                            <span class="status-indicator online"></span> Online
-                        </div>
-                    </div>
-                    <div class="sync-item">
-                        <div class="sync-label">Última sincronización:</div>
-                        <div class="sync-value" id="sync-last-time">Hoy 15:30</div>
-                    </div>
-                    <div class="sync-item">
-                        <div class="sync-label">Elementos pendientes:</div>
-                        <div class="sync-value" id="sync-pending-items">0</div>
-                    </div>
-                </div>
-                <div class="sync-details">
-                    <h3>Detalle por módulo</h3>
-                    <table class="sync-details-table">
-                        <thead>
-                            <tr>
-                                <th>Módulo</th>
-                                <th>Actualizados</th>
-                                <th>Pendientes</th>
-                                <th>Estado</th>
-                            </tr>
-                        </thead>
-                        <tbody>
-                            <tr>
-                                <td>Ventas</td>
-                                <td id="sync-ventas-updated">0</td>
-                                <td id="sync-ventas-pending">0</td>
-                                <td id="sync-ventas-status"><span class="status-indicator ok"></span></td>
-                            </tr>
-                            <tr>
-                                <td>Productos</td>
-                                <td id="sync-productos-updated">0</td>
-                                <td id="sync-productos-pending">0</td>
-                                <td id="sync-productos-status"><span class="status-indicator ok"></span></td>
-                            </tr>
-                            <tr>
-                                <td>Clientes</td>
-                                <td id="sync-clientes-updated">0</td>
-                                <td id="sync-clientes-pending">0</td>
-                                <td id="sync-clientes-status"><span class="status-indicator ok"></span></td>
-                            </tr>
-                            <tr>
-                                <td>Compras</td>
-                                <td id="sync-compras-updated">0</td>
-                                <td id="sync-compras-pending">0</td>
-                                <td id="sync-compras-status"><span class="status-indicator ok"></span></td>
-                            </tr>
-                            <!-- Más módulos aquí -->
-                        </tbody>
-                    </table>
-                </div>
-                <div class="form-actions">
-                    <button id="force-sync" class="btn btn-primary">Forzar Sincronización</button>
-                    <button id="sync-settings" class="btn btn-secondary">Configuración</button>
-                </div>
-            </div>
-        </div>
-    </div>
-
     <!-- Scripts generales -->
     <script src="https://cdnjs.cloudflare.com/ajax/libs/Chart.js/3.9.1/chart.min.js"></script>
     
     <!-- Script de precarga para la comunicación con Electron -->
-    <script src="../preload.js"></script>
+    <script src="preload.js"></script>
     
     <!-- Scripts de utilidades -->
-    <script src="assets/js/utils/database.js"></script>
-    <script src="assets/js/utils/sync.js"></script>
-    <script src="assets/js/utils/auth.js"></script>
-    <script src="assets/js/utils/printer.js"></script>
-    <script src="assets/js/utils/validation.js"></script>
-    <script src="assets/js/utils/backup.js"></script>
-    <script src="assets/js/utils/logger.js"></script>
+    <script src="app/assets/js/utils/database.js"></script>
+    <script src="app/assets/js/utils/sync.js"></script>
+    <script src="app/assets/js/utils/auth.js"></script>
+    <script src="app/assets/js/utils/printer.js"></script>
+    <script src="app/assets/js/utils/validation.js"></script>
+    <script src="app/assets/js/utils/backup.js"></script>
+    <script src="app/assets/js/utils/logger.js"></script>
     
     <!-- Scripts de componentes de UI -->
-    <script src="assets/js/components/sidebar.js"></script>
-    <script src="assets/js/components/dashboard.js"></script>
-    <script src="assets/js/components/tabs.js"></script>
-    <script src="assets/js/components/notifications.js"></script>
+    <script src="app/assets/js/components/sidebar.js"></script>
+    <script src="app/assets/js/components/dashboard.js"></script>
+    <script src="app/assets/js/components/tabs.js"></script>
+    <script src="app/assets/js/components/notifications.js"></script>
+    <script src="app/assets/js/components/modals.js"></script>
     
-    <!-- Scripts para renderización y comunicación con Electron -->
-    <script src="assets/js/renderer.js"></script>
+    <!-- Scripts para módulos específicos -->
+    <script src="app/assets/js/modules/facturador/facturador.js"></script>
+    <script src="app/assets/js/modules/facturador/cliente.js"></script>
+    <script src="app/assets/js/modules/facturador/productos.js"></script>
+    <script src="app/assets/js/modules/facturador/pagos.js"></script>
     
-    <!-- Scripts de módulos específicos -->
-    <script src="assets/js/modules/facturador/facturador.js"></script>
-    <script src="assets/js/modules/facturador/cliente.js"></script>
-    <script src="assets/js/modules/facturador/productos.js"></script>
-    <script src="assets/js/modules/facturador/pagos.js"></script>
-    
-    <script src="assets/js/modules/ventas/index.js"></script>
-    <script src="assets/js/modules/ventas/historial.js"></script>
-    <script src="assets/js/modules/ventas/estadisticas.js"></script>
-    <script src="assets/js/modules/ventas/reportes.js"></script>
-    
-    <script src="assets/js/modules/compras/index.js"></script>
-    <script src="assets/js/modules/compras/registrar.js"></script>
-    <script src="assets/js/modules/compras/historial.js"></script>
-    <script src="assets/js/modules/compras/analisis.js"></script>
-    
-    <script src="assets/js/modules/productos/index.js"></script>
-    <script src="assets/js/modules/productos/editor.js"></script>
-    <script src="assets/js/modules/productos/importacion.js"></script>
-    <script src="assets/js/modules/productos/stock.js"></script>
-    <script src="assets/js/modules/productos/codigosBarras.js"></script>
-    
-    <script src="assets/js/modules/caja/index.js"></script>
-    <script src="assets/js/modules/caja/apertura.js"></script>
-    <script src="assets/js/modules/caja/cierre.js"></script>
-    <script src="assets/js/modules/caja/movimientos.js"></script>
-    <script src="assets/js/modules/caja/reportes.js"></script>
-    
-    <script src="assets/js/modules/clientes/index.js"></script>
-    <script src="assets/js/modules/clientes/editor.js"></script>
-    <script src="assets/js/modules/clientes/historial.js"></script>
-    <script src="assets/js/modules/clientes/fidelizacion.js"></script>
-    
-    <script src="assets/js/modules/proveedores/index.js"></script>
-    <script src="assets/js/modules/proveedores/editor.js"></script>
-    <script src="assets/js/modules/proveedores/historial.js"></script>
-    
-    <script src="assets/js/modules/usuarios/index.js"></script>
-    <script src="assets/js/modules/usuarios/roles.js"></script>
-    <script src="assets/js/modules/usuarios/permisos.js"></script>
-    <script src="assets/js/modules/usuarios/actividad.js"></script>
-    
-    <script src="assets/js/modules/cuotificador/index.js"></script>
-    <script src="assets/js/modules/cuotificador/simulador.js"></script>
-    <script src="assets/js/modules/cuotificador/tasas.js"></script>
-    
-    <script src="assets/js/modules/configuraciones/index.js"></script>
-    <script src="assets/js/modules/configuraciones/empresa.js"></script>
-    <script src="assets/js/modules/configuraciones/visual.js"></script>
-    <script src="assets/js/modules/configuraciones/seguridad.js"></script>
-    <script src="assets/js/modules/configuraciones/impresion.js"></script>
-    <script src="assets/js/modules/configuraciones/backups.js"></script>
-    
-    <!-- Scripts de integraciones -->
-    <script src="assets/js/modules/configuraciones/integraciones/mercadoPago.js"></script>
-    <script src="assets/js/modules/configuraciones/integraciones/arca.js"></script>
-    <script src="assets/js/modules/configuraciones/integraciones/whatsapp.js"></script>
-    <script src="assets/js/modules/configuraciones/integraciones/email.js"></script>
-    <script src="assets/js/modules/configuraciones/integraciones/bancos/index.js"></script>
-    <script src="assets/js/modules/configuraciones/integraciones/bancos/galicia.js"></script>
-    <script src="assets/js/modules/configuraciones/integraciones/bancos/getnet.js"></script>
-    <script src="assets/js/modules/configuraciones/integraciones/bancos/bbva.js"></script>
-    <script src="assets/js/modules/configuraciones/integraciones/bancos/payway.js"></script>
-    
-    <script src="assets/js/modules/reportes/index.js"></script>
-    <script src="assets/js/modules/reportes/ventas.js"></script>
-    <script src="assets/js/modules/reportes/compras.js"></script>
-    <script src="assets/js/modules/reportes/caja.js"></script>
-    <script src="assets/js/modules/reportes/stock.js"></script>
-    <script src="assets/js/modules/reportes/fiscales.js"></script>
-    <script src="assets/js/modules/reportes/exportacion.js"></script>
-    
-    <script src="assets/js/modules/documentos/index.js"></script>
-    <script src="assets/js/modules/documentos/remitos.js"></script>
-    <script src="assets/js/modules/documentos/notasCredito.js"></script>
-    <script src="assets/js/modules/documentos/notasDebito.js"></script>
-    
-    <script src="assets/js/modules/ayuda/index.js"></script>
-    <script src="assets/js/modules/ayuda/manual.js"></script>
-    <script src="assets/js/modules/ayuda/tutoriales.js"></script>
-    <script src="assets/js/modules/ayuda/soporte.js"></script>
-    
-    <script src="assets/js/modules/sucursales/index.js"></script>
-    <script src="assets/js/modules/sucursales/editor.js"></script>
-    <script src="assets/js/modules/sucursales/configuracion.js"></script>
-    <script src="assets/js/modules/sucursales/sincronizacion.js"></script>
+    <!-- Módulos adicionales -->
+    <script src="app/assets/js/modules/ventas/index.js"></script>
+    <script src="app/assets/js/modules/productos/index.js"></script>
+    <script src="app/assets/js/modules/caja/index.js"></script>
+    <script src="app/assets/js/modules/clientes/index.js"></script>
+    <script src="app/assets/js/modules/cuotificador/index.js"></script>
+    <script src="app/assets/js/modules/cuotificador/simulador.js"></script>
+    <script src="app/assets/js/modules/cuotificador/tasas.js"></script>
+    <script src="app/assets/js/modules/configuraciones/index.js"></script>
+    <script src="app/assets/js/modules/reportes/index.js"></script>
     
     <!-- Script principal de la aplicación -->
-    <script src="assets/js/app.js"></script>
+    <script src="app/assets/js/app.js"></script>
     
+    <!-- Script de inicialización y gestión de vistas -->
     <script>
-        // Inicialización de la aplicación cuando se carga el DOM
-        document.addEventListener('DOMContentLoaded', () => {
-            // Iniciar la aplicación
-            app.init();
+        // Objeto global para la aplicación
+        const factusystem = {
+            // Variable para controlar el estado de carga de los módulos
+            modulosCardados: {},
             
-            // Comprobar el estado de la caja al inicio
-            caja.verificarEstado().then(estado => {
-                if (!estado.abierta) {
-                    // Si la caja no está abierta, mostrar modal de apertura
-                    modals.show('modal-apertura-caja');
-                }
-            });
-            
-            // Configurar listeners para eventos de la interfaz
-            sidebar.init();
-            tabs.init();
-            notifications.init();
-            
-            // Inicializar el dashboard con estadísticas actuales
-            dashboard.cargarEstadisticas();
-            
-            // Configurar sincronización y verificación de conexión
-            sync.iniciar();
-            sync.verificarConexion();
-            
-            // Configurar eventos para modales
-            configurarEventosModales();
-        });
-        
-        function configurarEventosModales() {
-            // Modal de apertura de caja
-            document.getElementById('form-apertura-caja').addEventListener('submit', (e) => {
-                e.preventDefault();
-                const montoInicial = document.getElementById('monto-inicial').value;
-                const nota = document.getElementById('nota-apertura').value;
+            /**
+             * Función para inicializar la aplicación
+             */
+            init: function() {
+                console.log('Inicializando FactuSystem...');
                 
-                caja.abrirCaja(montoInicial, nota).then(() => {
-                    modals.hide('modal-apertura-caja');
-                    notifications.mostrar('Caja abierta correctamente', 'success');
-                }).catch(error => {
-                    notifications.mostrar('Error al abrir caja: ' + error, 'error');
+                // Inicializar componentes principales
+                this.initComponentes();
+                
+                // Configurar eventos de navegación
+                this.initEventos();
+                
+                // Cargar la vista inicial (dashboard)
+                this.cargarModulo('dashboard');
+                
+                // Verificar estado de autenticación
+                this.verificarAutenticacion();
+                
+                // Verificar estado de caja
+                this.verificarEstadoCaja();
+                
+                // Iniciar sistema de sincronización
+                if (window.sync && typeof sync.iniciar === 'function') {
+                    sync.iniciar();
+                }
+                
+                console.log('FactuSystem inicializado correctamente');
+            },
+            
+            /**
+             * Inicializa los componentes principales de la aplicación
+             */
+            initComponentes: function() {
+                // Inicializar barra lateral
+                if (window.sidebar && typeof sidebar.init === 'function') {
+                    sidebar.init();
+                }
+                
+                // Inicializar sistema de notificaciones
+                if (window.notifications && typeof notifications.init === 'function') {
+                    notifications.init();
+                }
+                
+                // Inicializar sistema de modales
+                if (window.modals && typeof modals.init === 'function') {
+                    modals.init();
+                }
+                
+                // Inicializar sistema de pestañas
+                if (window.tabs && typeof tabs.init === 'function') {
+                    tabs.init();
+                }
+            },
+            
+            /**
+             * Configura los eventos de navegación y UI
+             */
+            initEventos: function() {
+                // Eventos para el menú lateral
+                document.querySelectorAll('.sidebar-menu li').forEach(item => {
+                    item.addEventListener('click', (e) => {
+                        const moduleId = e.currentTarget.getAttribute('data-module');
+                        this.cargarModulo(moduleId);
+                    });
                 });
-            });
-            
-            // Botón de cierre de sesión
-            document.getElementById('logout-btn').addEventListener('click', () => {
-                auth.cerrarSesion().then(() => {
-                    window.location.href = 'login.html';
-                });
-            });
-            
-            // Eventos para otros modales y botones
-            document.querySelectorAll('.modal-close').forEach(btn => {
-                btn.addEventListener('click', (e) => {
-                    const modalId = e.target.closest('.modal').id;
-                    modals.hide(modalId);
-                });
-            });
-            
-            // Eventos para acciones rápidas en el dashboard
-            document.querySelectorAll('.quick-action').forEach(btn => {
-                btn.addEventListener('click', (e) => {
-                    const moduleId = e.currentTarget.dataset.module;
-                    tabs.abrir(moduleId);
-                });
-            });
-            
-            // Botón de notificaciones
-            document.getElementById('notifications-btn').addEventListener('click', () => {
-                modals.show('modal-notificaciones');
-            });
-            
-            // Botón de estado de sincronización
-            document.getElementById('sync-status').addEventListener('click', () => {
-                modals.show('modal-sync-status');
-            });
-            
-            // Botón para forzar sincronización
-            document.getElementById('force-sync').addEventListener('click', () => {
-                sync.forzarSincronizacion();
-            });
-            
-            // Botón para minimizar todas las pestañas
-            document.getElementById('minimize-all-tabs').addEventListener('click', () => {
-                tabs.minimizarTodas();
-            });
-        }
-    </script>
-// Añade este código al final de index.html justo antes de </body>
-<script>
-    // Capturar errores globales y mostrarlos
-    window.addEventListener('error', function(event) {
-        console.error('Error capturado:', event.error);
-        
-        // Crear un elemento visible con el error
-        const errorDiv = document.createElement('div');
-        errorDiv.style.position = 'fixed';
-        errorDiv.style.top = '0';
-        errorDiv.style.left = '0';
-        errorDiv.style.right = '0';
-        errorDiv.style.backgroundColor = 'red';
-        errorDiv.style.color = 'white';
-        errorDiv.style.padding = '20px';
-        errorDiv.style.zIndex = '9999';
-        errorDiv.innerHTML = `
-            <h2>Error en la aplicación:</h2>
-            <pre>${event.error?.stack || event.message || 'Error desconocido'}</pre>
-        `;
-        document.body.appendChild(errorDiv);
-    });
-
-    // Verificar carga de recursos críticos
-    window.addEventListener('DOMContentLoaded', function() {
-        console.log('DOM completamente cargado');
-        
-        // Verificar archivos CSS principales
-        const cssFiles = [
-            'assets/css/main.css',
-            'assets/css/components/sidebar.css',
-            'assets/css/components/dashboard.css',
-            'assets/css/components/facturador.css',
-            'assets/css/components/modal.css',
-            'assets/css/components/tables.css'
-        ];
-        
-        cssFiles.forEach(file => {
-            const link = document.createElement('link');
-            link.href = file;
-            link.rel = 'stylesheet';
-            link.onload = () => console.log(`CSS cargado: ${file}`);
-            link.onerror = () => console.error(`Error al cargar CSS: ${file}`);
-            document.head.appendChild(link);
-        });
-        
-        // Verificar si los scripts principales existen
-        const criticalScripts = [
-            'assets/js/app.js',
-            'assets/js/utils/database.js',
-            'assets/js/components/sidebar.js',
-            'assets/js/components/dashboard.js'
-        ];
-        
-        criticalScripts.forEach(script => {
-            fetch(script)
-                .then(response => {
-                    if (!response.ok) {
-                        throw new Error(`No se pudo cargar ${script}`);
+                
+                // Eventos para botones de acción
+                document.addEventListener('click', (e) => {
+                    if (e.target.matches('.btn[data-module]') || e.target.closest('.btn[data-module]')) {
+                        const btn = e.target.matches('.btn[data-module]') ? e.target : e.target.closest('.btn[data-module]');
+                        const moduleId = btn.getAttribute('data-module');
+                        this.cargarModulo(moduleId);
                     }
-                    console.log(`Script verificado: ${script}`);
-                })
-                .catch(error => {
-                    console.error(`Error con script: ${script}`, error);
-                    const errorDiv = document.createElement('div');
-                    errorDiv.style.backgroundColor = 'orange';
-                    errorDiv.style.color = 'black';
-                    errorDiv.style.padding = '10px';
-                    errorDiv.style.margin = '5px 0';
-                    errorDiv.textContent = `No se pudo cargar: ${script}`;
-                    document.body.insertBefore(errorDiv, document.body.firstChild);
+                    
+                    // Otros botones globales pueden ser manejados aquí
                 });
+                
+                // Evento para botón de cierre de caja (si existe)
+                const btnCierreCaja = document.getElementById('cerrar-caja-btn');
+                if (btnCierreCaja) {
+                    btnCierreCaja.addEventListener('click', () => {
+                        if (window.caja && typeof caja.mostrarCierreCaja === 'function') {
+                            caja.mostrarCierreCaja();
+                        }
+                    });
+                }
+                
+                // Escuchar eventos de mensajes del proceso principal de Electron
+                if (window.electron && typeof electron.recibir === 'function') {
+                    electron.recibir('mensaje', (evento, datos) => {
+                        console.log('Mensaje recibido de Electron:', datos);
+                        // Manejar mensajes del proceso principal
+                    });
+                }
+            },
+            
+            /**
+             * Carga un módulo específico
+             * @param {string} moduleId - Identificador del módulo a cargar
+             */
+            cargarModulo: function(moduleId) {
+                console.log(`Cargando módulo: ${moduleId}`);
+                
+                // Actualizar clases activas en el menú
+                document.querySelectorAll('.sidebar-menu li').forEach(item => {
+                    if (item.getAttribute('data-module') === moduleId) {
+                        item.classList.add('active');
+                    } else {
+                        item.classList.remove('active');
+                    }
+                });
+                
+                // Ocultar todas las vistas
+                document.querySelectorAll('.view-container').forEach(view => {
+                    view.classList.remove('active');
+                });
+                
+                // Mostrar la vista solicitada
+                const viewElement = document.getElementById(`view-${moduleId}`);
+                if (!viewElement) {
+                    console.error(`Contenedor para el módulo ${moduleId} no encontrado`);
+                    return;
+                }
+                
+                viewElement.classList.add('active');
+                
+                // Verificar si ya se ha cargado el contenido
+                if (this.modulosCardados[moduleId]) {
+                    console.log(`Módulo ${moduleId} ya está cargado, activándolo`);
+                    return;
+                }
+                
+                // Cargar el contenido del módulo desde su archivo HTML
+                this.cargarContenidoModulo(moduleId, viewElement);
+            },
+            
+            /**
+             * Carga el contenido HTML del módulo y lo inicializa
+             * @param {string} moduleId - Identificador del módulo
+             * @param {HTMLElement} viewElement - Elemento contenedor de la vista
+             */
+            cargarContenidoModulo: function(moduleId, viewElement) {
+                console.log(`Cargando contenido para: ${moduleId}`);
+                
+                // Mostrar indicador de carga
+                viewElement.innerHTML = `
+                    <div class="loading-indicator">
+                        <i class="fas fa-spinner fa-spin"></i>
+                        <span>Cargando ${moduleId}...</span>
+                    </div>
+                `;
+                
+                // Intentar cargar el archivo HTML del módulo
+                fetch(`app/views/${moduleId}.html`)
+                    .then(response => {
+                        if (!response.ok) {
+                            throw new Error(`Vista no encontrada: ${moduleId}.html (${response.status})`);
+                        }
+                        return response.text();
+                    })
+                    .then(html => {
+                        // Insertar el HTML en el contenedor
+                        viewElement.innerHTML = html;
+                        this.modulosCardados[moduleId] = true;
+                        
+                        // Actualizar el título de la página si existe un elemento header-title
+                        const headerTitle = viewElement.querySelector('.header-title');
+                        if (headerTitle) {
+                            document.title = `FactuSystem - ${headerTitle.textContent}`;
+                        } else {
+                            document.title = `FactuSystem - ${moduleId.charAt(0).toUpperCase() + moduleId.slice(1)}`;
+                        }
+                        
+                        // Inicializar el módulo específico
+                        this.inicializarModulo(moduleId);
+                    })
+                    .catch(error => {
+                        console.error(`Error cargando vista ${moduleId}:`, error);
+                        
+                        // Mostrar mensaje de error o vista en desarrollo
+                        viewElement.innerHTML = `
+                            <div class="content-header">
+                                <h1 class="header-title">${moduleId.charAt(0).toUpperCase() + moduleId.slice(1)}</h1>
+                            </div>
+                            <div class="module-content">
+                                <div class="alert alert-warning">
+                                    <i class="fas fa-exclamation-triangle"></i>
+                                    <span>Módulo en desarrollo...</span>
+                                </div>
+                            </div>
+                        `;
+                    });
+            },
+            
+            /**
+             * Inicializa un módulo específico llamando a su función init si existe
+             * @param {string} moduleId - Identificador del módulo
+             */
+            inicializarModulo: function(moduleId) {
+                console.log(`Inicializando módulo: ${moduleId}`);
+                
+                // Verificar si existe un objeto global para el módulo
+                if (window[moduleId]) {
+                    // Llamar a la función init del módulo si existe
+                    if (typeof window[moduleId].init === 'function') {
+                        window[moduleId].init();
+                        console.log(`Módulo ${moduleId} inicializado correctamente`);
+                    } else {
+                        console.warn(`El módulo ${moduleId} existe pero no tiene función init()`);
+                    }
+                } else {
+                    // Intentar buscar en submódulos específicos según la estructura del proyecto
+                    switch (moduleId) {
+                        case 'dashboard':
+                            if (window.dashboard && typeof dashboard.init === 'function') {
+                                dashboard.init();
+                            }
+                            break;
+                        case 'facturador':
+                            if (window.facturador && typeof facturador.init === 'function') {
+                                facturador.init();
+                            }
+                            break;
+                        case 'clientes':
+                            if (window.clientes && typeof clientes.init === 'function') {
+                                clientes.init();
+                            }
+                            break;
+                        case 'productos':
+                            if (window.productos && typeof productos.init === 'function') {
+                                productos.init();
+                            }
+                            break;
+                        case 'caja':
+                            if (window.caja && typeof caja.init === 'function') {
+                                caja.init();
+                            }
+                            break;
+                        case 'reportes':
+                            if (window.reportes && typeof reportes.init === 'function') {
+                                reportes.init();
+                            }
+                            break;
+                        case 'cuotificador':
+                            if (window.cuotificador && typeof cuotificador.init === 'function') {
+                                cuotificador.init();
+                            }
+                            break;
+                        case 'configuraciones':
+                            if (window.configuraciones && typeof configuraciones.init === 'function') {
+                                configuraciones.init();
+                            }
+                            break;
+                        default:
+                            console.warn(`No se encontró una inicialización específica para el módulo ${moduleId}`);
+                    }
+                }
+                
+                // Inicializar elementos UI comunes si existen en el DOM
+                this.inicializarElementosUI();
+            },
+            
+            /**
+             * Inicializa elementos de UI comunes en la aplicación
+             */
+            inicializarElementosUI: function() {
+                // Inicializar selectores personalizados
+                const selects = document.querySelectorAll('select.form-control');
+                if (selects.length > 0 && window.customSelect) {
+                    selects.forEach(select => customSelect.init(select));
+                }
+                
+                // Inicializar datepickers
+                const datepickers = document.querySelectorAll('input[type="date"]');
+                if (datepickers.length > 0 && window.datepicker) {
+                    datepickers.forEach(input => datepicker.init(input));
+                }
+                
+                // Inicializar tooltips
+                const tooltips = document.querySelectorAll('[data-tooltip]');
+                if (tooltips.length > 0 && window.tooltip) {
+                    tooltips.forEach(el => tooltip.init(el));
+                }
+                
+                // Detectar y configurar tabs
+                const tabContainers = document.querySelectorAll('.form-tabs');
+                if (tabContainers.length > 0) {
+                    tabContainers.forEach(container => {
+                        const tabButtons = container.querySelectorAll('.tab-btn');
+                        tabButtons.forEach(btn => {
+                            btn.addEventListener('click', (e) => {
+                                const tabId = e.currentTarget.getAttribute('data-tab');
+                                
+                                // Desactivar todos los tabs
+                                tabButtons.forEach(b => b.classList.remove('active'));
+                                document.querySelectorAll('.tab-content').forEach(content => {
+                                    content.classList.remove('active');
+                                });
+                                
+                                // Activar el tab seleccionado
+                                e.currentTarget.classList.add('active');
+                                document.getElementById(`tab-${tabId}`).classList.add('active');
+                            });
+                        });
+                    });
+                }
+            },
+            
+            /**
+             * Verifica el estado de autenticación del usuario
+             */
+            verificarAutenticacion: function() {
+                // Si existe el módulo de autenticación, verificar estado
+                if (window.auth && typeof auth.verificarSesion === 'function') {
+                    const sesionValida = auth.verificarSesion();
+                    
+                    if (!sesionValida) {
+                        console.log('Sesión no válida, redirigiendo a login');
+                        window.location.href = 'app/views/login.html';
+                        return;
+                    }
+                    
+                    // Actualizar información del usuario en la interfaz
+                    if (typeof auth.obtenerUsuarioActual === 'function') {
+                        const usuario = auth.obtenerUsuarioActual();
+                        // Actualizar UI con información del usuario si es necesario
+                    }
+                }
+            },
+            
+            /**
+             * Verifica el estado de la caja
+             */
+            verificarEstadoCaja: function() {
+                if (window.caja && typeof caja.verificarEstado === 'function') {
+                    caja.verificarEstado().then(estado => {
+                        if (!estado.abierta) {
+                            console.log('Caja cerrada, mostrar modal de apertura');
+                            // Si la caja no está abierta y existe el sistema de modales, mostrar diálogo de apertura
+                            if (window.modals && typeof modals.mostrar === 'function') {
+                                setTimeout(() => {
+                                    modals.mostrar('modal-apertura-caja');
+                                }, 1000); // Pequeño retraso para asegurar que la UI esté lista
+                            }
+                        }
+                    }).catch(error => {
+                        console.error('Error verificando estado de caja:', error);
+                    });
+                }
+            }
+        };
+        
+        // Inicializar la aplicación cuando se carga el documento
+        document.addEventListener('DOMContentLoaded', () => {
+            // Iniciar aplicación con el nuevo sistema
+            factusystem.init();
+            
+            // Mantener compatibilidad con el código antiguo si es necesario
+            if (typeof app !== 'undefined' && app.init && app !== factusystem) {
+                console.log('Inicializando sistema antiguo para compatibilidad');
+                app.init();
+            }
         });
-    });
-</script>
+    </script>
 </body>
 </html>
