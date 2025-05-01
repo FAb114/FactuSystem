@@ -1,225 +1,400 @@
-const { app, BrowserWindow, ipcMain, dialog } = require('electron');
+const { app, BrowserWindow, ipcMain, Menu, shell } = require('electron');
 const path = require('path');
 const fs = require('fs');
+const url = require('url');
 
-// Habilitar registro detallado
-const log = (...args) => {
-  console.log(new Date().toISOString(), ...args);
-  
-  // También guardar logs en un archivo para depuración
-  try {
-    const logPath = path.join(app.getPath('userData'), 'logs');
-    if (!fs.existsSync(logPath)) {
-      fs.mkdirSync(logPath, { recursive: true });
-    }
-    
-    fs.appendFileSync(
-      path.join(logPath, `factusystem-${new Date().toISOString().split('T')[0]}.log`),
-      `${new Date().toISOString()} ${args.join(' ')}\n`
-    );
-  } catch (e) {
-    console.error('Error al guardar log:', e);
-  }
+// Mantener referencias globales de las ventanas activas
+const windows = {
+  main: null,
+  modules: {}
 };
 
-let mainWindow;
+// Configuración de la aplicación
+const appConfig = {
+  minWidth: 1024,
+  minHeight: 768,
+  icon: path.join(__dirname, 'app/assets/img/logo.png')
+};
 
-function createWindow() {
-  log('Iniciando creación de ventana principal');
-
-  // Crear la ventana del navegador.
-  mainWindow = new BrowserWindow({
-    width: 1200,
+// Crear la ventana principal
+function createMainWindow() {
+  windows.main = new BrowserWindow({
+    width: 1280,
     height: 800,
-    icon: path.join(__dirname, 'assets/img/icon.png'),
+    minWidth: appConfig.minWidth,
+    minHeight: appConfig.minHeight,
+    icon: appConfig.icon,
     webPreferences: {
-      nodeIntegration: false,
+      nodeIntegration: true,
       contextIsolation: true,
-      enableRemoteModule: false,
       preload: path.join(__dirname, 'preload.js')
-    }
+    },
+    show: false, // No mostrar hasta que esté lista
+    backgroundColor: '#f5f6fa' // Color de fondo durante la carga
   });
 
-  log('Configuración de BrowserWindow completada');
+  // Cargar el archivo index.html
+  windows.main.loadFile(path.join(__dirname, 'app/index.html'));
 
-  // Verificar que el archivo index.html existe
-  const indexPath = path.join(__dirname, 'app', 'index.html');
-  try {
-    if (fs.existsSync(indexPath)) {
-      log(`Archivo index.html encontrado en: ${indexPath}`);
-    } else {
-      log(`ADVERTENCIA: index.html no encontrado en: ${indexPath}`);
-      
-      // Intentar detectar la ubicación correcta de index.html
-      const possiblePaths = [
-        path.join(__dirname, 'index.html'),
-        path.join(__dirname, 'src', 'index.html'),
-        path.join(__dirname, 'public', 'index.html')
-      ];
-      
-      let foundAlternative = false;
-      for (const p of possiblePaths) {
-        if (fs.existsSync(p)) {
-          log(`Alternativa encontrada: ${p}`);
-          mainWindow.loadFile(p);
-          foundAlternative = true;
-          break;
-        }
+  // Mostrar una vez que esté lista
+  windows.main.once('ready-to-show', () => {
+    windows.main.show();
+    windows.main.maximize();
+  });
+
+  // Cerrar todas las ventanas de módulos al cerrar la principal
+  windows.main.on('closed', () => {
+    for (const moduleId in windows.modules) {
+      if (windows.modules[moduleId] && !windows.modules[moduleId].isDestroyed()) {
+        windows.modules[moduleId].close();
       }
-      
-      if (!foundAlternative) {
-        // Crear una página HTML de error básica
-        const errorHTML = `
-          <!DOCTYPE html>
-          <html>
-          <head>
-            <meta charset="UTF-8">
-            <title>FactuSystem - Error</title>
-            <style>
-              body { font-family: Arial, sans-serif; padding: 20px; background-color: #f0f0f0; }
-              .error-container { max-width: 800px; margin: 0 auto; background: white; padding: 20px; border-radius: 5px; box-shadow: 0 2px 10px rgba(0,0,0,0.1); }
-              h1 { color: #d9534f; }
-              pre { background: #f8f8f8; padding: 10px; border-radius: 3px; overflow: auto; }
-              .btn { display: inline-block; padding: 10px 15px; background: #0275d8; color: white; border-radius: 3px; text-decoration: none; margin-top: 20px; }
-            </style>
-          </head>
-          <body>
-            <div class="error-container">
-              <h1>Error al iniciar FactuSystem</h1>
-              <p>No se ha podido encontrar el archivo principal de la aplicación (index.html).</p>
-              <h2>Ubicaciones verificadas:</h2>
-              <pre>${possiblePaths.join('\n')}</pre>
-              <p>Comprueba la estructura de archivos de tu proyecto y asegúrate de que index.html esté en la ubicación correcta.</p>
-              <button class="btn" onclick="window.electronAPI.openDevTools()">Abrir DevTools</button>
-              <button class="btn" onclick="window.electronAPI.restart()">Reiniciar aplicación</button>
-            </div>
-            <script>
-              // Informar al proceso principal del error
-              if (window.electronAPI) {
-                window.electronAPI.reportError('INDEX_NOT_FOUND');
-              }
-            </script>
-          </body>
-          </html>
-        `;
-        
-        const errorPath = path.join(app.getPath('temp'), 'factusystem-error.html');
-        fs.writeFileSync(errorPath, errorHTML);
-        mainWindow.loadFile(errorPath);
-      }
-      return;
     }
-  } catch (error) {
-    log(`Error al verificar archivo index.html: ${error.message}`);
-    dialog.showErrorBox('Error en FactuSystem', 
-      'Ha ocurrido un error al iniciar la aplicación. Por favor, contacte con soporte.\n\n' + error.message);
+    windows.main = null;
+  });
+
+  // Menú de desarrollo en modo desarrollo
+  if (process.env.NODE_ENV === 'development') {
+    windows.main.webContents.openDevTools();
   }
 
-  // Cargar el archivo index.html de la aplicación.
-  try {
-    log(`Intentando cargar: ${indexPath}`);
-    mainWindow.loadFile(indexPath);
-  } catch (error) {
-    log(`Error al cargar index.html: ${error.message}`);
-    dialog.showErrorBox('Error en FactuSystem', 
-      'Ha ocurrido un error al cargar la interfaz de la aplicación.\n\n' + error.message);
-  }
-
-  // Abrir las herramientas de desarrollo.
-  mainWindow.webContents.openDevTools();
-
-  mainWindow.webContents.on('did-finish-load', () => {
-    log('La ventana ha terminado de cargar');
-  });
-
-  mainWindow.webContents.on('did-fail-load', (event, errorCode, errorDescription) => {
-    log(`Error al cargar la ventana: ${errorCode} - ${errorDescription}`);
-    
-    // Mostrar página de error
-    const errorHTML = `
-      <!DOCTYPE html>
-      <html>
-      <head>
-        <meta charset="UTF-8">
-        <title>FactuSystem - Error</title>
-        <style>
-          body { font-family: Arial, sans-serif; padding: 20px; background-color: #f0f0f0; }
-          .error-container { max-width: 800px; margin: 0 auto; background: white; padding: 20px; border-radius: 5px; box-shadow: 0 2px 10px rgba(0,0,0,0.1); }
-          h1 { color: #d9534f; }
-          pre { background: #f8f8f8; padding: 10px; border-radius: 3px; overflow: auto; }
-          .btn { display: inline-block; padding: 10px 15px; background: #0275d8; color: white; border-radius: 3px; text-decoration: none; margin-top: 20px; }
-        </style>
-      </head>
-      <body>
-        <div class="error-container">
-          <h1>Error al cargar FactuSystem</h1>
-          <p>No se ha podido cargar correctamente la aplicación.</p>
-          <h2>Detalles del error:</h2>
-          <pre>Código: ${errorCode}\nDescripción: ${errorDescription}</pre>
-          <button class="btn" onclick="window.electronAPI.reload()">Intentar de nuevo</button>
-        </div>
-      </body>
-      </html>
-    `;
-    
-    const errorPath = path.join(app.getPath('temp'), 'factusystem-error.html');
-    fs.writeFileSync(errorPath, errorHTML);
-    mainWindow.loadFile(errorPath);
-  });
-
-  mainWindow.on('closed', function () {
-    log('Ventana principal cerrada');
-    mainWindow = null;
-  });
+  // Configurar el menú de la aplicación
+  createApplicationMenu();
 }
 
-// Este método se llamará cuando Electron haya terminado
-// la inicialización y esté listo para crear ventanas del navegador.
-app.whenReady().then(() => {
-  log('Aplicación lista - Electron inicializado');
-  createWindow();
+// Crear ventana para un módulo específico
+function createModuleWindow(moduleId) {
+  // Verificar si la ventana ya existe y está abierta
+  if (windows.modules[moduleId] && !windows.modules[moduleId].isDestroyed()) {
+    windows.modules[moduleId].focus();
+    return;
+  }
 
-  app.on('activate', function () {
-    // En macOS es común volver a crear una ventana en la aplicación cuando el
-    // icono del dock es clicado y no hay otras ventanas abiertas.
-    if (mainWindow === null) createWindow();
+  // Configuración de las ventanas de módulos
+  const moduleConfig = {
+    facturador: {
+      title: 'FactuSystem - Facturador',
+      width: 1200,
+      height: 800,
+      file: 'views/facturador.html'
+    },
+    ventas: {
+      title: 'FactuSystem - Ventas',
+      width: 1100,
+      height: 750,
+      file: 'views/ventas.html'
+    },
+    compras: {
+      title: 'FactuSystem - Compras',
+      width: 1100,
+      height: 750,
+      file: 'views/compras.html'
+    },
+    inventario: {
+      title: 'FactuSystem - Inventario',
+      width: 1100,
+      height: 750,
+      file: 'views/productos.html'
+    },
+    clientes: {
+      title: 'FactuSystem - Clientes',
+      width: 1000,
+      height: 700,
+      file: 'views/clientes.html'
+    },
+    proveedores: {
+      title: 'FactuSystem - Proveedores',
+      width: 1000,
+      height: 700,
+      file: 'views/proveedores.html'
+    },
+    usuarios: {
+      title: 'FactuSystem - Usuarios',
+      width: 1000,
+      height: 700,
+      file: 'views/usuarios.html'
+    },
+    caja: {
+      title: 'FactuSystem - Caja',
+      width: 1000,
+      height: 700,
+      file: 'views/caja.html'
+    },
+    reportes: {
+      title: 'FactuSystem - Reportes',
+      width: 1100,
+      height: 750,
+      file: 'views/reportes.html'
+    },
+    cuotificador: {
+      title: 'FactuSystem - Cuotificador',
+      width: 1000,
+      height: 700,
+      file: 'views/cuotificador.html'
+    },
+    documentos: {
+      title: 'FactuSystem - Documentos',
+      width: 1000,
+      height: 700,
+      file: 'views/documentos.html'
+    },
+    configuraciones: {
+      title: 'FactuSystem - Configuración',
+      width: 1000,
+      height: 700,
+      file: 'views/configuraciones.html'
+    },
+    sucursales: {
+      title: 'FactuSystem - Sucursales',
+      width: 1100,
+      height: 750,
+      file: 'views/sucursales.html'
+    },
+    ayuda: {
+      title: 'FactuSystem - Ayuda',
+      width: 1000,
+      height: 700,
+      file: 'views/ayuda.html'
+    }
+    
+  };
+
+  // Verificar si el módulo está configurado
+  if (!moduleConfig[moduleId]) {
+    console.error(`Módulo no configurado: ${moduleId}`);
+    return;
+  }
+
+  const config = moduleConfig[moduleId];
+  const moduleFilePath = path.join(__dirname, 'app', config.file);
+
+  // Verificar si el archivo del módulo existe
+  if (!fs.existsSync(moduleFilePath)) {
+    console.error(`Archivo del módulo no encontrado: ${moduleFilePath}`);
+    return;
+  }
+
+  // Crear la ventana del módulo
+  windows.modules[moduleId] = new BrowserWindow({
+    title: config.title,
+    width: config.width,
+    height: config.height,
+    minWidth: appConfig.minWidth,
+    minHeight: appConfig.minHeight,
+    icon: appConfig.icon,
+    parent: windows.main, // Ventana principal como padre
+    modal: false, // No modal para permitir interacción con otras ventanas
+    webPreferences: {
+      nodeIntegration: true, 
+      contextIsolation: true,
+      preload: path.join(__dirname, 'preload.js')
+    },
+    show: false
+  });
+
+  // Cargar el archivo HTML del módulo
+  windows.modules[moduleId].loadFile(moduleFilePath);
+
+  // Mostrar cuando esté listo
+  windows.modules[moduleId].once('ready-to-show', () => {
+    windows.modules[moduleId].show();
+  });
+
+  // Limpiar la referencia cuando se cierre
+  windows.modules[moduleId].on('closed', () => {
+    windows.modules[moduleId] = null;
+  });
+
+  // Abrir DevTools en modo desarrollo
+  if (process.env.NODE_ENV === 'development') {
+    windows.modules[moduleId].webContents.openDevTools();
+  }
+}
+
+// Crear el menú de la aplicación
+function createApplicationMenu() {
+  const template = [
+    {
+      label: 'Archivo',
+      submenu: [
+        {
+          label: 'Dashboard',
+          click: () => {
+            if (windows.main) {
+              windows.main.focus();
+            }
+          }
+        },
+        { type: 'separator' },
+        {
+          label: 'Facturador',
+          click: () => createModuleWindow('facturador')
+        },
+        { type: 'separator' },
+        {
+          label: 'Salir',
+          accelerator: process.platform === 'darwin' ? 'Cmd+Q' : 'Ctrl+Q',
+          click: () => app.quit()
+        }
+      ]
+    },
+    {
+      label: 'Módulos',
+      submenu: [
+        {
+          label: 'Ventas',
+          click: () => createModuleWindow('ventas')
+        },
+        {
+          label: 'Compras',
+          click: () => createModuleWindow('compras')
+        },
+        {
+          label: 'Inventario',
+          click: () => createModuleWindow('inventario')
+        },
+        {
+          label: 'Clientes',
+          click: () => createModuleWindow('clientes')
+        },
+        {
+          label: 'Proveedores',
+          click: () => createModuleWindow('proveedores')
+        },
+        {
+          label: 'Caja',
+          click: () => createModuleWindow('caja')
+        },
+        {
+          label: 'Reportes',
+          click: () => createModuleWindow('reportes')
+        },
+        {
+          label: 'Cuotificador',
+          click: () => createModuleWindow('cuotificador')
+        }
+      ]
+    },
+    {
+      label: 'Herramientas',
+      submenu: [
+        {
+          label: 'Configuración',
+          click: () => {
+            // Aquí implementar apertura de configuración
+          }
+        },
+        { type: 'separator' },
+        {
+          label: 'Recargar',
+          accelerator: 'F5',
+          click: (item, focusedWindow) => {
+            if (focusedWindow) focusedWindow.reload();
+          }
+        }
+      ]
+    },
+    {
+      label: 'Ayuda',
+      submenu: [
+        {
+          label: 'Documentación',
+          click: () => {
+            shell.openExternal('https://github.com/FAb114/FactuSystem');
+          }
+        },
+        {
+          label: 'Acerca de FactuSystem',
+          click: () => {
+            // Mostrar ventana acerca de
+          }
+        }
+      ]
+    }
+  ];
+
+  // Agregar menú para macOS
+  if (process.platform === 'darwin') {
+    template.unshift({
+      label: app.getName(),
+      submenu: [
+        { role: 'about' },
+        { type: 'separator' },
+        { role: 'services' },
+        { type: 'separator' },
+        { role: 'hide' },
+        { role: 'hideothers' },
+        { role: 'unhide' },
+        { type: 'separator' },
+        { role: 'quit' }
+      ]
+    });
+  }
+
+  // Aplicar el menú
+  const menu = Menu.buildFromTemplate(template);
+  Menu.setApplicationMenu(menu);
+}
+
+// Iniciar la aplicación cuando Electron esté listo
+app.whenReady().then(() => {
+  createMainWindow();
+
+  // En macOS, recrear la ventana cuando se hace clic en el dock
+  app.on('activate', () => {
+    if (BrowserWindow.getAllWindows().length === 0) {
+      createMainWindow();
+    }
   });
 });
 
-// Salir cuando todas las ventanas estén cerradas.
-app.on('window-all-closed', function () {
-  log('Todas las ventanas cerradas, saliendo de la aplicación');
-  // En macOS es común que las aplicaciones y su barra de menú
-  // permanezcan activas hasta que el usuario salga explícitamente con Cmd + Q
-  if (process.platform !== 'darwin') app.quit();
+// Cerrar la aplicación cuando todas las ventanas están cerradas (excepto en macOS)
+app.on('window-all-closed', () => {
+  if (process.platform !== 'darwin') {
+    app.quit();
+  }
 });
 
-// Configurar canales IPC para comunicación con el proceso de renderizado
-ipcMain.handle('app:getPath', (event, name) => {
-  log(`Solicitada ruta: ${name}`);
-  return app.getPath(name);
+// Manejar eventos IPC (comunicación entre procesos)
+ipcMain.handle('open-module', (event, moduleId) => {
+  createModuleWindow(moduleId);
 });
 
-ipcMain.handle('app:restart', () => {
-  log('Reiniciando aplicación...');
-  app.relaunch();
-  app.exit();
+// Función para obtener estadísticas del sistema (simuladas)
+ipcMain.handle('get-system-stats', async () => {
+  // Aquí podrías implementar la lógica real para obtener estadísticas
+  // desde tu base de datos o sistema de archivos
+  return {
+    ventas: {
+      hoy: Math.floor(Math.random() * 20000) + 5000,
+      semana: Math.floor(Math.random() * 100000) + 30000,
+      mes: Math.floor(Math.random() * 500000) + 150000
+    },
+    facturas: {
+      pendientes: Math.floor(Math.random() * 30) + 5,
+      completadas: Math.floor(Math.random() * 100) + 50,
+      anuladas: Math.floor(Math.random() * 10) + 1
+    },
+    inventario: {
+      total: Math.floor(Math.random() * 1000) + 200,
+      bajoStock: Math.floor(Math.random() * 20) + 5,
+      agotados: Math.floor(Math.random() * 10) + 1
+    },
+    clientes: {
+      activos: Math.floor(Math.random() * 500) + 100,
+      nuevos: Math.floor(Math.random() * 20) + 5
+    }
+  };
 });
 
-ipcMain.handle('app:showDialog', async (event, options) => {
-  log('Mostrando diálogo:', options.type);
-  return await dialog.show(options);
-});
+// Función para verificar actualizaciones de la aplicación
+function checkForUpdates() {
+  // Implementar lógica de verificación de actualizaciones
+  console.log('Verificando actualizaciones...');
+}
 
-// Manejo de errores no capturados en el proceso principal
-process.on('uncaughtException', (error) => {
-  log(`Error no capturado: ${error.message}`);
-  log(error.stack);
-  
-  dialog.showErrorBox(
-    'Error en FactuSystem',
-    `Ha ocurrido un error inesperado en la aplicación.\n\n${error.message}\n\nPor favor, contacte con soporte técnico.`
-  );
+// Verificar actualizaciones al iniciar
+app.whenReady().then(() => {
+  // Verificar actualizaciones cada 24 horas
+  checkForUpdates();
+  setInterval(checkForUpdates, 24 * 60 * 60 * 1000);
 });
-
-log('Archivo main.js cargado completamente');

@@ -1,638 +1,133 @@
-/* tables.css - Estilos para las tablas de FactuSystem */
+/* tables.css - Estilos para todas las tablas de la aplicación */
 
-:root {
-    /* Colores principales */
-    --table-bg: #ffffff;
-    --table-header-bg: #f8f9fa;
-    --table-border-color: #dee2e6;
-    --table-stripe-color: #f9fafb;
-    --table-hover-color: #f1f5f9;
-    --table-text-color: #212529;
-    --table-header-text-color: #495057;
-    --table-muted-text: #6c757d;
-    
-    /* Colores de estado */
-    --status-success: #26c281;
-    --status-warning: #ffac30;
-    --status-danger: #ff5252;
-    --status-info: #2e88ff;
-    --status-pending: #9c27b0;
-    --status-cancelled: #e74c3c;
-    --status-inactive: #95a5a6;
-    
-    /* Dimensiones */
-    --table-border-radius: 8px;
-    --table-cell-padding: 12px 16px;
-    --table-sm-cell-padding: 8px 12px;
-    --table-lg-cell-padding: 16px 20px;
-    
-    /* Sombras y otros */
-    --table-shadow: 0 2px 4px rgba(0, 0, 0, 0.05);
-    --table-header-font-weight: 600;
-    --table-transition: all 0.2s ease;
-  }
-  
-  /* Estilos base para tablas */
-  .table-container {
-    width: 100%;
-    overflow-x: auto;
-    background-color: var(--table-bg);
-    border-radius: var(--table-border-radius);
-    box-shadow: var(--table-shadow);
-    margin-bottom: 1.5rem;
-    position: relative;
-  }
-  
-  .table {
-    width: 100%;
-    border-collapse: separate;
-    border-spacing: 0;
-    margin: 0;
-    color: var(--table-text-color);
-  }
-  
-  /* Estilos para el encabezado */
-  .table thead {
-    background-color: var(--table-header-bg);
-  }
-  
-  .table th {
-    padding: var(--table-cell-padding);
-    font-weight: var(--table-header-font-weight);
-    text-align: left;
-    color: var(--table-header-text-color);
-    border-bottom: 1px solid var(--table-border-color);
-    position: sticky;
-    top: 0;
-    background-color: var(--table-header-bg);
-    z-index: 10;
-    font-size: 0.875rem;
-    white-space: nowrap;
-  }
-  
-  .table th:first-child {
-    border-top-left-radius: var(--table-border-radius);
-  }
-  
-  .table th:last-child {
-    border-top-right-radius: var(--table-border-radius);
-  }
-  
-  /* Estilos para celdas */
-  .table td {
-    padding: var(--table-cell-padding);
-    border-bottom: 1px solid var(--table-border-color);
-    vertical-align: middle;
-  }
-  
-  .table tbody tr:last-child td {
-    border-bottom: none;
-  }
-  
-  .table tbody tr:last-child td:first-child {
-    border-bottom-left-radius: var(--table-border-radius);
-  }
-  
-  .table tbody tr:last-child td:last-child {
-    border-bottom-right-radius: var(--table-border-radius);
-  }
-  
-  /* Tabla con filas alternando colores */
-  .table-striped tbody tr:nth-of-type(odd) {
-    background-color: var(--table-stripe-color);
-  }
-  
-  /* Tabla con hover */
-  .table-hover tbody tr:hover {
-    background-color: var(--table-hover-color);
-    transition: var(--table-transition);
-  }
-  
-  /* Tabla con borde completo */
-  .table-bordered {
-    border: 1px solid var(--table-border-color);
-  }
-  
-  .table-bordered th,
-  .table-bordered td {
-    border: 1px solid var(--table-border-color);
-  }
-  
-  /* Tamaños de tabla */
-  .table-sm th,
-  .table-sm td {
-    padding: var(--table-sm-cell-padding);
-    font-size: 0.875rem;
-  }
-  
-  .table-lg th,
-  .table-lg td {
-    padding: var(--table-lg-cell-padding);
-  }
-  
-  /* Variantes de alineación de texto */
-  .text-center {
-    text-align: center;
-  }
-  
-  .text-right {
-    text-align: right;
-  }
-  
-  .text-left {
-    text-align: left;
-  }
-  
-  /* Manejo de texto en celdas */
-  .cell-truncate {
-    max-width: 200px;
-    white-space: nowrap;
-    overflow: hidden;
-    text-overflow: ellipsis;
-  }
-  
-  .cell-wrap {
-    white-space: normal;
-    word-break: break-word;
-  }
-  
-  .cell-nowrap {
-    white-space: nowrap;
-  }
-  
-  /* Estado de las filas */
-  .row-selected {
-    background-color: rgba(46, 136, 255, 0.1) !important;
-  }
-  
-  .row-inactive {
-    opacity: 0.6;
-  }
-  
-  /* Estilos para badges de estado */
-  .table-badge {
-    display: inline-flex;
-    align-items: center;
-    padding: 4px 8px;
-    border-radius: 12px;
-    font-size: 0.75rem;
-    font-weight: 600;
-    line-height: 1;
-    white-space: nowrap;
-  }
-  
-  .table-badge::before {
-    content: '';
-    display: inline-block;
-    width: 8px;
-    height: 8px;
-    border-radius: 50%;
-    margin-right: 6px;
-  }
-  
-  .table-badge.success {
-    background-color: rgba(38, 194, 129, 0.1);
-    color: var(--status-success);
-  }
-  
-  .table-badge.success::before {
-    background-color: var(--status-success);
-  }
-  
-  .table-badge.warning {
-    background-color: rgba(255, 172, 48, 0.1);
-    color: var(--status-warning);
-  }
-  
-  .table-badge.warning::before {
-    background-color: var(--status-warning);
-  }
-  
-  .table-badge.danger {
-    background-color: rgba(255, 82, 82, 0.1);
-    color: var(--status-danger);
-  }
-  
-  .table-badge.danger::before {
-    background-color: var(--status-danger);
-  }
-  
-  .table-badge.info {
-    background-color: rgba(46, 136, 255, 0.1);
-    color: var(--status-info);
-  }
-  
-  .table-badge.info::before {
-    background-color: var(--status-info);
-  }
-  
-  .table-badge.pending {
-    background-color: rgba(156, 39, 176, 0.1);
-    color: var(--status-pending);
-  }
-  
-  .table-badge.pending::before {
-    background-color: var(--status-pending);
-  }
-  
-  .table-badge.cancelled {
-    background-color: rgba(231, 76, 60, 0.1);
-    color: var(--status-cancelled);
-  }
-  
-  .table-badge.cancelled::before {
-    background-color: var(--status-cancelled);
-  }
-  
-  .table-badge.inactive {
-    background-color: rgba(149, 165, 166, 0.1);
-    color: var(--status-inactive);
-  }
-  
-  .table-badge.inactive::before {
-    background-color: var(--status-inactive);
-  }
-  
-  /* Botones de acción en tablas */
-  .table-action-btn {
-    display: inline-flex;
-    align-items: center;
-    justify-content: center;
-    width: 28px;
-    height: 28px;
-    border-radius: 4px;
-    background-color: transparent;
-    border: none;
-    cursor: pointer;
-    color: var(--table-muted-text);
-    transition: var(--table-transition);
-  }
-  
-  .table-action-btn:hover {
-    background-color: rgba(0, 0, 0, 0.05);
-    color: var(--table-text-color);
-  }
-  
-  .table-action-btn svg {
-    width: 16px;
-    height: 16px;
-  }
-  
-  .table-actions {
-    display: flex;
-    align-items: center;
-    gap: 8px;
-  }
-  
-  /* Contenedor para tabla con cabecera y opciones */
-  .table-component {
-    background-color: var(--table-bg);
-    border-radius: var(--table-border-radius);
-    box-shadow: var(--table-shadow);
-    overflow: hidden;
-  }
-  
-  .table-header {
-    display: flex;
-    align-items: center;
-    justify-content: space-between;
-    padding: 12px 16px;
-    border-bottom: 1px solid var(--table-border-color);
-    background-color: var(--table-header-bg);
-  }
-  
-  .table-title {
-    font-weight: 600;
-    font-size: 1rem;
-    color: var(--table-header-text-color);
-    margin: 0;
-  }
-  
-  .table-options {
-    display: flex;
-    align-items: center;
-    gap: 8px;
-  }
-  
-  /* Filtros y búsqueda */
-  .table-search {
-    position: relative;
-    width: 250px;
-  }
-  
-  .table-search input {
-    width: 100%;
-    padding: 8px 12px 8px 36px;
-    border-radius: 4px;
-    border: 1px solid var(--table-border-color);
-    font-size: 0.875rem;
-    transition: var(--table-transition);
-  }
-  
-  .table-search input:focus {
-    outline: none;
-    border-color: var(--status-info);
-    box-shadow: 0 0 0 3px rgba(46, 136, 255, 0.2);
-  }
-  
-  .table-search svg {
-    position: absolute;
-    left: 12px;
-    top: 50%;
-    transform: translateY(-50%);
-    width: 16px;
-    height: 16px;
-    color: var(--table-muted-text);
-  }
-  
-  /* Paginación */
-  .table-pagination {
-    display: flex;
-    align-items: center;
-    justify-content: space-between;
-    padding: 12px 16px;
-    border-top: 1px solid var(--table-border-color);
-    background-color: var(--table-header-bg);
-  }
-  
-  .pagination-info {
-    color: var(--table-muted-text);
-    font-size: 0.875rem;
-  }
-  
-  .pagination-controls {
-    display: flex;
-    align-items: center;
-    gap: 4px;
-  }
-  
-  .pagination-btn {
-    display: inline-flex;
-    align-items: center;
-    justify-content: center;
-    width: 32px;
-    height: 32px;
-    border-radius: 4px;
-    border: 1px solid var(--table-border-color);
-    background-color: var(--table-bg);
-    cursor: pointer;
-    transition: var(--table-transition);
-  }
-  
-  .pagination-btn:hover:not(.pagination-btn-active, .pagination-btn-disabled) {
-    background-color: var(--table-hover-color);
-    border-color: var(--table-muted-text);
-  }
-  
-  .pagination-btn-active {
-    background-color: var(--status-info);
-    color: white;
-    border-color: var(--status-info);
-  }
-  
-  .pagination-btn-disabled {
-    opacity: 0.5;
-    cursor: not-allowed;
-  }
-  
-  .pagination-btn svg {
-    width: 16px;
-    height: 16px;
-  }
-  
-  /* Celda con checkbox para selección */
-  .cell-checkbox {
-    width: 48px;
-    text-align: center;
-  }
-  
-  /* Celda con acciones */
-  .cell-actions {
-    width: 100px;
-    text-align: right;
-  }
-  
-  /* Estilo para checkbox personalizado */
-  .table-checkbox {
-    display: inline-block;
-    width: 18px;
-    height: 18px;
-    border: 2px solid var(--table-muted-text);
-    border-radius: 3px;
-    position: relative;
-    cursor: pointer;
-    transition: var(--table-transition);
-  }
-  
-  .table-checkbox.checked {
-    background-color: var(--status-info);
-    border-color: var(--status-info);
-  }
-  
-  .table-checkbox.checked::after {
-    content: '';
-    position: absolute;
-    left: 5px;
-    top: 2px;
-    width: 5px;
-    height: 10px;
-    border: solid white;
-    border-width: 0 2px 2px 0;
-    transform: rotate(45deg);
-  }
-  
-  /* Para tablas con resaltado vertical */
-  .table-column-highlight tbody tr td.highlight {
-    background-color: rgba(46, 136, 255, 0.05);
-  }
-  
-  /* Celdas de datos numéricos */
-  .cell-number {
-    font-family: 'Roboto Mono', monospace;
-    text-align: right;
-  }
-  
-  .cell-currency::before {
-    content: '$';
-    margin-right: 2px;
-    opacity: 0.7;
-  }
-  
-  /* Tablas responsivas */
-  @media (max-width: 768px) {
-    .table-responsive-stack thead {
-      display: none;
-    }
-    
-    .table-responsive-stack tr {
-      display: block;
-      border-bottom: 3px solid var(--table-border-color);
-      margin-bottom: 10px;
-    }
-    
-    .table-responsive-stack td {
-      display: block;
-      text-align: right;
-      border-bottom: 1px solid var(--table-border-color);
-      padding: 8px 16px;
-    }
-    
-    .table-responsive-stack td::before {
-      content: attr(data-label);
-      float: left;
-      font-weight: 600;
-      color: var(--table-header-text-color);
-    }
-    
-    .table-responsive-stack td:last-child {
-      border-bottom: 0;
-    }
-  }
-  
-  /* Estado de carga para tablas */
-  .table-loading {
-    position: relative;
-    min-height: 200px;
-  }
-  
-  .table-loading::after {
-    content: '';
-    position: absolute;
-    top: 0;
-    left: 0;
-    right: 0;
-    bottom: 0;
-    background-color: rgba(255, 255, 255, 0.7);
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    z-index: 20;
-  }
-  
-  .table-loading::before {
-    content: '';
-    position: absolute;
-    top: 50%;
-    left: 50%;
-    width: 40px;
-    height: 40px;
-    margin-top: -20px;
-    margin-left: -20px;
-    border: 4px solid rgba(46, 136, 255, 0.2);
-    border-radius: 50%;
-    border-top-color: var(--status-info);
-    animation: spin 1s infinite linear;
-    z-index: 30;
-  }
-  
-  @keyframes spin {
-    0% { transform: rotate(0deg); }
-    100% { transform: rotate(360deg); }
-  }
-  
-  /* Estado vacío para tablas */
-  .table-empty {
-    text-align: center;
-    padding: 40px 20px;
-    color: var(--table-muted-text);
-  }
-  
-  .table-empty-icon {
-    font-size: 3rem;
-    margin-bottom: 16px;
-    opacity: 0.3;
-  }
-  
-  .table-empty-text {
-    font-size: 1rem;
-    margin-bottom: 8px;
-  }
-  
-  .table-empty-subtext {
-    font-size: 0.875rem;
-  }
-  
-  /* Tabla con filas expandibles */
-  .table-row-expandable {
-    cursor: pointer;
-    transition: var(--table-transition);
-  }
-  
-  .table-row-expandable:hover {
-    background-color: var(--table-hover-color);
-  }
-  
-  .table-row-expanded {
-    background-color: var(--table-stripe-color) !important;
-  }
-  
-  .table-row-details {
-    background-color: var(--table-stripe-color);
-    padding: 0;
-  }
-  
-  .table-row-details-content {
-    padding: 16px;
-    border-top: 1px solid var(--table-border-color);
-  }
-  
-  .cell-expand-icon {
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    width: 20px;
-    height: 20px;
-    transition: transform 0.2s ease;
-  }
-  
-  .row-expanded .cell-expand-icon {
-    transform: rotate(90deg);
-  }
-  
-  /* Tablas para módulos específicos */
-  .facturador-table .cell-total {
-    font-weight: 600;
-    color: var(--status-success);
-  }
-  
-  .productos-table .cell-stock-bajo {
-    color: var(--status-danger);
-  }
-  
-  .ventas-table .cell-fecha {
-    white-space: nowrap;
-  }
-  
-  /* Soporte para modo oscuro */
-  @media (prefers-color-scheme: dark) {
-    :root {
-      --table-bg: #1e293b;
-      --table-header-bg: #111827;
-      --table-border-color: #334155;
-      --table-stripe-color: #1a1d2d;
-      --table-hover-color: #283548;
-      --table-text-color: #e2e8f0;
-      --table-header-text-color: #f8fafc;
-      --table-muted-text: #94a3b8;
-    }
-    
-    .table-search input {
-      background-color: #1e293b;
-      color: #e2e8f0;
-      border-color: #334155;
-    }
-    
-    .table-search input::placeholder {
-      color: #64748b;
-    }
-    
-    .pagination-btn {
-      background-color: #1e293b;
-      color: #e2e8f0;
-      border-color: #334155;
-    }
-    
-    .table-loading::after {
-      background-color: rgba(15, 23, 42, 0.7);
-    }
-  }
+.table-container {
+  width: 100%;
+  overflow-x: auto;
+  background-color: white;
+  border-radius: 6px;
+  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.05);
+  margin-bottom: 20px;
+}
+
+.data-table {
+  width: 100%;
+  border-collapse: collapse;
+}
+
+.data-table th {
+  background-color: #f5f7fa;
+  padding: 12px 15px;
+  text-align: left;
+  color: #666;
+  font-weight: 500;
+  border-bottom: 1px solid #e0e0e0;
+}
+
+.data-table td {
+  padding: 12px 15px;
+  border-bottom: 1px solid #e0e0e0;
+  color: #333;
+}
+
+.data-table tr:last-child td {
+  border-bottom: none;
+}
+
+.data-table tr:hover {
+  background-color: #f8f9fb;
+}
+
+/* Estilo para tabla de productos top */
+.product-table {
+  width: 100%;
+}
+
+.product-row {
+  display: flex;
+  align-items: center;
+  margin-bottom: 15px;
+}
+
+.product-name {
+  flex: 1;
+  font-size: 14px;
+  color: #333;
+}
+
+.product-percentage {
+  width: 40px;
+  text-align: right;
+  color: #666;
+  font-size: 14px;
+}
+
+.progress-bar-container {
+  flex: 2;
+  height: 8px;
+  background-color: #e0e0e0;
+  border-radius: 4px;
+  margin: 0 10px;
+  overflow: hidden;
+}
+
+.progress-bar {
+  height: 100%;
+  background-color: #4ca3d8;
+  border-radius: 4px;
+}
+
+/* Paginación */
+.pagination {
+  display: flex;
+  justify-content: flex-end;
+  padding: 10px 15px;
+  background-color: #f5f7fa;
+  border-top: 1px solid #e0e0e0;
+}
+
+.pagination-btn {
+  background-color: white;
+  border: 1px solid #ddd;
+  color: #333;
+  padding: 5px 10px;
+  margin: 0 2px;
+  cursor: pointer;
+  border-radius: 4px;
+}
+
+.pagination-btn.active {
+  background-color: #4ca3d8;
+  color: white;
+  border-color: #4ca3d8;
+}
+
+.pagination-info {
+  color: #666;
+  font-size: 13px;
+  margin-right: 10px;
+  display: flex;
+  align-items: center;
+}
+
+/* Estilo para caja de estado */
+.status-box {
+  padding: 15px;
+  font-size: 18px;
+  font-weight: bold;
+  text-align: center;
+}
+
+.status-open {
+  color: #4cd964;
+}
+
+.status-closed {
+  color: #ff5252;
+}
+
+.status-info {
+  font-size: 12px;
+  color: #666;
+  margin-top: 5px;
+  font-weight: normal;
+}

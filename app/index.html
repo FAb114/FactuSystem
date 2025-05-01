@@ -1,506 +1,207 @@
 <!DOCTYPE html>
 <html lang="es">
 <head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <meta http-equiv="Content-Security-Policy" content="script-src 'self' 'unsafe-inline' https://cdnjs.cloudflare.com">
-    <title>FactuSystem - Dashboard</title>
-    
-    <!-- Estilos CSS principales -->
-    <link rel="stylesheet" href="app/assets/css/main.css">
-    <link rel="stylesheet" href="app/assets/css/components/sidebar.css">
-    <link rel="stylesheet" href="app/assets/css/components/dashboard.css">
-    <link rel="stylesheet" href="app/assets/css/components/facturador.css">
-    <link rel="stylesheet" href="app/assets/css/components/modal.css">
-    <link rel="stylesheet" href="app/assets/css/components/tables.css">
-    
-    <!-- Librerías externas CSS -->
-    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
-    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/animate.css/4.1.1/animate.min.css">
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>FactuSystem</title>
+  <link rel="stylesheet" href="assets/css/main.css" />
+  <link rel="stylesheet" href="assets/css/components/sidebar.css" />
+  <link rel="stylesheet" href="assets/css/components/dashboard.css" />
+  <link rel="stylesheet" href="assets/css/components/modal.css" />
+  <link rel="stylesheet" href="assets/css/components/tables.css" />
+  <link rel="icon" href="assets/img/logo.png" />
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/bootstrap/5.3.0/css/bootstrap.min.css">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/Chart.js/2.9.4/Chart.min.css">
 </head>
 <body>
-    <!-- Overlay para modales -->
-    <div id="modal-overlay" class="hidden"></div>
-    
-    <!-- Notificaciones -->
-    <div id="notifications-container" class="notifications-container"></div>
-    
-    <!-- Barra lateral -->
-    <div class="sidebar-header">
-        <img src="app/assets/img/icons/logo.png" alt="Logo de Facturación" class="logo-sidebar">
+  <div id="app">
+    <!-- Sidebar mejorado -->
+    <aside class="sidebar">
+      <div class="logo">
+        <img src="assets/img/logo.png" alt="Logo" />
+        <h1>FACTURACIÓN APP</h1>
       </div>
-        
-        <ul class="sidebar-menu">
-            <li class="active" data-module="dashboard">
-                <i class="fas fa-tachometer-alt"></i>
-                <span>Dashboard</span>
-            </li>
-            <li data-module="facturador">
-                <i class="fas fa-file-invoice"></i>
-                <span>Facturas</span>
-            </li>
-            <li data-module="clientes">
-                <i class="fas fa-users"></i>
-                <span>Clientes</span>
-            </li>
-            <li data-module="productos">
-                <i class="fas fa-box"></i>
-                <span>Inventario</span>
-            </li>
-            <li data-module="caja">
-                <i class="fas fa-cash-register"></i>
-                <span>Caja</span>
-            </li>
-            <li data-module="reportes">
-                <i class="fas fa-chart-bar"></i>
-                <span>Reportes</span>
-            </li>
-            <li data-module="cuotificador">
-                <i class="fas fa-calculator"></i>
-                <span>Cuotificador</span>
-            </li>
-            <li data-module="configuraciones">
-                <i class="fas fa-cogs"></i>
-                <span>Configuración</span>
-            </li>
+      <nav>
+        <ul>
+          <li><button onclick="abrirModulo('facturador')"><i class="fas fa-file-invoice-dollar"></i> Facturador</button></li>
+          <li><button onclick="abrirModulo('ventas')"><i class="fas fa-shopping-cart"></i> Ventas</button></li>
+          <li><button onclick="abrirModulo('compras')"><i class="fas fa-truck-loading"></i> Compras</button></li>
+          <li><button onclick="abrirModulo('inventario')"><i class="fas fa-boxes"></i> Inventario</button></li>
+          <li><button onclick="abrirModulo('clientes')"><i class="fas fa-users"></i> Clientes</button></li>
+          <li><button onclick="abrirModulo('proveedores')"><i class="fas fa-truck"></i> Proveedores</button></li>
+          <li><button onclick="abrirModulo('usuarios')"><i class="fas fa-user-shield"></i> Usuarios</button></li>
+          <li><button onclick="abrirModulo('caja')"><i class="fas fa-cash-register"></i> Caja</button></li>
+          <li><button onclick="abrirModulo('reportes')"><i class="fas fa-chart-bar"></i> Reportes</button></li>
+          <li><button onclick="abrirModulo('cuotificador')"><i class="fas fa-percent"></i> Cuotificador</button></li>
+          <li><button onclick="abrirModulo('documentos')"><i class="fas fa-file-alt"></i> Documentos</button></li>
+          <li><button onclick="abrirModulo('sucursales')"><i class="fas fa-network-wired"></i> Sucursales</button></li>
+          <li><button onclick="abrirModulo('configuraciones')"><i class="fas fa-cogs"></i> Configuración</button></li>
+          <li><button onclick="abrirModulo('ayuda')"><i class="fas fa-question-circle"></i> Ayuda</button></li>
         </ul>
-        
-        <div class="sidebar-footer" style="position: absolute; bottom: 0; width: 100%; padding: 15px; background-color: var(--darker-bg);">
-            <div class="sucursal-info">
-                <i class="fas fa-store"></i>
-                <span id="current-sucursal">Sucursal Central</span>
-            </div>
+      </nav>
+    </aside>
+
+    <!-- Contenido principal -->
+    <main class="main-content">
+      <div class="dashboard-container">
+        <div class="header">
+          <h1 class="dashboard-title">Dashboard</h1>
+          <div class="payment-notification">
+            <i class="fas fa-check-circle"></i> Pago recibido: $12,500.00 - 25/04/2025
+          </div>
         </div>
-    </div>
-    
-    <!-- Contenedor principal para cargar vistas dinámicamente -->
-    <div class="main-content">
-        <!-- Los contenedores de vistas se cargarán dinámicamente -->
-        <div id="view-dashboard" class="view-container active"></div>
-        <div id="view-facturador" class="view-container"></div>
-        <div id="view-clientes" class="view-container"></div>
-        <div id="view-productos" class="view-container"></div>
-        <div id="view-caja" class="view-container"></div>
-        <div id="view-reportes" class="view-container"></div>
-        <div id="view-cuotificador" class="view-container"></div>
-        <div id="view-configuraciones" class="view-container"></div>
-    </div>
-    
-    <!-- Modales del sistema -->
-    <!-- Estos se cargarán dinámicamente desde sus respectivos archivos cuando sean necesarios -->
-    
-    <!-- Scripts generales -->
-    <script src="https://cdnjs.cloudflare.com/ajax/libs/Chart.js/3.9.1/chart.min.js"></script>
-    
-    <!-- Script de precarga para la comunicación con Electron -->
-    <script src="preload.js"></script>
-    
-    <!-- Scripts de utilidades -->
-    <script src="app/assets/js/utils/database.js"></script>
-    <script src="app/assets/js/utils/sync.js"></script>
-    <script src="app/assets/js/utils/auth.js"></script>
-    <script src="app/assets/js/utils/printer.js"></script>
-    <script src="app/assets/js/utils/validation.js"></script>
-    <script src="app/assets/js/utils/backup.js"></script>
-    <script src="app/assets/js/utils/logger.js"></script>
-    
-    <!-- Scripts de componentes de UI -->
-    <script src="app/assets/js/components/sidebar.js"></script>
-    <script src="app/assets/js/components/dashboard.js"></script>
-    <script src="app/assets/js/components/tabs.js"></script>
-    <script src="app/assets/js/components/notifications.js"></script>
-    <script src="app/assets/js/components/modals.js"></script>
-    
-    <!-- Scripts para módulos específicos -->
-    <script src="app/assets/js/modules/facturador/facturador.js"></script>
-    <script src="app/assets/js/modules/facturador/cliente.js"></script>
-    <script src="app/assets/js/modules/facturador/productos.js"></script>
-    <script src="app/assets/js/modules/facturador/pagos.js"></script>
-    
-    <!-- Módulos adicionales -->
-    <script src="app/assets/js/modules/ventas/index.js"></script>
-    <script src="app/assets/js/modules/productos/index.js"></script>
-    <script src="app/assets/js/modules/caja/index.js"></script>
-    <script src="app/assets/js/modules/clientes/index.js"></script>
-    <script src="app/assets/js/modules/cuotificador/index.js"></script>
-    <script src="app/assets/js/modules/cuotificador/simulador.js"></script>
-    <script src="app/assets/js/modules/cuotificador/tasas.js"></script>
-    <script src="app/assets/js/modules/configuraciones/index.js"></script>
-    <script src="app/assets/js/modules/reportes/index.js"></script>
-    
-    <!-- Script principal de la aplicación -->
-    <script src="app/assets/js/app.js"></script>
-    
-    <!-- Script de inicialización y gestión de vistas -->
-    <script>
-        // Objeto global para la aplicación
-        const factusystem = {
-            // Variable para controlar el estado de carga de los módulos
-            modulosCardados: {},
+
+        <div class="summary-cards">
+          <div class="card">
+            <div class="card-title">Ventas del día</div>
+            <div class="card-value">$45,890.00</div>
+            <div class="card-subtext positive-change">+5% vs ayer</div>
+          </div>
+          
+          <div class="card">
+            <div class="card-title">Facturas emitidas</div>
+            <div class="card-value">24</div>
+            <div class="card-subtext">Hoy</div>
+          </div>
+          
+          <div class="card">
+            <div class="card-title">Estado de caja</div>
+            <div class="card-value" style="color: #4cd964;">ABIERTA</div>
+            <div class="card-subtext">Apertura: 08:15</div>
+          </div>
+        </div>
+
+        <div class="charts-row">
+          <div class="charts-section">
+            <h2 class="section-title">Ventas últimos 7 días</h2>
+            <canvas id="salesChart" height="200"></canvas>
+          </div>
+          
+          <div class="top-products">
+            <h2 class="section-title">Top Productos</h2>
+            <div class="product-bar">
+              <div class="product-name">Smartphone XZ-10</div>
+              <div class="product-bar-container">
+                <div class="product-bar-fill" style="width: 32%"></div>
+                <div class="product-percentage">32%</div>
+              </div>
+            </div>
             
-            /**
-             * Función para inicializar la aplicación
-             */
-            init: function() {
-                console.log('Inicializando FactuSystem...');
-                
-                // Inicializar componentes principales
-                this.initComponentes();
-                
-                // Configurar eventos de navegación
-                this.initEventos();
-                
-                // Cargar la vista inicial (dashboard)
-                this.cargarModulo('dashboard');
-                
-                // Verificar estado de autenticación
-                this.verificarAutenticacion();
-                
-                // Verificar estado de caja
-                this.verificarEstadoCaja();
-                
-                // Iniciar sistema de sincronización
-                if (window.sync && typeof sync.iniciar === 'function') {
-                    sync.iniciar();
-                }
-                
-                console.log('FactuSystem inicializado correctamente');
-            },
+            <div class="product-bar">
+              <div class="product-name">Smart TV 50"</div>
+              <div class="product-bar-container">
+                <div class="product-bar-fill" style="width: 25%"></div>
+                <div class="product-percentage">25%</div>
+              </div>
+            </div>
             
-            /**
-             * Inicializa los componentes principales de la aplicación
-             */
-            initComponentes: function() {
-                // Inicializar barra lateral
-                if (window.sidebar && typeof sidebar.init === 'function') {
-                    sidebar.init();
-                }
-                
-                // Inicializar sistema de notificaciones
-                if (window.notifications && typeof notifications.init === 'function') {
-                    notifications.init();
-                }
-                
-                // Inicializar sistema de modales
-                if (window.modals && typeof modals.init === 'function') {
-                    modals.init();
-                }
-                
-                // Inicializar sistema de pestañas
-                if (window.tabs && typeof tabs.init === 'function') {
-                    tabs.init();
-                }
-            },
+            <div class="product-bar">
+              <div class="product-name">Auriculares BT</div>
+              <div class="product-bar-container">
+                <div class="product-bar-fill" style="width: 18%"></div>
+                <div class="product-percentage">18%</div>
+              </div>
+            </div>
             
-            /**
-             * Configura los eventos de navegación y UI
-             */
-            initEventos: function() {
-                // Eventos para el menú lateral
-                document.querySelectorAll('.sidebar-menu li').forEach(item => {
-                    item.addEventListener('click', (e) => {
-                        const moduleId = e.currentTarget.getAttribute('data-module');
-                        this.cargarModulo(moduleId);
-                    });
-                });
-                
-                // Eventos para botones de acción
-                document.addEventListener('click', (e) => {
-                    if (e.target.matches('.btn[data-module]') || e.target.closest('.btn[data-module]')) {
-                        const btn = e.target.matches('.btn[data-module]') ? e.target : e.target.closest('.btn[data-module]');
-                        const moduleId = btn.getAttribute('data-module');
-                        this.cargarModulo(moduleId);
-                    }
-                    
-                    // Otros botones globales pueden ser manejados aquí
-                });
-                
-                // Evento para botón de cierre de caja (si existe)
-                const btnCierreCaja = document.getElementById('cerrar-caja-btn');
-                if (btnCierreCaja) {
-                    btnCierreCaja.addEventListener('click', () => {
-                        if (window.caja && typeof caja.mostrarCierreCaja === 'function') {
-                            caja.mostrarCierreCaja();
-                        }
-                    });
-                }
-                
-                // Escuchar eventos de mensajes del proceso principal de Electron
-                if (window.electron && typeof electron.recibir === 'function') {
-                    electron.recibir('mensaje', (evento, datos) => {
-                        console.log('Mensaje recibido de Electron:', datos);
-                        // Manejar mensajes del proceso principal
-                    });
-                }
-            },
-            
-            /**
-             * Carga un módulo específico
-             * @param {string} moduleId - Identificador del módulo a cargar
-             */
-            cargarModulo: function(moduleId) {
-                console.log(`Cargando módulo: ${moduleId}`);
-                
-                // Actualizar clases activas en el menú
-                document.querySelectorAll('.sidebar-menu li').forEach(item => {
-                    if (item.getAttribute('data-module') === moduleId) {
-                        item.classList.add('active');
-                    } else {
-                        item.classList.remove('active');
-                    }
-                });
-                
-                // Ocultar todas las vistas
-                document.querySelectorAll('.view-container').forEach(view => {
-                    view.classList.remove('active');
-                });
-                
-                // Mostrar la vista solicitada
-                const viewElement = document.getElementById(`view-${moduleId}`);
-                if (!viewElement) {
-                    console.error(`Contenedor para el módulo ${moduleId} no encontrado`);
-                    return;
-                }
-                
-                viewElement.classList.add('active');
-                
-                // Verificar si ya se ha cargado el contenido
-                if (this.modulosCardados[moduleId]) {
-                    console.log(`Módulo ${moduleId} ya está cargado, activándolo`);
-                    return;
-                }
-                
-                // Cargar el contenido del módulo desde su archivo HTML
-                this.cargarContenidoModulo(moduleId, viewElement);
-            },
-            
-            /**
-             * Carga el contenido HTML del módulo y lo inicializa
-             * @param {string} moduleId - Identificador del módulo
-             * @param {HTMLElement} viewElement - Elemento contenedor de la vista
-             */
-            cargarContenidoModulo: function(moduleId, viewElement) {
-                console.log(`Cargando contenido para: ${moduleId}`);
-                
-                // Mostrar indicador de carga
-                viewElement.innerHTML = `
-                    <div class="loading-indicator">
-                        <i class="fas fa-spinner fa-spin"></i>
-                        <span>Cargando ${moduleId}...</span>
-                    </div>
-                `;
-                
-                // Intentar cargar el archivo HTML del módulo
-                fetch(`app/views/${moduleId}.html`)
-                    .then(response => {
-                        if (!response.ok) {
-                            throw new Error(`Vista no encontrada: ${moduleId}.html (${response.status})`);
-                        }
-                        return response.text();
-                    })
-                    .then(html => {
-                        // Insertar el HTML en el contenedor
-                        viewElement.innerHTML = html;
-                        this.modulosCardados[moduleId] = true;
-                        
-                        // Actualizar el título de la página si existe un elemento header-title
-                        const headerTitle = viewElement.querySelector('.header-title');
-                        if (headerTitle) {
-                            document.title = `FactuSystem - ${headerTitle.textContent}`;
-                        } else {
-                            document.title = `FactuSystem - ${moduleId.charAt(0).toUpperCase() + moduleId.slice(1)}`;
-                        }
-                        
-                        // Inicializar el módulo específico
-                        this.inicializarModulo(moduleId);
-                    })
-                    .catch(error => {
-                        console.error(`Error cargando vista ${moduleId}:`, error);
-                        
-                        // Mostrar mensaje de error o vista en desarrollo
-                        viewElement.innerHTML = `
-                            <div class="content-header">
-                                <h1 class="header-title">${moduleId.charAt(0).toUpperCase() + moduleId.slice(1)}</h1>
-                            </div>
-                            <div class="module-content">
-                                <div class="alert alert-warning">
-                                    <i class="fas fa-exclamation-triangle"></i>
-                                    <span>Módulo en desarrollo...</span>
-                                </div>
-                            </div>
-                        `;
-                    });
-            },
-            
-            /**
-             * Inicializa un módulo específico llamando a su función init si existe
-             * @param {string} moduleId - Identificador del módulo
-             */
-            inicializarModulo: function(moduleId) {
-                console.log(`Inicializando módulo: ${moduleId}`);
-                
-                // Verificar si existe un objeto global para el módulo
-                if (window[moduleId]) {
-                    // Llamar a la función init del módulo si existe
-                    if (typeof window[moduleId].init === 'function') {
-                        window[moduleId].init();
-                        console.log(`Módulo ${moduleId} inicializado correctamente`);
-                    } else {
-                        console.warn(`El módulo ${moduleId} existe pero no tiene función init()`);
-                    }
-                } else {
-                    // Intentar buscar en submódulos específicos según la estructura del proyecto
-                    switch (moduleId) {
-                        case 'dashboard':
-                            if (window.dashboard && typeof dashboard.init === 'function') {
-                                dashboard.init();
-                            }
-                            break;
-                        case 'facturador':
-                            if (window.facturador && typeof facturador.init === 'function') {
-                                facturador.init();
-                            }
-                            break;
-                        case 'clientes':
-                            if (window.clientes && typeof clientes.init === 'function') {
-                                clientes.init();
-                            }
-                            break;
-                        case 'productos':
-                            if (window.productos && typeof productos.init === 'function') {
-                                productos.init();
-                            }
-                            break;
-                        case 'caja':
-                            if (window.caja && typeof caja.init === 'function') {
-                                caja.init();
-                            }
-                            break;
-                        case 'reportes':
-                            if (window.reportes && typeof reportes.init === 'function') {
-                                reportes.init();
-                            }
-                            break;
-                        case 'cuotificador':
-                            if (window.cuotificador && typeof cuotificador.init === 'function') {
-                                cuotificador.init();
-                            }
-                            break;
-                        case 'configuraciones':
-                            if (window.configuraciones && typeof configuraciones.init === 'function') {
-                                configuraciones.init();
-                            }
-                            break;
-                        default:
-                            console.warn(`No se encontró una inicialización específica para el módulo ${moduleId}`);
-                    }
-                }
-                
-                // Inicializar elementos UI comunes si existen en el DOM
-                this.inicializarElementosUI();
-            },
-            
-            /**
-             * Inicializa elementos de UI comunes en la aplicación
-             */
-            inicializarElementosUI: function() {
-                // Inicializar selectores personalizados
-                const selects = document.querySelectorAll('select.form-control');
-                if (selects.length > 0 && window.customSelect) {
-                    selects.forEach(select => customSelect.init(select));
-                }
-                
-                // Inicializar datepickers
-                const datepickers = document.querySelectorAll('input[type="date"]');
-                if (datepickers.length > 0 && window.datepicker) {
-                    datepickers.forEach(input => datepicker.init(input));
-                }
-                
-                // Inicializar tooltips
-                const tooltips = document.querySelectorAll('[data-tooltip]');
-                if (tooltips.length > 0 && window.tooltip) {
-                    tooltips.forEach(el => tooltip.init(el));
-                }
-                
-                // Detectar y configurar tabs
-                const tabContainers = document.querySelectorAll('.form-tabs');
-                if (tabContainers.length > 0) {
-                    tabContainers.forEach(container => {
-                        const tabButtons = container.querySelectorAll('.tab-btn');
-                        tabButtons.forEach(btn => {
-                            btn.addEventListener('click', (e) => {
-                                const tabId = e.currentTarget.getAttribute('data-tab');
-                                
-                                // Desactivar todos los tabs
-                                tabButtons.forEach(b => b.classList.remove('active'));
-                                document.querySelectorAll('.tab-content').forEach(content => {
-                                    content.classList.remove('active');
-                                });
-                                
-                                // Activar el tab seleccionado
-                                e.currentTarget.classList.add('active');
-                                document.getElementById(`tab-${tabId}`).classList.add('active');
-                            });
-                        });
-                    });
-                }
-            },
-            
-            /**
-             * Verifica el estado de autenticación del usuario
-             */
-            verificarAutenticacion: function() {
-                // Si existe el módulo de autenticación, verificar estado
-                if (window.auth && typeof auth.verificarSesion === 'function') {
-                    const sesionValida = auth.verificarSesion();
-                    
-                    if (!sesionValida) {
-                        console.log('Sesión no válida, redirigiendo a login');
-                        window.location.href = 'app/views/login.html';
-                        return;
-                    }
-                    
-                    // Actualizar información del usuario en la interfaz
-                    if (typeof auth.obtenerUsuarioActual === 'function') {
-                        const usuario = auth.obtenerUsuarioActual();
-                        // Actualizar UI con información del usuario si es necesario
-                    }
-                }
-            },
-            
-            /**
-             * Verifica el estado de la caja
-             */
-            verificarEstadoCaja: function() {
-                if (window.caja && typeof caja.verificarEstado === 'function') {
-                    caja.verificarEstado().then(estado => {
-                        if (!estado.abierta) {
-                            console.log('Caja cerrada, mostrar modal de apertura');
-                            // Si la caja no está abierta y existe el sistema de modales, mostrar diálogo de apertura
-                            if (window.modals && typeof modals.mostrar === 'function') {
-                                setTimeout(() => {
-                                    modals.mostrar('modal-apertura-caja');
-                                }, 1000); // Pequeño retraso para asegurar que la UI esté lista
-                            }
-                        }
-                    }).catch(error => {
-                        console.error('Error verificando estado de caja:', error);
-                    });
-                }
+            <div class="product-bar">
+              <div class="product-name">Cargador USB-C</div>
+              <div class="product-bar-container">
+                <div class="product-bar-fill" style="width: 12%"></div>
+                <div class="product-percentage">12%</div>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <nav style="width: 90%; margin: 20px auto;">
+            <ul style="display: flex; list-style: none; padding: 0; justify-content: space-around;">
+              <li>
+                <button onclick="abrirModulo('facturador')" style="padding: 12px 20px; border: 1px solid #ccc; background-color: #f9f9f9; color: #333; cursor: pointer; border-radius: 8px; transition: background-color 0.3s ease, color 0.3s ease; font-size: 16px;"
+                        onmouseover="this.style.backgroundColor='#007bff'; this.style.color='white'; this.style.borderColor='#007bff';"
+                        onmouseout="this.style.backgroundColor='#f9f9f9'; this.style.color='#333'; this.style.borderColor='#ccc';">
+                  <i class="fas fa-file-invoice-dollar" style="margin-right: 8px;"></i> Facturador
+                </button>
+              </li>
+              <li>
+                <button onclick="abrirModulo('cotizador')" style="padding: 12px 20px; border: 1px solid #ccc; background-color: #f9f9f9; color: #333; cursor: pointer; border-radius: 8px; transition: background-color 0.3s ease, color 0.3s ease; font-size: 16px;"
+                        onmouseover="this.style.backgroundColor='#007bff'; this.style.color='white'; this.style.borderColor='#007bff';"
+                        onmouseout="this.style.backgroundColor='#f9f9f9'; this.style.color='#333'; this.style.borderColor='#ccc';">
+                  <i class="fas fa-percent" style="margin-right: 8px;"></i> Cotizador
+                </button>
+              </li>
+              <li>
+                <button onclick="abrirModulo('ventas')" style="padding: 12px 20px; border: 1px solid #ccc; background-color: #f9f9f9; color: #333; cursor: pointer; border-radius: 8px; transition: background-color 0.3s ease, color 0.3s ease; font-size: 16px;"
+                        onmouseover="this.style.backgroundColor='#007bff'; this.style.color='white'; this.style.borderColor='#007bff';"
+                        onmouseout="this.style.backgroundColor='#f9f9f9'; this.style.color='#333'; this.style.borderColor='#ccc';">
+                  <i class="fas fa-shopping-cart" style="margin-right: 8px;"></i> Ventas
+                </button>
+              </li>
+            </ul>
+          </nav>
+      </div>   
+    </main>
+  </div>
+
+  <!-- Scripts -->
+  <script src="assets/js/renderer.js"></script>
+  <script>
+    // Función para abrir módulos
+    function abrirModulo(moduloId) {
+      console.log('Abriendo módulo:', moduloId);
+      // Quitar clase activa de todos los botones
+      document.querySelectorAll('nav ul li button').forEach(item => {
+        item.classList.remove('active');
+      });
+      // Agregar clase activa al botón correspondiente
+      document.getElementById(moduloId)?.classList.add('active');
+      
+      // Si existe la API, llamar al método
+      if (window.api && typeof window.api.openModule === 'function') {
+        window.api.openModule(moduloId);
+      }
+    }
+    
+    // Inicializar el gráfico de ventas
+    document.addEventListener('DOMContentLoaded', function() {
+      const ctx = document.getElementById('salesChart').getContext('2d');
+      const salesChart = new Chart(ctx, {
+        type: 'bar',
+        data: {
+          labels: ['Lun', 'Mar', 'Mié', 'Jue', 'Vie'],
+          datasets: [{
+            label: 'Ventas',
+            data: [12500, 15000, 10800, 18200, 19500],
+            backgroundColor: '#4ca3d8',
+            borderRadius: 4
+          }]
+        },
+        options: {
+          responsive: true,
+          plugins: {
+            legend: {
+              display: false
             }
-        };
-        
-        // Inicializar la aplicación cuando se carga el documento
-        document.addEventListener('DOMContentLoaded', () => {
-            // Iniciar aplicación con el nuevo sistema
-            factusystem.init();
-            
-            // Mantener compatibilidad con el código antiguo si es necesario
-            if (typeof app !== 'undefined' && app.init && app !== factusystem) {
-                console.log('Inicializando sistema antiguo para compatibilidad');
-                app.init();
+          },
+          scales: {
+            y: {
+              beginAtZero: true,
+              grid: {
+                display: false
+              }
+            },
+            x: {
+              grid: {
+                display: false
+              }
             }
-        });
-    </script>
+          }
+        }
+      });
+      
+      // Establecer Dashboard como activo por defecto
+      document.getElementById('dashboard').classList.add('active');
+    });
+  </script>
 </body>
 </html>

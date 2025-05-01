@@ -268,6 +268,15 @@ function mostrarDetalleFactura(factura) {
 }
 });
 
+// Función global para abrir módulos como ventanas independientes
+window.abrirModulo = function (moduloId) {
+  if (window.api && typeof window.api.openModule === 'function') {
+    window.api.openModule(moduloId);
+  } else {
+    console.error('API de módulo no disponible');
+  }
+};
+
 // Configuración de navegación de la aplicación
 function setupNavigation() {
   const menuLinks = document.querySelectorAll('.nav-link');
