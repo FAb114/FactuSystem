@@ -1,106 +1,293 @@
-/* facturacion.css - Estilos específicos para la sección de facturación */
-
-.facturacion-container {
-  margin-left: 170px;
-  padding: 20px;
+/* Estilos base del facturador */
+.facturador-container {
+  display: flex;
+  flex-direction: column;
+  height: 100vh;
+  background-color: #f5f5f5;
+  font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
 }
 
-.facturas-section {
-  margin-bottom: 20px;
+.facturador-header {
+  display: flex;
+  padding: 10px;
+  background-color: #fff;
+  border-bottom: 1px solid #ddd;
+  gap: 20px;
 }
 
-.facturas-table {
-  width: 100%;
-  border-collapse: collapse;
-  background-color: white;
-  border-radius: 6px;
-  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.05);
-  overflow: hidden;
+.cliente-section, .comprobante-section {
+  flex: 1;
 }
 
-.facturas-table th {
-  background-color: #f5f7fa;
-  padding: 12px 15px;
-  text-align: left;
-  color: #666;
-  font-weight: 500;
-  border-bottom: 1px solid #e0e0e0;
+.input-group {
+  margin-bottom: 10px;
 }
 
-.facturas-table td {
-  padding: 12px 15px;
-  border-bottom: 1px solid #e0e0e0;
+.input-group label {
+  display: block;
+  margin-bottom: 5px;
+  font-weight: 600;
+  color: #555;
 }
 
-.facturas-table tr:last-child td {
-  border-bottom: none;
+.input-combo {
+  display: flex;
+  align-items: center;
 }
 
-.factura-numero {
-  color: #333;
-  font-weight: 500;
+.input-combo input {
+  flex: 1;
+  padding: 8px 12px;
+  border: 1px solid #ddd;
+  border-radius: 4px;
+  font-size: 14px;
 }
 
-.factura-fecha {
-  color: #666;
+.input-combo button {
+  margin-left: 5px;
+  padding: 8px 12px;
+  background-color: #f0f0f0;
+  border: 1px solid #ddd;
+  border-radius: 4px;
+  cursor: pointer;
+}
+
+.cliente-info {
+  margin-top: 10px;
+  padding: 10px;
+  background-color: #f9f9f9;
+  border-radius: 4px;
   font-size: 13px;
 }
 
-.factura-cliente {
-  color: #333;
-}
-
-.factura-monto {
-  font-weight: bold;
-  color: #333;
-}
-
-.factura-estado {
-  padding: 5px 10px;
-  border-radius: 4px;
-  font-size: 12px;
-  font-weight: 500;
-}
-
-.estado-pagado {
-  background-color: #e8f7ee;
-  color: #4cd964;
-}
-
-.estado-pendiente {
-  background-color: #fff7e6;
-  color: #ffa51e;
-}
-
-.estado-vencido {
-  background-color: #ffe6e6;
-  color: #ff5252;
-}
-
-.factura-acciones {
+.info-line {
   display: flex;
+  margin-bottom: 5px;
+}
+
+.info-line span:first-child {
+  font-weight: 600;
+  width: 80px;
+  color: #555;
+}
+
+.comprobante-info {
+  margin-top: 10px;
+}
+
+/* Cuerpo del facturador */
+.facturador-body {
+  display: flex;
+  flex: 1;
+  overflow: hidden;
+}
+
+.productos-section {
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+  background-color: #fff;
+  margin: 10px;
+  border-radius: 4px;
+  box-shadow: 0 1px 3px rgba(0,0,0,0.1);
+}
+
+.producto-search {
+  padding: 10px;
+  border-bottom: 1px solid #eee;
+}
+
+.productos-list-container {
+  flex: 1;
+  overflow-y: auto;
+}
+
+.productos-table {
+  width: 100%;
+  border-collapse: collapse;
+}
+
+.productos-table th {
+  text-align: left;
+  padding: 10px;
+  background-color: #f5f5f5;
+  font-weight: 600;
+  color: #555;
+  position: sticky;
+  top: 0;
+}
+
+.productos-table td {
+  padding: 10px;
+  border-bottom: 1px solid #eee;
+}
+
+.productos-table tr:last-child td {
+  border-bottom: none;
+}
+
+/* Sección de resumen */
+.resumen-section {
+  width: 350px;
+  display: flex;
+  flex-direction: column;
+  background-color: #fff;
+  margin: 10px;
+  border-radius: 4px;
+  box-shadow: 0 1px 3px rgba(0,0,0,0.1);
+  padding: 15px;
+}
+
+.resumen-totales {
+  margin-bottom: 20px;
+}
+
+.resumen-totales h3 {
+  margin-top: 0;
+  padding-bottom: 10px;
+  border-bottom: 1px solid #eee;
+  color: #444;
+}
+
+.total-line {
+  display: flex;
+  justify-content: space-between;
+  margin-bottom: 10px;
+  padding: 5px 0;
+}
+
+.total-line.grand-total {
+  border-top: 1px solid #eee;
+  padding-top: 10px;
+  font-weight: bold;
+  font-size: 1.1em;
+}
+
+.metodos-pago {
+  margin-bottom: 20px;
+}
+
+.metodos-pago h3 {
+  margin-top: 0;
+  padding-bottom: 10px;
+  border-bottom: 1px solid #eee;
+  color: #444;
+}
+
+.pago-buttons {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 5px;
+  margin-bottom: 15px;
+}
+
+.pago-btn {
+  flex: 1;
+  min-width: 80px;
+  padding: 8px 5px;
+  background-color: #f0f0f0;
+  border: 1px solid #ddd;
+  border-radius: 4px;
+  cursor: pointer;
+  font-size: 12px;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+}
+
+.pago-btn.active {
+  background-color: #e0e0ff;
+  border-color: #a0a0ff;
+}
+
+.pago-btn i {
+  margin-bottom: 3px;
+  font-size: 16px;
+}
+
+.pago-details {
+  padding: 10px;
+  background-color: #f9f9f9;
+  border-radius: 4px;
+}
+
+.mp-qr-container {
+  text-align: center;
+}
+
+.mp-qr-container img {
+  max-width: 200px;
+  margin: 0 auto;
+}
+
+.mp-instructions {
+  font-size: 12px;
+  color: #666;
+  margin: 10px 0;
+}
+
+.mp-status {
+  margin-top: 10px;
+  font-size: 13px;
+}
+
+/* Botones de acción */
+.facturador-actions {
+  display: flex;
+  gap: 10px;
+  margin-top: auto;
+}
+
+.btn-primary, .btn-secondary, .btn-afip {
+  flex: 1;
+  padding: 10px;
+  border: none;
+  border-radius: 4px;
+  cursor: pointer;
+  font-weight: 600;
+  display: flex;
+  align-items: center;
+  justify-content: center;
   gap: 5px;
 }
 
-.btn-accion {
-  background-color: transparent;
-  border: none;
-  cursor: pointer;
-  color: #666;
-  padding: 5px;
-}
-
-.btn-accion:hover {
-  color: #333;
-}
-
-.nueva-factura-btn {
-  background-color: #4ca3d8;
+.btn-primary {
+  background-color: #4a6bdf;
   color: white;
-  padding: 12px 20px;
-  border-radius: 4px;
-  border: none;
-  font-weight: 500;
-  cursor: pointer;
-  margin-bottom: 20px;
+}
+
+.btn-secondary {
+  background-color: #f0f0f0;
+  color: #444;
+  border: 1px solid #ddd;
+}
+
+.btn-afip {
+  background-color: #f5f5f5;
+  border: 1px solid #ddd;
+}
+
+.btn-afip img {
+  height: 20px;
+}
+
+/* Estilos para móviles */
+@media (max-width: 768px) {
+  .facturador-body {
+      flex-direction: column;
+  }
+  
+  .resumen-section {
+      width: auto;
+  }
+  
+  .pago-buttons {
+      flex-wrap: nowrap;
+      overflow-x: auto;
+      padding-bottom: 5px;
+  }
+  
+  .pago-btn {
+      min-width: 70px;
+  }
 }

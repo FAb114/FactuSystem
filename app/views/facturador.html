@@ -3,1454 +3,2145 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>FactuSystem - Facturador</title>
-    <link rel="stylesheet" href="../assets/css/main.css">
-    <link rel="stylesheet" href="../assets/css/components/facturador.css">
-    <link rel="stylesheet" href="../assets/css/components/modal.css">
-    <!-- Font Awesome para íconos -->
+    <title>FactuSystem</title>
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js">
+    <style>
+        :root {
+            --primary-color: #0078D7;
+            --secondary-color: #f8f9fa;
+            --accent-color: #28a745;
+            --border-color: #dee2e6;
+            --text-color: #212529;
+            --light-gray: #e9ecef;
+            --medium-gray: #adb5bd;
+            --error-color: #dc3545;
+        }
+
+        * {
+            box-sizing: border-box;
+            margin: 0;
+            padding: 0;
+            font-family: 'Segoe UI', Arial, sans-serif;
+        }
+
+        .lista-desplegable {
+  list-style: none;
+  margin: 0;
+  padding: 0;
+  border: 1px solid #ccc;
+  max-height: 150px;
+  overflow-y: auto;
+  background-color: white;
+  position: absolute;
+  width: 100%;
+  z-index: 1000;
+}
+.lista-desplegable li {
+  padding: 8px;
+  cursor: pointer;
+}
+.lista-desplegable li:hover {
+  background-color: #eee;
+}
+
+        body {
+            background-color: #f5f5f5;
+            color: var(--text-color);
+        }
+
+        .container {
+            max-width: 1200px;
+            margin: 0 auto;
+            padding: 20px;
+        }
+
+        header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding: 10px 0;
+            margin-bottom: 20px;
+        }
+
+        .client-info {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            margin-bottom: 20px;
+        }
+
+        .client-input {
+            flex-grow: 1;
+            padding: 10px;
+            border: 1px solid var(--border-color);
+            border-radius: 4px;
+            font-size: 16px;
+        }
+
+        .invoice-info {
+            display: flex;
+            gap: 10px;
+            margin-bottom: 20px;
+        }
+
+        .invoice-type, .invoice-number, .invoice-date {
+            padding: 10px;
+            border: 1px solid var(--border-color);
+            border-radius: 4px;
+            font-size: 14px;
+        }
+
+        .arca-logo {
+            color: var(--primary-color);
+            font-size: 40px;
+            margin-right: 20px;
+        }
+
+        .action-buttons {
+            display: flex;
+            gap: 15px;
+            justify-content: flex-end;
+        }
+
+        .action-button {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            background: transparent;
+            border: none;
+            cursor: pointer;
+            color: var(--text-color);
+            font-size: 12px;
+        }
+
+        .action-button i {
+            font-size: 24px;
+            margin-bottom: 5px;
+        }
+
+        .search-product {
+            display: flex;
+            gap: 10px;
+            margin-bottom: 20px;
+        }
+
+        .search-product input, .search-product .price-input, .search-product .quantity-input, .search-product .discount-input {
+            padding: 10px;
+            border: 1px solid var(--border-color);
+            border-radius: 4px;
+        }
+
+        .search-product .product-input {
+            flex-grow: 2;
+        }
+
+        .search-product .price-input {
+            width: 150px;
+        }
+
+        .search-product .quantity-input, .search-product .discount-input, .search-product .iva-input {
+            width: 100px;
+        }
+
+        .responsive-table-container {
+            overflow-x: auto;
+            margin-bottom: 20px;
+        }
+
+        .products-table {
+            width: 100%;
+            border-collapse: collapse;
+            margin-bottom: 20px;
+        }
+
+        .products-table th, .products-table td {
+            padding: 12px;
+            text-align: left;
+            border-bottom: 1px solid var(--border-color);
+        }
+
+        .products-table th {
+            background-color: var(--secondary-color);
+            font-weight: 600;
+        }
+
+        .products-table tr:hover {
+            background-color: var(--light-gray);
+        }
+
+        .payment-methods {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 10px;
+            margin-bottom: 20px;
+        }
+
+        .payment-method {
+            flex: 1;
+            min-width: 150px;
+            padding: 15px;
+            border: 1px solid var(--border-color);
+            border-radius: 4px;
+            text-align: center;
+            background-color: white;
+            cursor: pointer;
+            transition: all 0.3s;
+        }
+
+        .payment-method:hover {
+            background-color: var(--light-gray);
+        }
+
+        .payment-method.active {
+            background-color: var(--light-gray);
+            border-color: var(--primary-color);
+        }
+
+        .payment-method i {
+            font-size: 24px;
+            margin-bottom: 10px;
+            color: var(--primary-color);
+        }
+
+        .arca-button {
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 10px;
+            padding: 15px;
+            background-color: var(--primary-color);
+            color: white;
+            border: none;
+            border-radius: 4px;
+            font-size: 16px;
+            font-weight: 600;
+            cursor: pointer;
+            margin-bottom: 20px;
+            width: 100%;
+        }
+
+        .arca-button:disabled {
+            background-color: var(--medium-gray);
+            cursor: not-allowed;
+        }
+
+        .totals {
+            display: flex;
+            justify-content: space-between;
+            margin-bottom: 20px;
+            background-color: #e6f7ff;
+            padding: 15px;
+            border-radius: 4px;
+        }
+
+        .totals-left {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 20px;
+        }
+
+        .total-item {
+            text-align: center;
+            min-width: 100px;
+        }
+
+        .total-item .value {
+            font-weight: 600;
+        }
+
+        .grand-total {
+            text-align: center;
+        }
+
+        .grand-total .label {
+            font-size: 16px;
+        }
+
+        .grand-total .value {
+            font-size: 24px;
+            font-weight: 700;
+            color: var(--primary-color);
+        }
+
+        .generate-button {
+            display: block;
+            width: 100%;
+            padding: 15px;
+            background-color: var(--accent-color);
+            color: white;
+            border: none;
+            border-radius: 4px;
+            font-size: 16px;
+            font-weight: 600;
+            cursor: pointer;
+            text-align: center;
+            text-transform: uppercase;
+        }
+
+        /* Modals */
+        .modal {
+            display: none;
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background-color: rgba(0,0,0,0.5);
+            z-index: 1000;
+            overflow: auto;
+        }
+
+        .modal-content {
+            background-color: white;
+            margin: 10% auto;
+            padding: 20px;
+            border-radius: 8px;
+            width: 80%;
+            max-width: 600px;
+            box-shadow: 0 4px 8px rgba(0,0,0,0.1);
+            position: relative;
+        }
+
+        .close-modal {
+            position: absolute;
+            top: 10px;
+            right: 15px;
+            font-size: 24px;
+            cursor: pointer;
+        }
+
+        .modal-header {
+            margin-bottom: 20px;
+            padding-bottom: 10px;
+            border-bottom: 1px solid var(--border-color);
+        }
+
+        .modal-footer {
+            margin-top: 20px;
+            padding-top: 10px;
+            border-top: 1px solid var(--border-color);
+            display: flex;
+            justify-content: flex-end;
+            gap: 10px;
+        }
+
+        .modal-button {
+            padding: 10px 20px;
+            border: none;
+            border-radius: 4px;
+            cursor: pointer;
+        }
+
+        .modal-button.primary {
+            background-color: var(--primary-color);
+            color: white;
+        }
+
+        .modal-button.secondary {
+            background-color: var(--light-gray);
+            color: var(--text-color);
+        }
+
+        .form-group {
+            margin-bottom: 15px;
+        }
+
+        .form-group label {
+            display: block;
+            margin-bottom: 5px;
+            font-weight: 500;
+        }
+
+        .form-group input, .form-group select {
+            width: 100%;
+            padding: 10px;
+            border: 1px solid var(--border-color);
+            border-radius: 4px;
+        }
+
+        .form-error {
+            color: var(--error-color);
+            font-size: 12px;
+            margin-top: 5px;
+        }
+
+        .qr-loading {
+            text-align: center;
+            padding: 30px;
+        }
+
+        .qr-spinner {
+            border: 5px solid var(--light-gray);
+            border-top: 5px solid var(--primary-color);
+            border-radius: 50%;
+            width: 50px;
+            height: 50px;
+            animation: spin 1s linear infinite;
+            margin: 0 auto 20px;
+        }
+
+        @keyframes spin {
+            0% { transform: rotate(0deg); }
+            100% { transform: rotate(360deg); }
+        }
+
+        .payment-options {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 10px;
+            margin-bottom: 20px;
+        }
+
+        .payment-option {
+            background-color: var(--light-gray);
+            padding: 10px 15px;
+            border-radius: 4px;
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            width: calc(50% - 5px);
+        }
+
+        .payment-option i {
+            color: red;
+            cursor: pointer;
+        }
+
+        .generate-options {
+            display: flex;
+            gap: 10px;
+            flex-wrap: wrap;
+        }
+
+        .generate-option {
+            flex: 1;
+            min-width: calc(50% - 5px);
+            padding: 15px;
+            border: 1px solid var(--border-color);
+            border-radius: 4px;
+            text-align: center;
+            background-color: white;
+            cursor: pointer;
+            transition: all 0.3s;
+        }
+
+        .generate-option:hover {
+            background-color: var(--light-gray);
+        }
+
+        .generate-option i {
+            font-size: 24px;
+            margin-bottom: 10px;
+            color: var(--primary-color);
+        }
+
+        .search-results {
+            max-height: 300px;
+            overflow-y: auto;
+            margin-top: 10px;
+        }
+
+        .search-results table {
+            width: 100%;
+            border-collapse: collapse;
+        }
+
+        .search-results th, .search-results td {
+            padding: 8px;
+            text-align: left;
+            border-bottom: 1px solid var(--border-color);
+        }
+
+        .search-results tr:hover {
+            background-color: var(--light-gray);
+            cursor: pointer;
+        }
+
+        .progress-bar {
+            width: 100%;
+            background-color: var(--light-gray);
+            border-radius: 4px;
+            margin-bottom: 20px;
+        }
+
+        .progress {
+            height: 20px;
+            background-color: var(--primary-color);
+            border-radius: 4px;
+            width: 0%;
+            transition: width 0.5s;
+        }
+
+        .progress-text {
+            text-align: center;
+            margin-bottom: 20px;
+        }
+
+        #invoicePreview {
+            width: 100%;
+            min-height: 500px;
+            border: 1px solid var(--border-color);
+            margin-bottom: 20px;
+            padding: 20px;
+            background-color: white;
+        }
+
+        .invoice-preview-header {
+            display: flex;
+            justify-content: space-between;
+            margin-bottom: 20px;
+            padding-bottom: 10px;
+            border-bottom: 1px solid var(--border-color);
+        }
+
+        .tabs {
+            display: flex;
+            margin-bottom: 20px;
+            border-bottom: 1px solid var(--border-color);
+        }
+
+        .tab {
+            padding: 10px 20px;
+            cursor: pointer;
+            border: 1px solid transparent;
+            border-bottom: none;
+            margin-right: 5px;
+        }
+
+        .tab.active {
+            background-color: white;
+            border-color: var(--border-color);
+            border-radius: 4px 4px 0 0;
+        }
+
+        .tab-content {
+            display: none;
+        }
+
+        .tab-content.active {
+            display: block;
+        }
+
+        /* Toast notifications */
+        .toast {
+            position: fixed;
+            bottom: 20px;
+            right: 20px;
+            padding: 15px 20px;
+            background-color: var(--primary-color);
+            color: white;
+            border-radius: 4px;
+            box-shadow: 0 4px 8px rgba(0,0,0,0.1);
+            opacity: 0;
+            transition: opacity 0.3s;
+            z-index: 2000;
+        }
+
+        .toast.success {
+            background-color: var(--accent-color);
+        }
+
+        .toast.error {
+            background-color: var(--error-color);
+        }
+
+        .toast.show {
+            opacity: 1;
+        }
+
+        /* Responsive styles */
+        @media (max-width: 768px) {
+            .client-info, .invoice-info, .search-product {
+                flex-direction: column;
+            }
+
+            .action-buttons {
+                gap: 5px;
+            }
+
+            .action-button i {
+                font-size: 18px;
+            }
+
+            .payment-option, .generate-option {
+                width: 100%;
+            }
+
+            .totals {
+                flex-direction: column;
+                gap: 15px;
+            }
+
+            .totals-left {
+                justify-content: center;
+            }
+
+            .search-product .product-input, .search-product .price-input, 
+            .search-product .quantity-input, .search-product .discount-input, 
+            .search-product .iva-input {
+                width: 100%;
+            }
+        }
+
+        /* Print styles */
+        @media print {
+            .no-print {
+                display: none;
+            }
+
+            .container {
+                width: 100%;
+                max-width: 100%;
+                padding: 0;
+                margin: 0;
+            }
+
+            body {
+                background-color: white;
+            }
+        }
+    </style>
 </head>
-<body class="facturador-page">
-    <div class="facturador-container">
-        <!-- Encabezado del Facturador -->
-        <div class="facturador-header">
-            <div class="header-title">
-                <h1>Facturador</h1>
-                <span class="subtitle" id="sucursal-actual">Sucursal: </span>
-                <span class="subtitle" id="usuario-actual">Usuario: </span>
-            </div>
-            <div class="header-actions">
-                <button class="btn-action" id="btn-minimize" title="Minimizar">
-                    <i class="fas fa-window-minimize"></i>
-                </button>
-                <button class="btn-action" id="btn-close" title="Cerrar">
-                    <i class="fas fa-times"></i>
+<body>
+    <div class="container">
+        <!-- Header with client information and invoice details -->
+        <header>
+            <div class="client-info">
+                <i class="fas fa-user"></i>
+                <input type="text" class="client-input" id="clientInput" placeholder="Cliente (Enter para Consumidor Final)" autocomplete="off">
+                <button class="action-button" id="newClientBtn" title="Nuevo Cliente (F1)">
+                    <i class="fas fa-user-plus"></i>
+                    <span>Nuevo</span>
                 </button>
             </div>
+
+            <div class="invoice-info">
+                <select class="invoice-type" id="invoiceType">
+                    <option value="X">Factura X</option>
+                    <option value="A">Factura A</option>
+                    <option value="B">Factura B</option>
+                    <option value="C">Factura C</option>
+                    <option value="P">Presupuesto</option>
+                </select>
+                <input type="text" class="invoice-number" id="invoiceNumber" placeholder="Número" readonly>
+                <input type="date" class="invoice-date" id="invoiceDate" value="">
+            </div>
+
+            <div class="arca-logo">
+                <i class="fas fa-triangle"></i>
+            </div>
+
+            <div class="action-buttons">
+                <button class="action-button" id="userBtn" title="Usuarios">
+                    <i class="fas fa-user"></i>
+                </button>
+                <button class="action-button" id="cardBtn" title="Tarjetas">
+                    <i class="fas fa-credit-card"></i>
+                </button>
+                <button class="action-button" id="paymentsBtn" title="Pagos">
+                    <i class="fas fa-money-bill-wave"></i>
+                </button>
+                <button class="action-button" id="reportsBtn" title="Reportes">
+                    <i class="fas fa-chart-bar"></i>
+                </button>
+                <button class="action-button" id="historyBtn" title="Historial">
+                    <i class="fas fa-clock"></i>
+                </button>
+                <button class="action-button" id="settingsBtn" title="Configuración">
+                    <i class="fas fa-cog"></i>
+                </button>
+            </div>
+        </header>
+
+        <!-- Tabs -->
+        <div class="tabs">
+            <div class="tab active" data-tab="products">Productos</div>
+            <div class="tab" data-tab="history">Historial</div>
+            <div class="tab" data-tab="reports">Reportes</div>
         </div>
 
-        <!-- Sección de Cliente -->
-        <div class="cliente-section">
-            <div class="section-title">
-                <h2><i class="fas fa-user-tag"></i> Datos del Cliente</h2>
+        <div class="tab-content active" id="products-tab">
+            <!-- Product search and input -->
+<div class="search-product">
+    <button class="action-button" id="searchProductBtn" title="Buscar Producto (F1)">
+        <i class="fas fa-box"></i>
+    </button>
+    <input type="text" class="product-input" id="productInput" placeholder="Escanee o ingrese nombre del producto" autocomplete="off">
+    <!-- Lista de productos sugeridos -->
+    <ul id="listaProductos" class="lista-desplegable"></ul>
+    <div class="price-input-container">
+        <input type="text" class="price-input" id="priceInput" placeholder="Precio">
+    </div>
+    <input type="number" class="quantity-input" id="quantityInput" placeholder="Cant." value="1" min="1">
+    <input type="text" class="discount-input" id="discountInput" placeholder="± %">
+    <input type="text" class="iva-input" id="ivaInput" placeholder="IVA %" value="21">
+    <button class="action-button" id="addProductBtn" title="Agregar">
+        <i class="fas fa-plus"></i>
+    </button>
+</div>
+
+<!-- Products table -->
+<div class="responsive-table-container">
+    <table class="products-table" id="productsTable">
+        <thead>
+            <tr>
+                <th>Nº</th>
+                <th>Producto</th>
+                <th>Descripción</th>
+                <th>Cantidad</th>
+                <th>Precio</th>
+                <th>IVA</th>
+                <th>Subtotal</th>
+                <th></th>
+            </tr>
+        </thead>
+        <tbody>
+            <!-- Products will be added here dynamically -->
+        </tbody>
+    </table>
+</div>
+
+            <!-- Payment methods -->
+            <div class="payment-methods">
+                <div class="payment-method" id="cashPayment">
+                    <i class="fas fa-money-bill-wave"></i>
+                    <h3>EFECTIVO</h3>
+                </div>
+                <div class="payment-method" id="cardPayment">
+                    <i class="fas fa-credit-card"></i>
+                    <h3>TARJETA</h3>
+                </div>
+                <div class="payment-method" id="transferPayment">
+                    <i class="fas fa-exchange-alt"></i>
+                    <h3>TRANSFERENCIA</h3>
+                </div>
+                <div class="payment-method" id="qrPayment">
+                    <i class="fas fa-qrcode"></i>
+                    <h3>QR</h3>
+                </div>
             </div>
-            <div class="cliente-form">
-                <div class="form-group">
-                    <label for="cliente-nombre">Cliente:</label>
-                    <div class="input-with-action">
-                        <input type="text" id="cliente-nombre" placeholder="Consumidor Final o F1 para buscar" autofocus>
-                        <button class="btn-secondary" id="btn-buscar-cliente" title="Buscar Cliente (F1)">
-                            <i class="fas fa-search"></i>
-                        </button>
+
+            <!-- ARCA electronic invoice button -->
+            <button class="arca-button" id="arcaButton" disabled>
+                <i class="fas fa-triangle"></i>
+                GENERAR FACTURA ELECTRÓNICA ARCA
+            </button>
+
+            <!-- Totals and subtotals -->
+            <div class="totals">
+                <div class="totals-left">
+                    <div class="total-item">
+                        <div class="label">Neto</div>
+                        <div class="value" id="netTotal">$ 0,00</div>
+                    </div>
+                    <div class="total-item">
+                        <div class="label">Exento</div>
+                        <div class="value" id="exemptTotal">$ 0,00</div>
+                    </div>
+                    <div class="total-item">
+                        <div class="label">No Gravado</div>
+                        <div class="value" id="notTaxedTotal">$ 0,00</div>
+                    </div>
+                    <div class="total-item">
+                        <div class="label">IVA</div>
+                        <div class="value" id="ivaTotal">$ 0,00</div>
+                    </div>
+                    <div class="total-item">
+                        <div class="label">Impuestos</div>
+                        <div class="value" id="taxesTotal">$ 0,00</div>
                     </div>
                 </div>
-                <div class="cliente-info" id="cliente-info-container">
-                    <!-- Esta sección se completará dinámicamente -->
-                    <div class="info-item" id="cliente-documento">
-                        <span class="label">CUIT/DNI:</span>
-                        <span class="value">-</span>
-                    </div>
-                    <div class="info-item" id="cliente-direccion">
-                        <span class="label">Dirección:</span>
-                        <span class="value">-</span>
-                    </div>
-                    <div class="info-item" id="cliente-iva">
-                        <span class="label">Cond. IVA:</span>
-                        <span class="value">-</span>
-                    </div>
+                <div class="grand-total">
+                    <div class="label">Total</div>
+                    <div class="value" id="grandTotal">$ 0,00</div>
                 </div>
             </div>
+
+            <!-- Generate invoice button -->
+            <button class="generate-button" id="generateInvoiceBtn">GENERAR FACTURA</button>
         </div>
 
-        <!-- Sección de Comprobante -->
-        <div class="comprobante-section">
-            <div class="section-title">
-                <h2><i class="fas fa-file-invoice"></i> Tipo de Comprobante</h2>
-            </div>
-            <div class="comprobante-form">
-                <div class="form-group">
-                    <label for="tipo-comprobante">Tipo:</label>
-                    <select id="tipo-comprobante">
-                        <option value="FACTURA_B">Factura B</option>
-                        <option value="FACTURA_A">Factura A</option>
-                        <option value="FACTURA_C">Factura C</option>
-                        <option value="FACTURA_X">Factura X</option>
-                        <option value="PRESUPUESTO">Presupuesto</option>
-                    </select>
-                </div>
-                <div class="form-group">
-                    <label for="numero-comprobante">Número:</label>
-                    <input type="text" id="numero-comprobante" readonly>
-                </div>
-                <div class="form-group">
-                    <label for="fecha-comprobante">Fecha:</label>
-                    <input type="date" id="fecha-comprobante">
-                </div>
-            </div>
-        </div>
-
-        <!-- Sección de Ingreso de Productos -->
-        <div class="productos-section">
-            <div class="section-title">
-                <h2><i class="fas fa-barcode"></i> Productos</h2>
-            </div>
-            <div class="productos-form">
-                <div class="form-group">
-                    <label for="producto-codigo">Código o Nombre:</label>
-                    <div class="input-with-action">
-                        <input type="text" id="producto-codigo" placeholder="Escanee o ingrese código/nombre o F1 para buscar">
-                        <button class="btn-secondary" id="btn-buscar-producto" title="Buscar Producto (F1)">
-                            <i class="fas fa-search"></i>
-                        </button>
-                    </div>
-                </div>
-                <div class="form-row">
-                    <div class="form-group col-4">
-                        <label for="producto-cantidad">Cantidad:</label>
-                        <input type="number" id="producto-cantidad" value="1" min="0.01" step="0.01">
-                    </div>
-                    <div class="form-group col-4">
-                        <label for="producto-precio">Precio Unit:</label>
-                        <input type="number" id="producto-precio" readonly>
-                    </div>
-                    <div class="form-group col-4">
-                        <label for="producto-descuento">Desc %:</label>
-                        <input type="text" id="producto-descuento" value="0">
-                    </div>
-                </div>
-                <div class="form-actions">
-                    <button class="btn-primary" id="btn-agregar-producto">
-                        <i class="fas fa-plus-circle"></i> Agregar
-                    </button>
-                    <button class="btn-secondary" id="btn-limpiar-producto">
-                        <i class="fas fa-eraser"></i> Limpiar
-                    </button>
-                </div>
-            </div>
-
-            <!-- Tabla de productos agregados -->
-            <div class="productos-tabla-container">
-                <table class="productos-tabla" id="tabla-productos">
+        <div class="tab-content" id="history-tab">
+            <h2>Historial de Facturas</h2>
+            <div class="responsive-table-container">
+                <table class="products-table" id="historyTable">
                     <thead>
                         <tr>
-                            <th>Código</th>
-                            <th>Producto</th>
-                            <th>Cantidad</th>
-                            <th>Precio Unit.</th>
-                            <th>Descuento</th>
-                            <th>Subtotal</th>
+                            <th>Fecha</th>
+                            <th>Número</th>
+                            <th>Tipo</th>
+                            <th>Cliente</th>
+                            <th>Total</th>
                             <th>Acciones</th>
                         </tr>
                     </thead>
                     <tbody>
-                        <!-- Aquí se agregarán dinámicamente los productos -->
+                        <!-- History will be added here dynamically -->
                     </tbody>
                 </table>
             </div>
-
-            <!-- Imagen de producto (aparece brevemente al agregar) -->
-            <div class="producto-imagen-popup" id="producto-imagen-popup">
-                <img src="" alt="Producto" id="producto-imagen">
-            </div>
         </div>
 
-        <!-- Sección de Descuentos/Recargos -->
-        <div class="descuentos-section">
-            <div class="form-row">
-                <div class="form-group col-6">
-                    <label for="descuento-global">Descuento/Recargo Global (%):</label>
-                    <div class="input-with-info">
-                        <input type="text" id="descuento-global" placeholder="-10 para descuento, +5 para recargo">
-                        <span class="input-info">Ej: -10 para 10% descuento</span>
-                    </div>
-                </div>
-                <div class="form-group col-6">
-                    <label for="aplicar-iva">IVA:</label>
-                    <div class="toggle-switch">
-                        <input type="checkbox" id="aplicar-iva" checked>
-                        <label for="aplicar-iva">Aplicar IVA</label>
-                    </div>
-                </div>
+        <div class="tab-content" id="reports-tab">
+            <h2>Reportes de Ventas</h2>
+            <div class="form-group">
+                <label for="reportDateFrom">Desde</label>
+                <input type="date" id="reportDateFrom">
             </div>
-        </div>
-
-        <!-- Sección de Totales -->
-        <div class="totales-section">
-            <div class="totales-container">
-                <div class="totales-item">
-                    <span class="label">Subtotal:</span>
-                    <span class="value" id="subtotal">$0.00</span>
-                </div>
-                <div class="totales-item">
-                    <span class="label">Descuento/Recargo:</span>
-                    <span class="value" id="total-descuento">$0.00</span>
-                </div>
-                <div class="totales-item">
-                    <span class="label">IVA:</span>
-                    <span class="value" id="total-iva">$0.00</span>
-                </div>
-                <div class="totales-item total-principal">
-                    <span class="label">TOTAL:</span>
-                    <span class="value" id="total-factura">$0.00</span>
-                </div>
+            <div class="form-group">
+                <label for="reportDateTo">Hasta</label>
+                <input type="date" id="reportDateTo">
             </div>
-        </div>
-
-        <!-- Sección de Métodos de Pago -->
-        <div class="pagos-section">
-            <div class="section-title">
-                <h2><i class="fas fa-money-bill-wave"></i> Método de Pago</h2>
-            </div>
-            <div class="metodos-pago">
-                <button class="metodo-pago-btn" id="btn-pago-efectivo">
-                    <i class="fas fa-money-bill-alt"></i>
-                    <span>Efectivo</span>
-                </button>
-                <button class="metodo-pago-btn" id="btn-pago-tarjeta">
-                    <i class="fas fa-credit-card"></i>
-                    <span>Tarjeta</span>
-                </button>
-                <button class="metodo-pago-btn" id="btn-pago-transferencia">
-                    <i class="fas fa-university"></i>
-                    <span>Transferencia</span>
-                </button>
-                <button class="metodo-pago-btn" id="btn-pago-qr">
-                    <i class="fas fa-qrcode"></i>
-                    <span>QR</span>
-                </button>
-                <button class="metodo-pago-btn" id="btn-pago-mixto">
-                    <i class="fas fa-random"></i>
-                    <span>Pago Mixto</span>
-                </button>
-            </div>
-            <!-- Contenedor para mostrar los medios de pago seleccionados -->
-            <div class="pagos-seleccionados" id="pagos-seleccionados">
-                <!-- Los pagos seleccionados se mostrarán aquí dinámicamente -->
-            </div>
-        </div>
-
-        <!-- Sección de Facturación Electrónica -->
-        <div class="facturacion-electronica-section">
-            <button class="btn-primary btn-arca" id="btn-facturar-arca">
-                <i class="fas fa-receipt"></i> Facturar con ARCA (AFIP)
+            <button class="arca-button" id="generateReportBtn">
+                <i class="fas fa-chart-bar"></i>
+                GENERAR REPORTE
             </button>
-            <div class="estado-facturacion" id="estado-facturacion">
-                <!-- El estado de la facturación se mostrará aquí -->
-            </div>
-        </div>
-
-        <!-- Sección de Acciones Finales -->
-        <div class="acciones-section">
-            <button class="btn-secondary btn-large" id="btn-cancelar">
-                <i class="fas fa-times-circle"></i> Cancelar
-            </button>
-            <button class="btn-success btn-large" id="btn-generar-factura">
-                <i class="fas fa-check-circle"></i> <span id="btn-facturar-texto">Generar Factura</span>
-            </button>
+            <div id="reportResults"></div>
         </div>
     </div>
 
-    <!-- Modales -->
-    <!-- Modal para buscar cliente -->
-    <div class="modal" id="modal-cliente">
+    <!-- Modals -->
+    <!-- New Client Modal -->
+    <div class="modal" id="newClientModal">
         <div class="modal-content">
-            <div class="modal-header">
-                <h2>Buscar Cliente</h2>
-                <button class="modal-close" id="modal-cliente-close">
-                    <i class="fas fa-times"></i>
-                </button>
-            </div>
-            <div class="modal-body">
-                <div class="form-group">
-                    <label for="buscar-cliente-texto">Buscar:</label>
-                    <input type="text" id="buscar-cliente-texto" placeholder="Nombre, DNI o CUIT" autocomplete="off">
-                </div>
-                <div class="tabla-container">
-                    <table class="tabla-busqueda" id="tabla-clientes">
-                        <thead>
-                            <tr>
-                                <th>DNI/CUIT</th>
-                                <th>Nombre</th>
-                                <th>Cond. IVA</th>
-                                <th>Acciones</th>
-                            </tr>
-                        </thead>
-                        <tbody>
-                            <!-- Se cargará dinámicamente -->
-                        </tbody>
-                    </table>
-                </div>
-                <div class="modal-actions">
-                    <button class="btn-primary" id="btn-nuevo-cliente">
-                        <i class="fas fa-user-plus"></i> Nuevo Cliente
-                    </button>
-                </div>
-            </div>
-        </div>
-    </div>
-
-    <!-- Modal para nuevo cliente -->
-    <div class="modal" id="modal-nuevo-cliente">
-        <div class="modal-content">
+            <span class="close-modal" data-modal="newClientModal">&times;</span>
             <div class="modal-header">
                 <h2>Nuevo Cliente</h2>
-                <button class="modal-close" id="modal-nuevo-cliente-close">
-                    <i class="fas fa-times"></i>
-                </button>
             </div>
-            <div class="modal-body">
-                <div class="form-row">
-                    <div class="form-group col-6">
-                        <label for="nuevo-cliente-tipo-doc">Tipo:</label>
-                        <select id="nuevo-cliente-tipo-doc">
-                            <option value="DNI">DNI</option>
-                            <option value="CUIT">CUIT</option>
-                            <option value="CUIL">CUIL</option>
-                            <option value="PASAPORTE">Pasaporte</option>
-                        </select>
-                    </div>
-                    <div class="form-group col-6">
-                        <label for="nuevo-cliente-documento">Número:</label>
-                        <input type="text" id="nuevo-cliente-documento" placeholder="Sin guiones">
-                    </div>
-                </div>
-                <div class="form-group">
-                    <label for="nuevo-cliente-nombre">Nombre y Apellido / Razón Social:</label>
-                    <input type="text" id="nuevo-cliente-nombre">
-                </div>
-                <div class="form-group">
-                    <label for="nuevo-cliente-direccion">Dirección:</label>
-                    <input type="text" id="nuevo-cliente-direccion">
-                </div>
-                <div class="form-group">
-                    <label for="nuevo-cliente-iva">Condición frente al IVA:</label>
-                    <select id="nuevo-cliente-iva">
-                        <option value="CONSUMIDOR_FINAL">Consumidor Final</option>
-                        <option value="RESPONSABLE_INSCRIPTO">Responsable Inscripto</option>
-                        <option value="MONOTRIBUTO">Monotributista</option>
-                        <option value="EXENTO">Exento</option>
-                    </select>
-                </div>
-                <div class="form-row">
-                    <div class="form-group col-6">
-                        <label for="nuevo-cliente-telefono">Teléfono:</label>
-                        <input type="text" id="nuevo-cliente-telefono">
-                    </div>
-                    <div class="form-group col-6">
-                        <label for="nuevo-cliente-email">Email:</label>
-                        <input type="email" id="nuevo-cliente-email">
-                    </div>
-                </div>
-                <div class="form-group">
-                    <label for="nuevo-cliente-sucursal">Sucursal Asignada:</label>
-                    <select id="nuevo-cliente-sucursal">
-                        <!-- Se cargará dinámicamente -->
-                    </select>
-                </div>
-                <div class="modal-actions">
-                    <button class="btn-secondary" id="btn-cancelar-nuevo-cliente">Cancelar</button>
-                    <button class="btn-primary" id="btn-guardar-nuevo-cliente">Guardar Cliente</button>
-                </div>
+            <div class="form-group">
+                <label for="clientDni">DNI/CUIT *</label>
+                <input type="text" id="clientDni" placeholder="Ingrese DNI/CUIT">
+                <div class="form-error" id="clientDniError"></div>
+            </div>
+            <div class="form-group">
+                <label for="clientName">Nombre *</label>
+                <input type="text" id="clientName" placeholder="Nombre">
+                <div class="form-error" id="clientNameError"></div>
+            </div>
+            <div class="form-group">
+                <label for="clientLastName">Apellido *</label>
+                <input type="text" id="clientLastName" placeholder="Apellido">
+                <div class="form-error" id="clientLastNameError"></div>
+            </div>
+            <div class="form-group">
+                <label for="clientIvaCondition">Condición IVA *</label>
+                <select id="clientIvaCondition">
+                    <option value="CF">Consumidor Final</option>
+                    <option value="RI">Responsable Inscripto</option>
+                    <option value="MT">Monotributista</option>
+                    <option value="EX">Exento</option>
+                </select>
+            </div>
+            <div class="form-group">
+                <label for="clientAddress">Dirección</label>
+                <input type="text" id="clientAddress" placeholder="Dirección">
+            </div>
+            <div class="form-group">
+                <label for="clientEmail">Email</label>
+                <input type="email" id="clientEmail" placeholder="Email">
+                <div class="form-error" id="clientEmailError"></div>
+            </div>
+            <div class="form-group">
+                <label for="clientPhone">Teléfono</label>
+                <input type="text" id="clientPhone" placeholder="Teléfono">
+                <div class="form-error" id="clientPhoneError"></div>
+            </div>
+            <div class="modal-footer">
+                <button class="modal-button secondary" data-modal="newClientModal">Cancelar</button>
+                <button class="modal-button primary" id="saveClientBtn">Guardar</button>
             </div>
         </div>
     </div>
 
-    <!-- Modal para buscar producto -->
-    <div class="modal" id="modal-producto">
-        <div class="modal-content modal-lg">
+    <!-- Search Product Modal -->
+    <div class="modal" id="searchProductModal">
+        <div class="modal-content">
+            <span class="close-modal" data-modal="searchProductModal">&times;</span>
             <div class="modal-header">
                 <h2>Buscar Producto</h2>
-                <button class="modal-close" id="modal-producto-close">
-                    <i class="fas fa-times"></i>
-                </button>
             </div>
-            <div class="modal-body">
-                <div class="form-row">
-                    <div class="form-group col-6">
-                        <label for="buscar-producto-texto">Buscar:</label>
-                        <input type="text" id="buscar-producto-texto" placeholder="Código, nombre o descripción">
-                    </div>
-                    <div class="form-group col-6">
-                        <label for="filtro-categoria">Categoría:</label>
-                        <select id="filtro-categoria">
-                            <option value="">Todas las categorías</option>
-                            <!-- Se cargará dinámicamente -->
-                        </select>
-                    </div>
-                </div>
-                <div class="productos-grid" id="productos-grid">
-                    <!-- Se cargará dinámicamente -->
-                </div>
-                <div class="tabla-container">
-                    <table class="tabla-busqueda" id="tabla-productos-busqueda">
+            <div class="form-group">
+                <input type="text" id="searchProductInput" placeholder="Buscar por nombre o categoría...">
+            </div>
+            <div class="search-results" id="searchResults">
+                <table>
+                    <thead>
+                        <tr>
+                            <th>Código</th>
+                            <th>Producto</th>
+                            <th>Categoría</th>
+                            <th>Precio</th>
+                            <th>Stock</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        <!-- Search results will be added here dynamically -->
+                    </tbody>
+                </table>
+            </div>
+            <div class="modal-footer">
+                <button class="modal-button secondary" data-modal="searchProductModal">Cancelar</button>
+                <button class="modal-button primary" id="newProductBtn">Nuevo Producto</button>
+            </div>
+        </div>
+    </div>
+
+    <!-- New Product Modal -->
+    <div class="modal" id="newProductModal">
+        <div class="modal-content">
+            <span class="close-modal" data-modal="newProductModal">&times;</span>
+            <div class="modal-header">
+                <h2>Nuevo Producto</h2>
+            </div>
+            <div class="form-group">
+                <label for="productCode">Código *</label>
+                <input type="text" id="productCode" placeholder="Código del producto">
+                <div class="form-error" id="productCodeError"></div>
+            </div>
+            <div class="form-group">
+                <label for="productName">Nombre *</label>
+                <input type="text" id="productName" placeholder="Nombre del producto">
+                <div class="form-error" id="productNameError"></div>
+            </div>
+            <div class="form-group">
+                <label for="productCategory">Categoría</label>
+                <input type="text" id="productCategory" placeholder="Categoría">
+            </div>
+            <div class="form-group">
+                <label for="productPrice">Precio *</label>
+                <input type="text" id="productPrice" placeholder="Precio">
+                <div class="form-error" id="productPriceError"></div>
+            </div>
+            <div class="form-group">
+                <label for="productStock">Stock *</label>
+                <input type="number" id="productStock" placeholder="Stock" min="0">
+                <div class="form-error" id="productStockError"></div>
+            </div>
+            <div class="form-group">
+                <label for="productIva">IVA %</label>
+                <input type="text" id="productIva" placeholder="IVA %" value="21">
+            </div>
+            <div class="modal-footer">
+                <button class="modal-button secondary" data-modal="newProductModal">Cancelar</button>
+                <button class="modal-button primary" id="saveProductBtn">Guardar</button>
+            </div>
+        </div>
+    </div>
+
+    <!-- Payment Modal -->
+<div class="modal" id="paymentModal">
+    <div class="modal-content">
+        <span class="close-modal" data-modal="paymentModal">&times;</span>
+        <div class="modal-header">
+            <h2>Método de Pago</h2>
+        </div>
+        <div id="paymentTypeContent"></div>
+        <div class="payment-options" id="paymentOptions">
+            <!-- Payment options will be added here dynamically -->
+        </div>
+        <div class="form-group">
+            <label for="totalAmount">Total a Pagar</label>
+            <input type="text" id="totalAmount" readonly>
+        </div>
+        <div class="form-group">
+            <label for="paymentAmount">Monto Pagado</label>
+            <input type="text" id="paymentAmount" placeholder="Ingrese monto">
+        </div>
+        <div class="form-group">
+            <label for="changeAmount">Vuelto</label>
+            <input type="text" id="changeAmount" readonly>
+        </div>
+        <div class="modal-footer">
+            <button class="modal-button secondary" data-modal="paymentModal">Cancelar</button>
+            <button class="modal-button primary" id="completePaymentBtn">Completar Pago</button>
+        </div>
+    </div>
+</div>
+
+<!-- Card Payment Modal -->
+<div class="modal" id="cardPaymentModal">
+    <div class="modal-content">
+        <span class="close-modal" data-modal="cardPaymentModal">&times;</span>
+        <div class="modal-header">
+            <h2>Pago con Tarjeta</h2>
+        </div>
+        <div class="form-group">
+            <label for="cardType">Tipo de Tarjeta</label>
+            <select id="cardType">
+                <option value="VISA">VISA</option>
+                <option value="MASTERCARD">MASTERCARD</option>
+                <option value="AMEX">AMERICAN EXPRESS</option>
+                <option value="OTHER">OTRA</option>
+            </select>
+        </div>
+        <div class="form-group">
+            <label for="cardInstallments">Cuotas</label>
+            <select id="cardInstallments">
+                <option value="1">1</option>
+                <option value="3">3</option>
+                <option value="6">6</option>
+                <option value="12">12</option>
+            </select>
+        </div>
+        <div class="form-group">
+            <label for="cardAmount">Monto</label>
+            <input type="text" id="cardAmount" placeholder="Ingrese monto">
+        </div>
+        <div class="modal-footer">
+            <button class="modal-button secondary" data-modal="cardPaymentModal">Cancelar</button>
+            <button class="modal-button primary" id="addCardPaymentBtn">Agregar Pago</button>
+        </div>
+    </div>
+</div>
+
+<!-- Transfer Payment Modal -->
+<div class="modal" id="transferPaymentModal">
+    <div class="modal-content">
+        <span class="close-modal" data-modal="transferPaymentModal">&times;</span>
+        <div class="modal-header">
+            <h2>Pago por Transferencia</h2>
+        </div>
+        <div class="form-group">
+            <label for="transferReference">Referencia</label>
+            <input type="text" id="transferReference" placeholder="Número de referencia">
+        </div>
+        <div class="form-group">
+            <label for="transferAmount">Monto</label>
+            <input type="text" id="transferAmount" placeholder="Ingrese monto">
+        </div>
+        <div class="modal-footer">
+            <button class="modal-button secondary" data-modal="transferPaymentModal">Cancelar</button>
+            <button class="modal-button primary" id="addTransferPaymentBtn">Agregar Pago</button>
+        </div>
+    </div>
+</div>
+
+<!-- QR Payment Modal -->
+<div class="modal" id="qrPaymentModal">
+    <div class="modal-content">
+        <span class="close-modal" data-modal="qrPaymentModal">&times;</span>
+        <div class="modal-header">
+            <h2>Pago por QR</h2>
+        </div>
+        <div class="qr-loading" id="qrLoading">
+            <div class="qr-spinner"></div>
+            <p>Generando código QR...</p>
+        </div>
+        <div id="qrCodeContainer" style="text-align: center; display: none;">
+            <!-- QR code will be displayed here -->
+            <img id="qrCodeImage" src="" alt="Código QR para pago">
+        </div>
+        <div class="form-group">
+            <label for="qrAmount">Monto</label>
+            <input type="text" id="qrAmount" placeholder="Ingrese monto">
+        </div>
+        <div class="modal-footer">
+            <button class="modal-button secondary" data-modal="qrPaymentModal">Cancelar</button>
+            <button class="modal-button primary" id="generateQrBtn">Generar QR</button>
+            <button class="modal-button primary" id="confirmQrPaymentBtn" style="display: none;">Confirmar Pago</button>
+        </div>
+    </div>
+</div>
+
+<!-- Generate Invoice Modal -->
+<div class="modal" id="generateInvoiceModal">
+    <div class="modal-content">
+        <span class="close-modal" data-modal="generateInvoiceModal">&times;</span>
+        <div class="modal-header">
+            <h2>Generar Factura</h2>
+        </div>
+        <div class="generate-options">
+            <div class="generate-option" id="pdfOption">
+                <i class="fas fa-file-pdf"></i>
+                <h3>PDF</h3>
+            </div>
+            <div class="generate-option" id="emailOption">
+                <i class="fas fa-envelope"></i>
+                <h3>Enviar por Email</h3>
+            </div>
+            <div class="generate-option" id="printOption">
+                <i class="fas fa-print"></i>
+                <h3>Imprimir</h3>
+            </div>
+            <div class="generate-option" id="whatsappOption">
+                <i class="fab fa-whatsapp"></i>
+                <h3>Enviar por WhatsApp</h3>
+            </div>
+        </div>
+        <div id="invoicePreview">
+            <!-- Invoice preview will be displayed here -->
+        </div>
+        <div class="modal-footer">
+            <button class="modal-button secondary" data-modal="generateInvoiceModal">Cerrar</button>
+        </div>
+    </div>
+</div>
+
+<!-- Email Invoice Modal -->
+<div class="modal" id="emailInvoiceModal">
+    <div class="modal-content">
+        <span class="close-modal" data-modal="emailInvoiceModal">&times;</span>
+        <div class="modal-header">
+            <h2>Enviar Factura por Email</h2>
+        </div>
+        <div class="form-group">
+            <label for="emailTo">Enviar a</label>
+            <input type="email" id="emailTo" placeholder="Correo electrónico">
+            <div class="form-error" id="emailToError"></div>
+        </div>
+        <div class="form-group">
+            <label for="emailSubject">Asunto</label>
+            <input type="text" id="emailSubject" value="Factura ARCA">
+        </div>
+        <div class="form-group">
+            <label for="emailMessage">Mensaje</label>
+            <textarea id="emailMessage" rows="4">Estimado cliente, adjunto encontrará su factura. Gracias por su compra.</textarea>
+        </div>
+        <div class="progress-bar" style="display: none;">
+            <div class="progress" id="emailProgress"></div>
+        </div>
+        <div class="progress-text" id="emailProgressText"></div>
+        <div class="modal-footer">
+            <button class="modal-button secondary" data-modal="emailInvoiceModal">Cancelar</button>
+            <button class="modal-button primary" id="sendEmailBtn">Enviar</button>
+        </div>
+    </div>
+</div>
+
+<!-- WhatsApp Invoice Modal -->
+<div class="modal" id="whatsappInvoiceModal">
+    <div class="modal-content">
+        <span class="close-modal" data-modal="whatsappInvoiceModal">&times;</span>
+        <div class="modal-header">
+            <h2>Enviar Factura por WhatsApp</h2>
+        </div>
+        <div class="form-group">
+            <label for="whatsappNumber">Número de WhatsApp</label>
+            <input type="text" id="whatsappNumber" placeholder="Ingrese número con código de área">
+            <div class="form-error" id="whatsappNumberError"></div>
+        </div>
+        <div class="form-group">
+            <label for="whatsappMessage">Mensaje</label>
+            <textarea id="whatsappMessage" rows="4">Estimado cliente, adjunto encontrará su factura. Gracias por su compra.</textarea>
+        </div>
+        <div class="modal-footer">
+            <button class="modal-button secondary" data-modal="whatsappInvoiceModal">Cancelar</button>
+            <button class="modal-button primary" id="sendWhatsappBtn">Enviar</button>
+        </div>
+    </div>
+</div>
+
+<!-- Settings Modal -->
+<div class="modal" id="settingsModal">
+    <div class="modal-content">
+        <span class="close-modal" data-modal="settingsModal">&times;</span>
+        <div class="modal-header">
+            <h2>Configuración</h2>
+        </div>
+        <div class="tabs">
+            <div class="tab active" data-tab="general">General</div>
+            <div class="tab" data-tab="invoice">Facturación</div>
+            <div class="tab" data-tab="company">Empresa</div>
+        </div>
+        <div class="tab-content active" id="general-tab">
+            <div class="form-group">
+                <label for="themeSetting">Tema</label>
+                <select id="themeSetting">
+                    <option value="light">Claro</option>
+                    <option value="dark">Oscuro</option>
+                    <option value="system">Automático</option>
+                </select>
+            </div>
+            <div class="form-group">
+                <label for="languageSetting">Idioma</label>
+                <select id="languageSetting">
+                    <option value="es">Español</option>
+                    <option value="en">Inglés</option>
+                    <option value="pt">Portugués</option>
+                </select>
+            </div>
+        </div>
+        <div class="tab-content" id="invoice-tab">
+            <div class="form-group">
+                <label for="invoicePrefix">Prefijo de Factura</label>
+                <input type="text" id="invoicePrefix" placeholder="Prefijo">
+            </div>
+            <div class="form-group">
+                <label for="defaultIva">IVA por Defecto</label>
+                <input type="text" id="defaultIva" placeholder="IVA %" value="21">
+            </div>
+            <div class="form-group">
+                <label for="defaultInvoiceType">Tipo de Factura por Defecto</label>
+                <select id="defaultInvoiceType">
+                    <option value="X">Factura X</option>
+                    <option value="A">Factura A</option>
+                    <option value="B">Factura B</option>
+                    <option value="C">Factura C</option>
+                    <option value="P">Presupuesto</option>
+                </select>
+            </div>
+        </div>
+        <div class="tab-content" id="company-tab">
+            <div class="form-group">
+                <label for="companyName">Nombre de la Empresa</label>
+                <input type="text" id="companyName" placeholder="Nombre">
+            </div>
+            <div class="form-group">
+                <label for="companyCuit">CUIT</label>
+                <input type="text" id="companyCuit" placeholder="CUIT">
+            </div>
+            <div class="form-group">
+                <label for="companyAddress">Dirección</label>
+                <input type="text" id="companyAddress" placeholder="Dirección">
+            </div>
+            <div class="form-group">
+                <label for="companyPhone">Teléfono</label>
+                <input type="text" id="companyPhone" placeholder="Teléfono">
+            </div>
+            <div class="form-group">
+                <label for="companyEmail">Email</label>
+                <input type="email" id="companyEmail" placeholder="Email">
+            </div>
+        </div>
+        <div class="modal-footer">
+            <button class="modal-button secondary" data-modal="settingsModal">Cancelar</button>
+            <button class="modal-button primary" id="saveSettingsBtn">Guardar</button>
+        </div>
+    </div>
+</div>
+
+<!-- Toast Notification -->
+<div class="toast" id="toastNotification"></div>
+
+<!-- Scripts -->
+<script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js"></script>
+<script>
+    // Initialize date input with current date
+    document.getElementById('invoiceDate').valueAsDate = new Date();
+    
+    if (document.getElementById('reportDateFrom')) {
+        const today = new Date();
+        const firstDayOfMonth = new Date(today.getFullYear(), today.getMonth(), 1);
+        document.getElementById('reportDateFrom').valueAsDate = firstDayOfMonth;
+        document.getElementById('reportDateTo').valueAsDate = today;
+    }
+
+    // Mock data for testing
+    const products = [
+        { id: 1, code: 'P001', name: 'Monitor LED 24"', category: 'Electrónica', price: 25000, stock: 15, iva: 21 },
+        { id: 2, code: 'P002', name: 'Teclado Mecánico', category: 'Periféricos', price: 8500, stock: 30, iva: 21 },
+        { id: 3, code: 'P003', name: 'Mouse Inalámbrico', category: 'Periféricos', price: 3200, stock: 25, iva: 21 },
+        { id: 4, code: 'P004', name: 'Disco SSD 500GB', category: 'Almacenamiento', price: 12000, stock: 10, iva: 21 },
+        { id: 5, code: 'P005', name: 'Memoria RAM 8GB', category: 'Componentes', price: 6500, stock: 20, iva: 21 }
+    ];
+
+    const clients = [
+        { id: 1, dni: '20123456', name: 'Juan', lastName: 'Pérez', ivaCondition: 'CF', address: 'Av. Rivadavia 1234', email: 'juan@example.com', phone: '1123456789' },
+        { id: 2, dni: '27987654', name: 'María', lastName: 'González', ivaCondition: 'MT', address: 'Calle Florida 567', email: 'maria@example.com', phone: '1187654321' },
+        { id: 3, dni: '30456789', name: 'Carlos', lastName: 'Rodríguez', ivaCondition: 'RI', address: 'Av. Corrientes 789', email: 'carlos@example.com', phone: '1145678923' }
+    ];
+
+    // Initialize invoice number
+    document.getElementById('invoiceNumber').value = '00001-00000001';
+
+    // Variables to store cart items
+    let cartItems = [];
+    let selectedPaymentMethods = [];
+    let currentInvoiceType = 'X';
+    
+    // Event Listeners
+    document.addEventListener('DOMContentLoaded', function() {
+        // Tab navigation
+        document.querySelectorAll('.tab').forEach(tab => {
+            tab.addEventListener('click', function() {
+                const tabId = this.getAttribute('data-tab');
+                
+                // Remove active class from all tabs and content
+                document.querySelectorAll('.tab').forEach(t => t.classList.remove('active'));
+                document.querySelectorAll('.tab-content').forEach(c => c.classList.remove('active'));
+                
+                // Add active class to clicked tab and corresponding content
+                this.classList.add('active');
+                document.getElementById(tabId + '-tab').classList.add('active');
+            });
+        });
+
+        // Modal close buttons
+        document.querySelectorAll('.close-modal, .modal-button.secondary').forEach(button => {
+            button.addEventListener('click', function() {
+                const modalId = this.getAttribute('data-modal');
+                document.getElementById(modalId).style.display = 'none';
+            });
+        });
+
+        // New Client button
+        document.getElementById('newClientBtn').addEventListener('click', function() {
+            document.getElementById('newClientModal').style.display = 'block';
+        });
+
+        // Save Client button
+        document.getElementById('saveClientBtn').addEventListener('click', function() {
+            // Form validation would go here
+            const dni = document.getElementById('clientDni').value;
+            const name = document.getElementById('clientName').value;
+            const lastName = document.getElementById('clientLastName').value;
+            
+            if (!dni || !name || !lastName) {
+                showFormError('clientDniError', !dni ? 'DNI/CUIT es requerido' : '');
+                showFormError('clientNameError', !name ? 'Nombre es requerido' : '');
+                showFormError('clientLastNameError', !lastName ? 'Apellido es requerido' : '');
+                return;
+            }
+            
+            // Add client to list (in a real app, this would be saved to a database)
+            const newClient = {
+                id: clients.length + 1,
+                dni: dni,
+                name: name,
+                lastName: lastName,
+                ivaCondition: document.getElementById('clientIvaCondition').value,
+                address: document.getElementById('clientAddress').value,
+                email: document.getElementById('clientEmail').value,
+                phone: document.getElementById('clientPhone').value
+            };
+            
+            clients.push(newClient);
+            
+            // Set the client in the input field
+            document.getElementById('clientInput').value = `${name} ${lastName} (${dni})`;
+            
+            // Close modal
+            document.getElementById('newClientModal').style.display = 'none';
+            
+            // Show toast notification
+            showToast('Cliente guardado correctamente', 'success');
+            
+            // Clear form
+            document.getElementById('clientDni').value = '';
+            document.getElementById('clientName').value = '';
+            document.getElementById('clientLastName').value = '';
+            document.getElementById('clientAddress').value = '';
+            document.getElementById('clientEmail').value = '';
+            document.getElementById('clientPhone').value = '';
+        });
+
+        // Search Product button
+        document.getElementById('searchProductBtn').addEventListener('click', function() {
+            document.getElementById('searchProductModal').style.display = 'block';
+            document.getElementById('searchProductInput').focus();
+            
+            // Populate search results with all products initially
+            populateSearchResults(products);
+        });
+
+        // Search Product Input
+        document.getElementById('searchProductInput').addEventListener('input', function() {
+            const searchTerm = this.value.toLowerCase();
+            const filteredProducts = products.filter(product => 
+                product.name.toLowerCase().includes(searchTerm) || 
+                product.category.toLowerCase().includes(searchTerm) ||
+                product.code.toLowerCase().includes(searchTerm)
+            );
+            
+            populateSearchResults(filteredProducts);
+        });
+
+        // New Product button
+        document.getElementById('newProductBtn').addEventListener('click', function() {
+            document.getElementById('searchProductModal').style.display = 'none';
+            document.getElementById('newProductModal').style.display = 'block';
+        });
+
+        // Save Product button
+        document.getElementById('saveProductBtn').addEventListener('click', function() {
+            // Form validation
+            const code = document.getElementById('productCode').value;
+            const name = document.getElementById('productName').value;
+            const price = document.getElementById('productPrice').value;
+            const stock = document.getElementById('productStock').value;
+            
+            if (!code || !name || !price || !stock) {
+                showFormError('productCodeError', !code ? 'Código es requerido' : '');
+                showFormError('productNameError', !name ? 'Nombre es requerido' : '');
+                showFormError('productPriceError', !price ? 'Precio es requerido' : '');
+                showFormError('productStockError', !stock ? 'Stock es requerido' : '');
+                return;
+            }
+            
+            // Add product to list
+            const newProduct = {
+                id: products.length + 1,
+                code: code,
+                name: name,
+                category: document.getElementById('productCategory').value,
+                price: parseFloat(price),
+                stock: parseInt(stock),
+                iva: parseFloat(document.getElementById('productIva').value || 21)
+            };
+            
+            products.push(newProduct);
+            
+            // Add product to input field
+            document.getElementById('productInput').value = name;
+            document.getElementById('priceInput').value = formatCurrency(price);
+            document.getElementById('ivaInput').value = newProduct.iva;
+            
+            // Close modal
+            document.getElementById('newProductModal').style.display = 'none';
+            
+            // Show toast notification
+            showToast('Producto guardado correctamente', 'success');
+            
+            // Clear form
+            document.getElementById('productCode').value = '';
+            document.getElementById('productName').value = '';
+            document.getElementById('productCategory').value = '';
+            document.getElementById('productPrice').value = '';
+            document.getElementById('productStock').value = '';
+            document.getElementById('productIva').value = '21';
+        });
+
+        // Add Product button
+        document.getElementById('addProductBtn').addEventListener('click', function() {
+            addProductToCart();
+        });
+
+        // Payment Methods
+        document.querySelectorAll('.payment-method').forEach(method => {
+            method.addEventListener('click', function() {
+                const paymentType = this.id;
+                
+                switch(paymentType) {
+                    case 'cashPayment':
+                        document.getElementById('paymentModal').style.display = 'block';
+                        document.getElementById('paymentTypeContent').innerHTML = '<h3>Pago en Efectivo</h3>';
+                        document.getElementById('totalAmount').value = formatCurrency(calculateTotal());
+                        document.getElementById('paymentAmount').focus();
+                        break;
+                    case 'cardPayment':
+                        document.getElementById('cardPaymentModal').style.display = 'block';
+                        document.getElementById('cardAmount').value = formatCurrency(calculateTotal());
+                        break;
+                    case 'transferPayment':
+                        document.getElementById('transferPaymentModal').style.display = 'block';
+                        document.getElementById('transferAmount').value = formatCurrency(calculateTotal());
+                        break;
+                    case 'qrPayment':
+                        document.getElementById('qrPaymentModal').style.display = 'block';
+                        document.getElementById('qrAmount').value = formatCurrency(calculateTotal());
+                        break;
+                }
+            });
+        });
+
+        // Generate Invoice button
+        document.getElementById('generateInvoiceBtn').addEventListener('click', function() {
+            if (cartItems.length === 0) {
+                showToast('Agregue productos a la factura', 'error');
+                return;
+            }
+            
+            document.getElementById('generateInvoiceModal').style.display = 'block';
+            generateInvoicePreview();
+        });
+
+        // Generate QR button
+        document.getElementById('generateQrBtn').addEventListener('click', function() {
+            // Mock QR generation
+            document.getElementById('qrLoading').style.display = 'block';
+            document.getElementById('qrCodeContainer').style.display = 'none';
+            document.getElementById('generateQrBtn').style.display = 'none';
+            
+            setTimeout(() => {
+                document.getElementById('qrLoading').style.display = 'none';
+                document.getElementById('qrCodeContainer').style.display = 'block';
+                document.getElementById('confirmQrPaymentBtn').style.display = 'inline-block';
+                
+                // In a real app, this would be generated from a QR API
+                document.getElementById('qrCodeImage').src = 'https://api.qrserver.com/v1/create-qr-code/?size=200x200&data=ARCA_PAYMENT_' + Date.now();
+            }, 1500);
+        });
+
+        // Confirm QR Payment button
+        document.getElementById('confirmQrPaymentBtn').addEventListener('click', function() {
+            const amount = parseCurrency(document.getElementById('qrAmount').value);
+            addPaymentMethod('QR', amount);
+            
+            document.getElementById('qrPaymentModal').style.display = 'none';
+            document.getElementById('qrLoading').style.display = 'none';
+            document.getElementById('qrCodeContainer').style.display = 'none';
+            document.getElementById('generateQrBtn').style.display = 'inline-block';
+            document.getElementById('confirmQrPaymentBtn').style.display = 'none';
+            
+            updatePaymentOptions();
+            checkPaymentComplete();
+        });
+
+        // Add Card Payment button
+        document.getElementById('addCardPaymentBtn').addEventListener('click', function() {
+            const cardType = document.getElementById('cardType').value;
+            const installments = document.getElementById('cardInstallments').value;
+            const amount = parseCurrency(document.getElementById('cardAmount').value);
+            
+            addPaymentMethod(`${cardType} (${installments} cuotas)`, amount);
+            
+            document.getElementById('cardPaymentModal').style.display = 'none';
+            updatePaymentOptions();
+            checkPaymentComplete();
+        });
+
+        // Add Transfer Payment button
+        document.getElementById('addTransferPaymentBtn').addEventListener('click', function() {
+            const reference = document.getElementById('transferReference').value;
+            const amount = parseCurrency(document.getElementById('transferAmount').value);
+            
+            addPaymentMethod(`Transferencia (Ref: ${reference})`, amount);
+            
+            document.getElementById('transferPaymentModal').style.display = 'none';
+            updatePaymentOptions();
+            checkPaymentComplete();
+        });
+
+        // Complete Payment button
+        document.getElementById('completePaymentBtn').addEventListener('click', function() {
+            const amount = parseCurrency(document.getElementById('paymentAmount').value);
+            addPaymentMethod('Efectivo', amount);
+            
+            document.getElementById('paymentModal').style.display = 'none';
+            updatePaymentOptions();
+            checkPaymentComplete();
+        });
+
+        // Payment Amount input calculation
+        document.getElementById('paymentAmount').addEventListener('input', function() {
+            const totalAmount = parseCurrency(document.getElementById('totalAmount').value);
+            const paymentAmount = parseCurrency(this.value);
+            const change = paymentAmount - totalAmount;
+            
+            document.getElementById('changeAmount').value = formatCurrency(Math.max(0, change));
+        });
+
+        // Generate Report button
+        if (document.getElementById('generateReportBtn')) {
+            document.getElementById('generateReportBtn').addEventListener('click', function() {
+                // Mock report generation
+                const dateFrom = document.getElementById('reportDateFrom').value;
+                const dateTo = document.getElementById('reportDateTo').value;
+                
+                // In a real app, this would fetch data from a database
+                const reportHTML = `
+                    <h3>Reporte de Ventas (${dateFrom} - ${dateTo})</h3>
+                    <table class="products-table">
                         <thead>
                             <tr>
-                                <th>Código</th>
-                                <th>Producto</th>
-                                <th>Precio</th>
-                                <th>Stock</th>
-                                <th>Acciones</th>
+                                <th>Fecha</th>
+                                <th>Número</th>
+                                <th>Tipo</th>
+                                <th>Cliente</th>
+                                <th>Total</th>
                             </tr>
                         </thead>
                         <tbody>
-                            <!-- Se cargará dinámicamente -->
+                            <tr>
+                                <td>2023-05-01</td>
+                                <td>00001-00000001</td>
+                                <td>A</td>
+                                <td>Juan Pérez</td>
+                                <td>$ 30.250,00</td>
+                            </tr>
+                            <tr>
+                                <td>2023-05-02</td>
+                                <td>00001-00000002</td>
+                                <td>B</td>
+                                <td>María González</td>
+                                <td>$ 12.500,00</td>
+                            </tr>
+                            <tr>
+                                <td>2023-05-03</td>
+                                <td>00001-00000003</td>
+                                <td>X</td>
+                                <td>Consumidor Final</td>
+                                <td>$ 3.200,00</td>
+                            </tr>
                         </tbody>
+                        <tfoot>
+                            <tr>
+                                <th colspan="4">Total</th>
+                                <th>$ 45.950,00</th>
+                            </tr>
+                        </tfoot>
                     </table>
-                </div>
-                <div class="modal-actions">
-                    <button class="btn-secondary" id="btn-cancelar-buscar-producto">Cancelar</button>
-                    <button class="btn-primary" id="btn-nuevo-producto">
-                        <i class="fas fa-plus-circle"></i> Nuevo Producto
-                    </button>
-                </div>
-            </div>
-        </div>
-    </div>
-
-    <!-- Modal para editar cantidad/precio -->
-    <div class="modal" id="modal-editar-producto">
-        <div class="modal-content modal-sm">
-            <div class="modal-header">
-                <h2>Editar Producto</h2>
-                <button class="modal-close" id="modal-editar-producto-close">
-                    <i class="fas fa-times"></i>
-                </button>
-            </div>
-            <div class="modal-body">
-                <h3 id="editar-producto-nombre">Nombre del Producto</h3>
-                <input type="hidden" id="editar-producto-index">
-                <div class="form-group">
-                    <label for="editar-producto-cantidad">Cantidad:</label>
-                    <input type="number" id="editar-producto-cantidad" min="0.01" step="0.01">
-                </div>
-                <div class="form-group">
-                    <label for="editar-producto-precio">Precio Unitario:</label>
-                    <input type="number" id="editar-producto-precio" step="0.01">
-                </div>
-                <div class="form-group">
-                    <label for="editar-producto-descuento">Descuento (%):</label>
-                    <input type="number" id="editar-producto-descuento" min="0" max="100">
-                </div>
-                <div class="modal-actions">
-                    <button class="btn-secondary" id="btn-cancelar-editar-producto">Cancelar</button>
-                    <button class="btn-primary" id="btn-guardar-editar-producto">Guardar Cambios</button>
-                </div>
-            </div>
-        </div>
-    </div>
-
-    <!-- Modal para pago en efectivo -->
-    <div class="modal" id="modal-pago-efectivo">
-        <div class="modal-content modal-sm">
-            <div class="modal-header">
-                <h2>Pago en Efectivo</h2>
-                <button class="modal-close" id="modal-pago-efectivo-close">
-                    <i class="fas fa-times"></i>
-                </button>
-            </div>
-            <div class="modal-body">
-                <div class="form-group">
-                    <label for="pago-efectivo-total">Total a Pagar:</label>
-                    <input type="text" id="pago-efectivo-total" readonly>
-                </div>
-                <div class="form-group">
-                    <label for="pago-efectivo-recibido">Monto Recibido:</label>
-                    <input type="number" id="pago-efectivo-recibido" step="0.01">
-                </div>
-                <div class="form-group">
-                    <label for="pago-efectivo-cambio">Cambio a Devolver:</label>
-                    <input type="text" id="pago-efectivo-cambio" readonly>
-                </div>
-                <div class="modal-actions">
-                    <button class="btn-secondary" id="btn-cancelar-pago-efectivo">Cancelar</button>
-                    <button class="btn-primary" id="btn-confirmar-pago-efectivo">Confirmar Pago</button>
-                </div>
-            </div>
-        </div>
-    </div>
-
-    <!-- Modal para pago con tarjeta -->
-    <div class="modal" id="modal-pago-tarjeta">
-        <div class="modal-content">
-            <div class="modal-header">
-                <h2>Pago con Tarjeta</h2>
-                <button class="modal-close" id="modal-pago-tarjeta-close">
-                    <i class="fas fa-times"></i>
-                </button>
-            </div>
-            <div class="modal-body">
-                <div class="form-group">
-                    <label for="pago-tarjeta-tipo">Tipo de Tarjeta:</label>
-                    <select id="pago-tarjeta-tipo">
-                        <option value="DEBITO">Débito</option>
-                        <option value="CREDITO">Crédito</option>
-                    </select>
-                </div>
-                <div class="form-group" id="tarjeta-cuotas-container">
-                    <label for="pago-tarjeta-cuotas">Cantidad de Cuotas:</label>
-                    <select id="pago-tarjeta-cuotas">
-                        <option value="1">1 cuota</option>
-                        <option value="3">3 cuotas</option>
-                        <option value="6">6 cuotas</option>
-                        <option value="12">12 cuotas</option>
-                        <option value="18">18 cuotas</option>
-                    </select>
-                </div>
-                <div class="form-group">
-                    <label for="pago-tarjeta-banco">Banco:</label>
-                    <select id="pago-tarjeta-banco">
-                        <option value="VISA">Visa</option>
-                        <option value="MASTERCARD">Mastercard</option>
-                        <option value="AMEX">American Express</option>
-                        <option value="NARANJA">Naranja</option>
-                        <option value="GALICIA">Galicia</option>
-                        <option value="BBVA">BBVA</option>
-                    </select>
-                </div>
-                <div class="form-group">
-                    <label for="pago-tarjeta-titular">Titular:</label>
-                    <input type="text" id="pago-tarjeta-titular">
-                </div>
-                <div class="form-row">
-                    <div class="form-group col-6">
-                        <label for="pago-tarjeta-ultimos">Últimos 4 dígitos:</label>
-                        <input type="text" id="pago-tarjeta-ultimos" maxlength="4" pattern="\d{4}">
-                    </div>
-                    <div class="form-group col-6">
-                        <label for="pago-tarjeta-autorizacion">Código Autorización:</label>
-                        <input type="text" id="pago-tarjeta-autorizacion">
-                    </div>
-                </div>
-                <div class="form-group">
-                    <label for="pago-tarjeta-monto">Monto:</label>
-                    <input type="number" id="pago-tarjeta-monto" step="0.01">
-                </div>
-                <div class="modal-actions">
-                    <button class="btn-secondary" id="btn-cancelar-pago-tarjeta">Cancelar</button>
-                    <button class="btn-primary" id="btn-confirmar-pago-tarjeta">Confirmar Pago</button>
-                </div>
-            </div>
-        </div>
-    </div>
-
-    <!-- Modal para pago por transferencia -->
-    <div class="modal" id="modal-pago-transferencia">
-        <div class="modal-content">
-            <div class="modal-header">
-                <h2>Pago por Transferencia</h2>
-                <button class="modal-close" id="modal-pago-transferencia-close">
-                    <i class="fas fa-times"></i>
-                </button>
-            </div>
-            <div class="modal-body">
-                <div class="form-group">
-                    <label for="pago-transferencia-banco">Banco:</label>
-                    <select id="pago-transferencia-banco">
-                        <option value="GALICIA">Galicia</option>
-                        <option value="GETNET">Getnet</option>
-                        <option value="BBVA">BBVA</option>
-                        <option value="PAYWAY">Payway</option>
-                        <option value="MERCADOPAGO">Mercado Pago</option>
-                        <option value="OTRO">Otro</option>
-                    </select>
-                </div>
-                <div class="form-group">
-                    <label for="pago-transferencia-comprobante">N° de Comprobante:</label>
-                    <input type="text" id="pago-transferencia-comprobante">
-                </div>
-                <div class="form-group">
-                    <label for="pago-transferencia-fecha">Fecha:</label>
-                    <input type="date" id="pago-transferencia-fecha">
-                </div>
-                <div class="form-group">
-                    <label for="pago-transferencia-monto">Monto:</label>
-                    <input type="number" id="pago-transferencia-monto" step="0.01">
-                </div>
-                <div class="modal-actions">
-                    <button class="btn-secondary" id="btn-cancelar-pago-transferencia">Cancelar</button>
-                    <button class="btn-primary" id="btn-confirmar-pago-transferencia">Confirmar Pago</button>
-                </div>
-            </div>
-        </div>
-    </div>
-
-    <!-- Modal para pago con QR -->
-    <div class="modal" id="modal-pago-qr">
-        <div class="modal-content">
-            <div class="modal-header">
-                <h2>Pago con QR (Mercado Pago)</h2>
-                <button class="modal-close" id="modal-pago-qr-close">
-                    <i class="fas fa-times"></i>
-                </button>
-            </div>
-            <div class="modal-body">
-                <div class="qr-container">
-                    <img src="" alt="QR de Mercado Pago" id="mercadopago-qr">
-                    <div class="qr-spinner" id="qr-loading">
-                        <i class="fas fa-spinner fa-spin"></i>
-                        <p>Generando código QR...</p>
-                    </div>
-                </div>
-                <div class="pago-qr-status" id="pago-qr-status">
-                    <p>Esperando pago... <i class="fas fa-spinner fa-spin"></i></p>
-                </div>
-                <div class="form-group">
-                    <label for="pago-qr-monto">Monto a Pagar:</label>
-                    <input type="number" id="pago-qr-monto" step="0.01" readonly>
-                </div>
-                <div class="modal-actions">
-                    <button class="btn-secondary" id="btn-cancelar-pago-qr">Cancelar</button>
-                    <button class="btn-primary" id="btn-confirmar-pago-qr" disabled>
-                        Confirmar Pago
-                    </button>
-                </div>
-            </div>
-        </div>
-    </div>
-
-    <!-- Modal para pago mixto -->
-    <div class="modal" id="modal-pago-mixto">
-        <div class="modal-content modal-lg">
-            <div class="modal-header">
-                <h2>Pago Mixto</h2>
-                <button class="modal-close" id="modal-pago-mixto-close">
-                    <i class="fas fa-times"></i>
-                </button>
-            </div>
-            <div class="modal-body">
-                <div class="form-group">
-                    <label for="pago-mixto-total">Total a Pagar:</label>
-                    <input type="text" id="pago-mixto-total" readonly>
-                </div>
-                <div class="form-group">
-                    <label for="pago-mixto-pendiente">Pendiente:</label>
-                    <input type="text" id="pago-mixto-pendiente" readonly>
-                </div>
+                `;
                 
-                <div class="pagos-agregados">
-                    <h3>Medios de Pago Agregados</h3>
-                    <div class="tabla-container">
-                        <table class="tabla-pagos-mixtos" id="tabla-pagos-mixtos">
-                            <thead>
-                                <tr>
-                                    <th>Método</th>
-                                    <th>Detalles</th>
-                                    <th>Monto</th>
-                                    <th>Acciones</th>
-                                </tr>
-                            </thead>
-                            <tbody>
-                                <!-- Se cargará dinámicamente -->
-                            </tbody>
-                        </table>
-                    </div>
-                </div>
-                
-                <div class="agregar-metodo">
-                    <h3>Agregar Método de Pago</h3>
-                    <div class="metodos-pago-mixto">
-                        <button class="metodo-pago-btn btn-sm" id="btn-mixto-efectivo">
-                            <i class="fas fa-money-bill-alt"></i>
-                            <span>Efectivo</span>
-                        </button>
-                        <button class="metodo-pago-btn btn-sm" id="btn-mixto-tarjeta">
-                            <i class="fas fa-credit-card"></i>
-                            <span>Tarjeta</span>
-                        </button>
-                        <button class="metodo-pago-btn btn-sm" id="btn-mixto-transferencia">
-                            <i class="fas fa-university"></i>
-                            <span>Transferencia</span>
-                        </button>
-                        <button class="metodo-pago-btn btn-sm" id="btn-mixto-qr">
-                            <i class="fas fa-qrcode"></i>
-                            <span>QR</span>
-                        </button>
-                    </div>
-                </div>
-                
-                <div class="modal-actions">
-                    <button class="btn-secondary" id="btn-cancelar-pago-mixto">Cancelar</button>
-                    <button class="btn-primary" id="btn-confirmar-pago-mixto">Confirmar Todos los Pagos</button>
-                </div>
-            </div>
-        </div>
-    </div>
-
-    <!-- Modal para agregar efectivo en pago mixto -->
-    <div class="modal" id="modal-mixto-efectivo">
-        <div class="modal-content modal-sm">
-            <div class="modal-header">
-                <h2>Agregar Pago en Efectivo</h2>
-                <button class="modal-close" id="modal-mixto-efectivo-close">
-                    <i class="fas fa-times"></i>
-                </button>
-            </div>
-            <div class="modal-body">
-                <div class="form-group">
-                    <label for="mixto-efectivo-monto">Monto:</label>
-                    <input type="number" id="mixto-efectivo-monto" step="0.01">
-                </div>
-                <div class="modal-actions">
-                    <button class="btn-secondary" id="btn-cancelar-mixto-efectivo">Cancelar</button>
-                    <button class="btn-primary" id="btn-agregar-mixto-efectivo">Agregar</button>
-                </div>
-            </div>
-        </div>
-    </div>
-
-    <!-- Modal para agregar tarjeta en pago mixto -->
-    <div class="modal" id="modal-mixto-tarjeta">
-        <div class="modal-content">
-            <div class="modal-header">
-                <h2>Agregar Pago con Tarjeta</h2>
-                <button class="modal-close" id="modal-mixto-tarjeta-close">
-                    <i class="fas fa-times"></i>
-                </button>
-            </div>
-            <div class="modal-body">
-                <div class="form-group">
-                    <label for="mixto-tarjeta-tipo">Tipo de Tarjeta:</label>
-                    <select id="mixto-tarjeta-tipo">
-                        <option value="DEBITO">Débito</option>
-                        <option value="CREDITO">Crédito</option>
-                    </select>
-                </div>
-                <div class="form-group" id="mixto-tarjeta-cuotas-container">
-                    <label for="mixto-tarjeta-cuotas">Cantidad de Cuotas:</label>
-                    <select id="mixto-tarjeta-cuotas">
-                        <option value="1">1 cuota</option>
-                        <option value="3">3 cuotas</option>
-                        <option value="6">6 cuotas</option>
-                        <option value="12">12 cuotas</option>
-                        <option value="18">18 cuotas</option>
-                    </select>
-                </div>
-                <div class="form-group">
-                    <label for="mixto-tarjeta-banco">Banco:</label>
-                    <select id="mixto-tarjeta-banco">
-                        <option value="VISA">Visa</option>
-                        <option value="MASTERCARD">Mastercard</option>
-                        <option value="AMEX">American Express</option>
-                        <option value="NARANJA">Naranja</option>
-                        <option value="GALICIA">Galicia</option>
-                        <option value="BBVA">BBVA</option>
-                    </select>
-                </div>
-                <div class="form-group">
-                    <label for="mixto-tarjeta-titular">Titular:</label>
-                    <input type="text" id="mixto-tarjeta-titular">
-                </div>
-                <div class="form-row">
-                    <div class="form-group col-6">
-                        <label for="mixto-tarjeta-ultimos">Últimos 4 dígitos:</label>
-                        <input type="text" id="mixto-tarjeta-ultimos" maxlength="4" pattern="\d{4}">
-                    </div>
-                    <div class="form-group col-6">
-                        <label for="mixto-tarjeta-autorizacion">Código Autorización:</label>
-                        <input type="text" id="mixto-tarjeta-autorizacion">
-                    </div>
-                </div>
-                <div class="form-group">
-                    <label for="mixto-tarjeta-monto">Monto:</label>
-                    <input type="number" id="mixto-tarjeta-monto" step="0.01">
-                </div>
-                <div class="modal-actions">
-                    <button class="btn-secondary" id="btn-cancelar-mixto-tarjeta">Cancelar</button>
-                    <button class="btn-primary" id="btn-agregar-mixto-tarjeta">Agregar</button>
-                </div>
-            </div>
-        </div>
-    </div>
-
-    <!-- Modal para agregar transferencia en pago mixto -->
-    <div class="modal" id="modal-mixto-transferencia">
-        <div class="modal-content">
-            <div class="modal-header">
-                <h2>Agregar Pago por Transferencia</h2>
-                <button class="modal-close" id="modal-mixto-transferencia-close">
-                    <i class="fas fa-times"></i>
-                </button>
-            </div>
-            <div class="modal-body">
-                <div class="form-group">
-                    <label for="mixto-transferencia-banco">Banco:</label>
-                    <select id="mixto-transferencia-banco">
-                        <option value="GALICIA">Galicia</option>
-                        <option value="GETNET">Getnet</option>
-                        <option value="BBVA">BBVA</option>
-                        <option value="PAYWAY">Payway</option>
-                        <option value="MERCADOPAGO">Mercado Pago</option>
-                        <option value="OTRO">Otro</option>
-                    </select>
-                </div>
-                <div class="form-group">
-                    <label for="mixto-transferencia-comprobante">N° de Comprobante:</label>
-                    <input type="text" id="mixto-transferencia-comprobante">
-                </div>
-                <div class="form-group">
-                    <label for="mixto-transferencia-fecha">Fecha:</label>
-                    <input type="date" id="mixto-transferencia-fecha">
-                </div>
-                <div class="form-group">
-                    <label for="mixto-transferencia-monto">Monto:</label>
-                    <input type="number" id="mixto-transferencia-monto" step="0.01">
-                </div>
-                <div class="modal-actions">
-                    <button class="btn-secondary" id="btn-cancelar-mixto-transferencia">Cancelar</button>
-                    <button class="btn-primary" id="btn-agregar-mixto-transferencia">Agregar</button>
-                </div>
-            </div>
-        </div>
-    </div>
-
-    <!-- Modal para agregar QR en pago mixto -->
-    <div class="modal" id="modal-mixto-qr">
-        <div class="modal-content">
-            <div class="modal-header">
-                <h2>Agregar Pago con QR</h2>
-                <button class="modal-close" id="modal-mixto-qr-close">
-                    <i class="fas fa-times"></i>
-                </button>
-            </div>
-            <div class="modal-body">
-                <div class="qr-container">
-                    <img src="" alt="QR de Mercado Pago" id="mixto-mercadopago-qr">
-                    <div class="qr-spinner" id="mixto-qr-loading">
-                        <i class="fas fa-spinner fa-spin"></i>
-                        <p>Generando código QR...</p>
-                    </div>
-                </div>
-                <div class="pago-qr-status" id="mixto-pago-qr-status">
-                    <p>Esperando pago... <i class="fas fa-spinner fa-spin"></i></p>
-                </div>
-                <div class="form-group">
-                    <label for="mixto-qr-monto">Monto a Pagar:</label>
-                    <input type="number" id="mixto-qr-monto" step="0.01">
-                </div>
-                <div class="modal-actions">
-                    <button class="btn-secondary" id="btn-cancelar-mixto-qr">Cancelar</button>
-                    <button class="btn-primary" id="btn-agregar-mixto-qr" disabled>Agregar</button>
-                </div>
-            </div>
-        </div>
-    </div>
-
-    <!-- Modal para facturación exitosa -->
-    <div class="modal" id="modal-factura-exito">
-        <div class="modal-content">
-            <div class="modal-header">
-                <h2>Factura Generada Exitosamente</h2>
-                <button class="modal-close" id="modal-factura-exito-close">
-                    <i class="fas fa-times"></i>
-                </button>
-            </div>
-            <div class="modal-body">
-                <div class="success-message">
-                    <i class="fas fa-check-circle"></i>
-                    <p>La factura se ha generado correctamente.</p>
-                    <div class="factura-detalles" id="factura-exito-detalles">
-                        <!-- Se completará dinámicamente -->
-                    </div>
-                </div>
-                <h3>¿Qué desea hacer con esta factura?</h3>
-                <div class="acciones-factura">
-                    <button class="btn-factura-accion" id="btn-imprimir-ticket">
-                        <i class="fas fa-receipt"></i>
-                        <span>Imprimir Ticket</span>
-                    </button>
-                    <button class="btn-factura-accion" id="btn-imprimir-a4">
-                        <i class="fas fa-print"></i>
-                        <span>Imprimir A4</span>
-                    </button>
-                    <button class="btn-factura-accion" id="btn-enviar-email">
-                        <i class="fas fa-envelope"></i>
-                        <span>Enviar por Email</span>
-                    </button>
-                    <button class="btn-factura-accion" id="btn-enviar-whatsapp">
-                        <i class="fab fa-whatsapp"></i>
-                        <span>Enviar por WhatsApp</span>
-                    </button>
-                </div>
-                <div class="modal-actions">
-                    <button class="btn-primary" id="btn-nueva-factura">
-                        <i class="fas fa-plus-circle"></i> Nueva Factura
-                    </button>
-                    <button class="btn-secondary" id="btn-ver-factura">
-                        <i class="fas fa-eye"></i> Ver en Ventas
-                    </button>
-                </div>
-            </div>
-        </div>
-    </div>
-
-    <!-- Modal para enviar por email -->
-    <div class="modal" id="modal-enviar-email">
-        <div class="modal-content">
-            <div class="modal-header">
-                <h2>Enviar Factura por Email</h2>
-                <button class="modal-close" id="modal-enviar-email-close">
-                    <i class="fas fa-times"></i>
-                </button>
-            </div>
-            <div class="modal-body">
-                <div class="form-group">
-                    <label for="email-destinatario">Email del Cliente:</label>
-                    <input type="email" id="email-destinatario">
-                </div>
-                <div class="form-group">
-                    <label for="email-asunto">Asunto:</label>
-                    <input type="text" id="email-asunto" value="Su factura de compra">
-                </div>
-                <div class="form-group">
-                    <label for="email-mensaje">Mensaje:</label>
-                    <textarea id="email-mensaje" rows="4">Estimado cliente, adjuntamos su factura. ¡Gracias por su compra!</textarea>
-                </div>
-                <div class="form-group">
-                    <label>Adjuntos:</label>
-                    <div class="email-adjuntos">
-                        <div class="email-adjunto">
-                            <i class="fas fa-file-pdf"></i>
-                            <span id="email-adjunto-nombre">Factura.pdf</span>
-                        </div>
-                    </div>
-                </div>
-                <div class="modal-actions">
-                    <button class="btn-secondary" id="btn-cancelar-email">Cancelar</button>
-                    <button class="btn-primary" id="btn-enviar-email-confirmar">
-                        <i class="fas fa-paper-plane"></i> Enviar Email
-                    </button>
-                </div>
-            </div>
-        </div>
-    </div>
-
-    <!-- Modal para enviar por WhatsApp -->
-    <div class="modal" id="modal-enviar-whatsapp">
-        <div class="modal-content">
-            <div class="modal-header">
-                <h2>Enviar Factura por WhatsApp</h2>
-                <button class="modal-close" id="modal-enviar-whatsapp-close">
-                    <i class="fas fa-times"></i>
-                </button>
-            </div>
-            <div class="modal-body">
-                <div class="form-group">
-                    <label for="whatsapp-numero">Número de WhatsApp:</label>
-                    <div class="input-prefix">
-                        <span class="prefix">+</span>
-                        <input type="tel" id="whatsapp-numero" placeholder="549XXXXXXXXXX">
-                    </div>
-                </div>
-                <div class="form-group">
-                    <label for="whatsapp-mensaje">Mensaje:</label>
-                    <textarea id="whatsapp-mensaje" rows="4">Hola! Adjunto su factura de compra. Gracias por elegirnos.</textarea>
-                </div>
-                <div class="form-group">
-                    <label>Adjuntos:</label>
-                    <div class="whatsapp-adjuntos">
-                        <div class="whatsapp-adjunto">
-                            <i class="fas fa-file-pdf"></i>
-                            <span id="whatsapp-adjunto-nombre">Factura.pdf</span>
-                        </div>
-                    </div>
-                </div>
-                <div class="modal-actions">
-                    <button class="btn-secondary" id="btn-cancelar-whatsapp">Cancelar</button>
-                    <button class="btn-primary" id="btn-enviar-whatsapp-confirmar">
-                        <i class="fab fa-whatsapp"></i> Enviar WhatsApp
-                    </button>
-                </div>
-            </div>
-        </div>
-    </div>
-
-    <!-- Modal para AFIP/ARCA en proceso -->
-    <div class="modal" id="modal-arca-proceso">
-        <div class="modal-content modal-sm">
-            <div class="modal-header">
-                <h2>Facturación Electrónica</h2>
-            </div>
-            <div class="modal-body text-center">
-                <div class="arca-loading">
-                    <i class="fas fa-sync fa-spin fa-3x"></i>
-                    <p id="arca-mensaje-proceso">Conectando con ARCA...</p>
-                </div>
-            </div>
-        </div>
-    </div>
-
-    <!-- Modal para error AFIP/ARCA -->
-    <div class="modal" id="modal-arca-error">
-        <div class="modal-content">
-            <div class="modal-header">
-                <h2>Error en Facturación Electrónica</h2>
-                <button class="modal-close" id="modal-arca-error-close">
-                    <i class="fas fa-times"></i>
-                </button>
-            </div>
-            <div class="modal-body">
-                <div class="error-message">
-                    <i class="fas fa-exclamation-triangle"></i>
-                    <p id="arca-mensaje-error">Ocurrió un error al comunicarse con AFIP.</p>
-                </div>
-                <div class="arca-error-detalles" id="arca-error-detalles">
-                    <!-- Se completará dinámicamente -->
-                </div>
-                <div class="modal-actions">
-                    <button class="btn-secondary" id="btn-cerrar-arca-error">Cerrar</button>
-                    <button class="btn-primary" id="btn-reintentar-arca">
-                        <i class="fas fa-sync"></i> Reintentar
-                    </button>
-                </div>
-            </div>
-        </div>
-    </div>
-
-    <!-- Modal para nota de crédito relacionada -->
-    <div class="modal" id="modal-nota-credito">
-        <div class="modal-content">
-            <div class="modal-header">
-                <h2>Generar Nota de Crédito</h2>
-                <button class="modal-close" id="modal-nota-credito-close">
-                    <i class="fas fa-times"></i>
-                </button>
-            </div>
-            <div class="modal-body">
-                <div class="form-group">
-                    <label for="nota-credito-motivo">Motivo:</label>
-                    <select id="nota-credito-motivo">
-                        <option value="DEVOLUCION">Devolución de productos</option>
-                        <option value="DESCUENTO">Descuento posterior</option>
-                        <option value="ERROR">Error en facturación</option>
-                        <option value="ANULACION">Anulación de factura</option>
-                        <option value="OTRO">Otro motivo</option>
-                    </select>
-                </div>
-                <div class="form-group" id="nota-credito-otro-container" style="display:none;">
-                    <label for="nota-credito-otro-motivo">Especifique motivo:</label>
-                    <input type="text" id="nota-credito-otro-motivo">
-                </div>
-                <div class="form-group">
-                    <label for="nota-credito-detalle">Detalle adicional:</label>
-                    <textarea id="nota-credito-detalle" rows="3"></textarea>
-                </div>
-                <div class="form-group">
-                    <label>Productos a devolver:</label>
-                    <div class="tabla-container">
-                        <table class="tabla-productos-nota" id="tabla-productos-nota">
-                            <thead>
-                                <tr>
-                                    <th>Seleccionar</th>
-                                    <th>Producto</th>
-                                    <th>Cantidad</th>
-                                    <th>Precio Unit.</th>
-                                    <th>Subtotal</th>
-                                </tr>
-                            </thead>
-                            <tbody>
-                                <!-- Se completará dinámicamente -->
-                            </tbody>
-                        </table>
-                    </div>
-                </div>
-                <div class="modal-actions">
-                    <button class="btn-secondary" id="btn-cancelar-nota-credito">Cancelar</button>
-                    <button class="btn-primary" id="btn-generar-nota-credito">
-                        <i class="fas fa-file-alt"></i> Generar Nota de Crédito
-                    </button>
-                </div>
-            </div>
-        </div>
-    </div>
-
-    <!-- Scripts -->
-    <script src="../assets/js/renderer.js"></script>
-    <script src="../assets/js/utils/database.js"></script>
-    <script src="../assets/js/utils/validation.js"></script>
-    <script src="../assets/js/utils/printer.js"></script>
-    <script src="../assets/js/modules/facturador/facturador.js"></script>
-    <script src="../assets/js/modules/facturador/cliente.js"></script>
-    <script src="../assets/js/modules/facturador/productos.js"></script>
-    <script src="../assets/js/modules/facturador/pagos.js"></script>
-    
-    <script>
-        // Script para manejar atajos de teclado y otras interacciones básicas
-        document.addEventListener('DOMContentLoaded', () => {
-            // Inicializar el facturador
-            initFacturador();
-            
-            // Atajos de teclado
-            document.addEventListener('keydown', (e) => {
-                // F1 en campo cliente para abrir búsqueda de clientes
-                if (e.key === 'F1' && document.activeElement === document.getElementById('cliente-nombre')) {
-                    e.preventDefault();
-                    document.getElementById('btn-buscar-cliente').click();
-                }
-                
-                // F1 en campo producto para abrir búsqueda de productos
-                if (e.key === 'F1' && document.activeElement === document.getElementById('producto-codigo')) {
-                    e.preventDefault();
-                    document.getElementById('btn-buscar-producto').click();
-                }
-                
-                // F2 en tabla de productos para editar el producto seleccionado
-                if (e.key === 'F2') {
-                    const selectedRow = document.querySelector('.productos-tabla tr.selected');
-                    if (selectedRow) {
-                        e.preventDefault();
-                        const editBtn = selectedRow.querySelector('.btn-editar-producto');
-                        if (editBtn) editBtn.click();
-                    }
-                }
-                
-                // Enter en campo cliente vacío para consumidor final
-                if (e.key === 'Enter' && document.activeElement === document.getElementById('cliente-nombre')) {
-                    const clienteInput = document.getElementById('cliente-nombre');
-                    if (clienteInput.value.trim() === '') {
-                        e.preventDefault();
-                        setConsumidorFinal();
-                    }
-                }
-                
-                // F8 para proceder al pago (atajo rápido)
-                if (e.key === 'F8') {
-                    e.preventDefault();
-                    document.getElementById('btn-pago-efectivo').click();
-                }
-                
-                // F10 para generar factura rápidamente
-                if (e.key === 'F10') {
-                    e.preventDefault();
-                    document.getElementById('btn-generar-factura').click();
-                }
-                
-                // Escape para cerrar modales abiertos
-                if (e.key === 'Escape') {
-                    const openModal = document.querySelector('.modal.show');
-                    if (openModal) {
-                        e.preventDefault();
-                        const closeBtn = openModal.querySelector('.modal-close');
-                        if (closeBtn) closeBtn.click();
-                    }
-                }
+                document.getElementById('reportResults').innerHTML = reportHTML;
             });
-            
-            // Manejar botones de minimizar y cerrar
-            document.getElementById('btn-minimize').addEventListener('click', () => {
-                window.electronAPI.minimizeWindow();
-            });
-            
-            document.getElementById('btn-close').addEventListener('click', () => {
-                closeFacturador();
-            });
+        }
+
+        // Generate options in Invoice Modal
+        document.getElementById('pdfOption').addEventListener('click', function() {
+            // Mock PDF generation
+            showToast('PDF generado correctamente', 'success');
         });
-        
-        // Función para inicializar el facturador
-        function initFacturador() {
-            // Cargar datos de la sucursal y usuario
-            cargarDatosSucursalUsuario();
-            
-            // Inicializar número de comprobante
-            actualizarNumeroComprobante();
-            
-            // Establecer fecha actual por defecto
-            document.getElementById('fecha-comprobante').valueAsDate = new Date();
-            
-            // Escuchar cambios en el tipo de comprobante
-            document.getElementById('tipo-comprobante').addEventListener('change', () => {
-                actualizarNumeroComprobante();
-                actualizarEtiquetaBotonFacturar();
-            });
-            
-            // Inicializar eventos de cliente
-            initClienteEvents();
-            
-            // Inicializar eventos de productos
-            initProductosEvents();
-            
-            // Inicializar eventos de pagos
-            initPagosEvents();
-            
-            // Inicializar otros eventos
-            initOtrosEvents();
-        }
-        
-        // Función para cargar datos de sucursal y usuario
-        function cargarDatosSucursalUsuario() {
-            // Estas funciones serían implementadas en los archivos JS correspondientes
-            // Aquí solo simulamos la carga
-            window.electronAPI.getActiveUser().then(usuario => {
-                document.getElementById('usuario-actual').textContent = `Usuario: ${usuario.nombre}`;
-            });
-            
-            window.electronAPI.getActiveSucursal().then(sucursal => {
-                document.getElementById('sucursal-actual').textContent = `Sucursal: ${sucursal.nombre}`;
-            });
-        }
-        
-        // Función para actualizar el número de comprobante
-        function actualizarNumeroComprobante() {
-            const tipoComprobante = document.getElementById('tipo-comprobante').value;
-            
-            // Esta función sería implementada para obtener el próximo número
-            window.electronAPI.getNextComprobanteNumber(tipoComprobante).then(numero => {
-                document.getElementById('numero-comprobante').value = numero;
-            });
-        }
-        
-        // Función para actualizar la etiqueta del botón de facturar
-        function actualizarEtiquetaBotonFacturar() {
-            const tipoComprobante = document.getElementById('tipo-comprobante').value;
-            const btnTexto = document.getElementById('btn-facturar-texto');
-            
-            if (tipoComprobante === 'PRESUPUESTO') {
-                btnTexto.textContent = 'Generar Presupuesto';
-            } else {
-                btnTexto.textContent = 'Generar Factura';
-            }
-        }
-        
-        // Función para establecer consumidor final
-        function setConsumidorFinal() {
-            const clienteNombre = document.getElementById('cliente-nombre');
-            clienteNombre.value = 'Consumidor Final';
-            
-            // Actualizar información del cliente
-            document.querySelector('#cliente-documento .value').textContent = '00000000';
-            document.querySelector('#cliente-direccion .value').textContent = '-';
-            document.querySelector('#cliente-iva .value').textContent = 'Consumidor Final';
-            
-            // Establecer datos en memoria (simulado aquí)
-            window.clienteActual = {
-                id: 0,
-                nombre: 'Consumidor Final',
-                documento: '00000000',
-                documentoTipo: 'DNI',
-                direccion: '',
-                condicionIva: 'CONSUMIDOR_FINAL'
-            };
-        }
-        
-        // Función para cerrar el facturador
-        function closeFacturador() {
-            // Verificar si hay cambios sin guardar
-            if (hayProductosAgregados()) {
-                if (confirm('¿Está seguro que desea salir? Se perderán los cambios no guardados.')) {
-                    window.electronAPI.closeFacturador();
-                }
-            } else {
-                window.electronAPI.closeFacturador();
-            }
-        }
-        
-        // Función para verificar si hay productos agregados
-        function hayProductosAgregados() {
-            return document.querySelector('#tabla-productos tbody').children.length > 0;
-        }
-        
-        // Estas funciones serían implementadas en sus respectivos archivos JS
-        function initClienteEvents() {
-            // Implementado en cliente.js
-        }
-        
-        function initProductosEvents() {
-            // Implementado en productos.js
-        }
-        
-        function initPagosEvents() {
-            // Implementado en pagos.js
-        }
-        
-        function initOtrosEvents() {
-            // Implementado aquí o en facturador.js
-            
-            // Evento para descuento global
-            document.getElementById('descuento-global').addEventListener('input', calcularTotales);
-            
-            // Evento para aplicar IVA
-            document.getElementById('aplicar-iva').addEventListener('change', calcularTotales);
-            
-            // Evento para botón generar factura
-            document.getElementById('btn-generar-factura').addEventListener('click', generarFactura);
-            
-            // Evento para botón cancelar
-            document.getElementById('btn-cancelar').addEventListener('click', () => {
-                if (confirm('¿Está seguro que desea cancelar la operación?')) {
-                    limpiarFacturador();
-                }
-            });
-            
-            // Evento para botón facturar con ARCA
-            document.getElementById('btn-facturar-arca').addEventListener('click', facturarConARCA);
-        }
-        
-        // Función para calcular totales
-        function calcularTotales() {
-            // Esta función sería implementada en detalle en los archivos JS correspondientes
-        }
-        
-        // Función para generar factura
-        function generarFactura() {
-            // Esta función sería implementada en detalle en los archivos JS correspondientes
-        }
-        
-        // Función para facturar con ARCA (AFIP)
-function facturarConARCA() {
-    // Mostrar modal de proceso
-    showModal('modal-arca-proceso');
-    
-    // Actualizar mensaje de proceso
-    document.getElementById('arca-mensaje-proceso').textContent = 'Conectando con ARCA...';
-    
-    // Obtener los datos de la factura
-    const facturaData = prepararDatosFactura();
-    
-    // Realizar la llamada a la API de ARCA/AFIP
-    window.electronAPI.facturarConARCA(facturaData)
-        .then(response => {
-            // Ocultar modal de proceso
-            hideModal('modal-arca-proceso');
-            
-            if (response.success) {
-                // Actualizar la factura con datos de AFIP (CAE, vencimiento, etc.)
-                actualizarDatosFacturaAFIP(response.data);
-                
-                // Mostrar mensaje de éxito
-                document.getElementById('estado-facturacion').innerHTML = 
-                    `<div class="estado-success"><i class="fas fa-check-circle"></i> Factura autorizada por AFIP. CAE: ${response.data.cae}</div>`;
-                
-                // Habilitar botón para generar factura
-                document.getElementById('btn-generar-factura').disabled = false;
-            } else {
-                // Mostrar modal de error
-                document.getElementById('arca-mensaje-error').textContent = response.message || 'Error al comunicarse con AFIP';
-                document.getElementById('arca-error-detalles').innerHTML = `<pre>${JSON.stringify(response.error, null, 2)}</pre>`;
-                showModal('modal-arca-error');
-            }
-        })
-        .catch(error => {
-            // Ocultar modal de proceso
-            hideModal('modal-arca-proceso');
-            
-            // Mostrar modal de error
-            document.getElementById('arca-mensaje-error').textContent = 'Error en la comunicación con AFIP';
-            document.getElementById('arca-error-detalles').innerHTML = `<pre>${error.message}</pre>`;
-            showModal('modal-arca-error');
+
+        document.getElementById('emailOption').addEventListener('click', function() {
+            document.getElementById('generateInvoiceModal').style.display = 'none';
+            document.getElementById('emailInvoiceModal').style.display = 'block';
         });
-}
 
-// Función para preparar los datos de la factura para AFIP
-function prepararDatosFactura() {
-    // Obtener información del cliente
-    const cliente = window.clienteActual;
-    
-    // Obtener tipo de comprobante
-    const tipoComprobante = document.getElementById('tipo-comprobante').value;
-    
-    // Obtener productos
-    const productos = obtenerProductosTabla();
-    
-    // Obtener totales
-    const subtotal = parseFloat(document.getElementById('subtotal').textContent.replace('$', ''));
-    const descuento = parseFloat(document.getElementById('total-descuento').textContent.replace('$', ''));
-    const iva = parseFloat(document.getElementById('total-iva').textContent.replace('$', ''));
-    const total = parseFloat(document.getElementById('total-factura').textContent.replace('$', ''));
-    
-    // Crear objeto de datos para AFIP
-    return {
-        cliente,
-        tipoComprobante,
-        productos,
-        totales: {
-            subtotal,
-            descuento,
-            iva,
-            total
-        },
-        fecha: document.getElementById('fecha-comprobante').value
-    };
-}
+        document.getElementById('printOption').addEventListener('click', function() {
+            // In a real app, this would trigger print functionality
+            window.print();
+        });
 
-// Función para actualizar los datos de la factura con la información de AFIP
-function actualizarDatosFacturaAFIP(datosAFIP) {
-    // Guardar en variables globales o en el estado
-    window.facturaAFIP = datosAFIP;
-    
-    // Actualizar UI si es necesario
-    // Por ejemplo, mostrar el CAE en algún lugar visible
-}
+        document.getElementById('whatsappOption').addEventListener('click', function() {
+            document.getElementById('generateInvoiceModal').style.display = 'none';
+            document.getElementById('whatsappInvoiceModal').style.display = 'block';
+        });
 
-// Función para limpiar el facturador
-function limpiarFacturador() {
-    // Limpiar cliente
-    document.getElementById('cliente-nombre').value = '';
-    document.querySelector('#cliente-documento .value').textContent = '-';
-    document.querySelector('#cliente-direccion .value').textContent = '-';
-    document.querySelector('#cliente-iva .value').textContent = '-';
-    window.clienteActual = null;
-    
-    // Limpiar productos
-    document.querySelector('#tabla-productos tbody').innerHTML = '';
-    
-    // Limpiar campos de producto
-    document.getElementById('producto-codigo').value = '';
-    document.getElementById('producto-cantidad').value = '1';
-    document.getElementById('producto-precio').value = '';
-    document.getElementById('producto-descuento').value = '0';
-    
-    // Limpiar descuentos y totales
-    document.getElementById('descuento-global').value = '';
-    document.getElementById('subtotal').textContent = '$0.00';
-    document.getElementById('total-descuento').textContent = '$0.00';
-    document.getElementById('total-iva').textContent = '$0.00';
-    document.getElementById('total-factura').textContent = '$0.00';
-    
-    // Limpiar pagos seleccionados
-    document.getElementById('pagos-seleccionados').innerHTML = '';
-    
-    // Actualizar estado de facturación
-    document.getElementById('estado-facturacion').innerHTML = '';
-    
-    // Resetear tipo de comprobante a predeterminado
-    document.getElementById('tipo-comprobante').value = 'FACTURA_B';
-    actualizarNumeroComprobante();
-    actualizarEtiquetaBotonFacturar();
-    
-    // Poner foco en campo cliente
-    document.getElementById('cliente-nombre').focus();
-}
+        // Send Email button
+        document.getElementById('sendEmailBtn').addEventListener('click', function() {
+            const email = document.getElementById('emailTo').value;
+            if (!email || !validateEmail(email)) {
+                showFormError('emailToError', 'Email inválido');
+                return;
+            }
+            
+            // Mock email sending
+            document.querySelector('.progress-bar').style.display = 'block';
+            document.getElementById('emailProgressText').textContent = 'Enviando email...';
+            
+            let progress = 0;
+            const progressInterval = setInterval(() => {
+                progress += 10;
+                document.getElementById('emailProgress').style.width = progress + '%';
+                
+                if (progress >= 100) {
+                    clearInterval(progressInterval);
+                    document.getElementById('emailProgressText').textContent = 'Email enviado correctamente';
+                    
+                    setTimeout(() => {
+                        document.getElementById('emailInvoiceModal').style.display = 'none';
+                        document.querySelector('.progress-bar').style.display = 'none';
+                        document.getElementById('emailProgress').style.width = '0%';
+                        document.getElementById('emailProgressText').textContent = '';
+                        showToast('Email enviado correctamente', 'success');
+                    }, 1000);
+                }
+            }, 300);
+        });
 
-// Funciones auxiliares para mostrar y ocultar modales
-function showModal(modalId) {
-    document.getElementById(modalId).classList.add('show');
-}
+        // Send WhatsApp button
+        document.getElementById('sendWhatsappBtn').addEventListener('click', function() {
+            const whatsappNumber = document.getElementById('whatsappNumber').value;
+            if (!whatsappNumber || !validatePhone(whatsappNumber)) {
+                showFormError('whatsappNumberError', 'Número inválido');
+                return;
+            }
+            
+            // Mock WhatsApp sending
+            document.getElementById('whatsappInvoiceModal').style.display = 'none';
+            showToast('Mensaje de WhatsApp enviado correctamente', 'success');
+        });
 
-function hideModal(modalId) {
-    document.getElementById(modalId).classList.remove('show');
-}
+        // Save Settings button
+        document.getElementById('saveSettingsBtn').addEventListener('click', function() {
+            // In a real app, this would save settings to local storage or database
+            document.getElementById('settingsModal').style.display = 'none';
+            showToast('Configuración guardada correctamente', 'success');
+        });
 
-// Función para obtener los productos de la tabla
-function obtenerProductosTabla() {
-    const productos = [];
-    const filas = document.querySelectorAll('#tabla-productos tbody tr');
-    
-    filas.forEach(fila => {
-        const codigo = fila.cells[0].textContent;
-        const nombre = fila.cells[1].textContent;
-        const cantidad = parseFloat(fila.cells[2].textContent);
-        const precioUnitario = parseFloat(fila.cells[3].textContent.replace('$', ''));
-        const descuento = parseFloat(fila.cells[4].textContent.replace('%', ''));
-        const subtotal = parseFloat(fila.cells[5].textContent.replace('$', ''));
+        // Settings button
+        document.getElementById('settingsBtn').addEventListener('click', function() {
+            document.getElementById('settingsModal').style.display = 'block';
+        });
+
+        // Invoice Type selection
+        document.getElementById('invoiceType').addEventListener('change', function() {
+            currentInvoiceType = this.value;
+            updateInvoiceNumber();
+        });
+
+        // Initialize client input with autocomplete
+        initializeAutocomplete(document.getElementById('clientInput'), clients, (client) => `${client.name} ${client.lastName} (${client.dni})`);
         
-        productos.push({
-            codigo,
-            nombre,
-            cantidad,
-            precioUnitario,
-            descuento,
-            subtotal
+        // Initialize product input with autocomplete
+        initializeAutocomplete(document.getElementById('productInput'), products, (product) => product.name, (product) => {
+            document.getElementById('priceInput').value = formatCurrency(product.price);
+            document.getElementById('ivaInput').value = product.iva;
         });
     });
+
+    // Functions
+    function populateSearchResults(filteredProducts) {
+        const resultsContainer = document.getElementById('searchResults');
+        
+        if (filteredProducts.length === 0) {
+            resultsContainer.innerHTML = '<p class="no-results">No se encontraron productos</p>';
+            return;
+        }
+        
+        let html = '<table class="products-table"><thead><tr><th>Código</th><th>Nombre</th><th>Categoría</th><th>Precio</th><th>Stock</th><th></th></tr></thead><tbody>';
+        
+        filteredProducts.forEach(product => {
+            html += `
+                <tr>
+                    <td>${product.code}</td>
+                    <td>${product.name}</td>
+                    <td>${product.category}</td>
+                    <td>${formatCurrency(product.price)}</td>
+                    <td>${product.stock}</td>
+                    <td><button class="select-product-btn" data-id="${product.id}">Seleccionar</button></td>
+                </tr>
+            `;
+        });
+        
+        html += '</tbody></table>';
+        resultsContainer.innerHTML = html;
+        
+        // Add event listeners to select buttons
+        document.querySelectorAll('.select-product-btn').forEach(button => {
+            button.addEventListener('click', function() {
+                const productId = parseInt(this.getAttribute('data-id'));
+                const product = products.find(p => p.id === productId);
+                
+                document.getElementById('productInput').value = product.name;
+                document.getElementById('priceInput').value = formatCurrency(product.price);
+                document.getElementById('ivaInput').value = product.iva;
+                
+                document.getElementById('searchProductModal').style.display = 'none';
+            });
+        });
+    }
+
+    function addProductToCart() {
+        const productName = document.getElementById('productInput').value;
+        const quantity = parseFloat(document.getElementById('quantityInput').value || 1);
+        const price = parseCurrency(document.getElementById('priceInput').value);
+        const iva = parseFloat(document.getElementById('ivaInput').value || 21);
+        
+        if (!productName) {
+            showToast('Seleccione un producto', 'error');
+            return;
+        }
+        
+        const product = products.find(p => p.name === productName);
+        const productId = product ? product.id : Date.now();
+        
+        // Check if product already exists in cart
+        const existingItemIndex = cartItems.findIndex(item => item.name === productName);
+        
+        if (existingItemIndex >= 0) {
+            // Update quantity of existing item
+            cartItems[existingItemIndex].quantity += quantity;
+        } else {
+            // Add new item to cart
+            cartItems.push({
+                id: productId,
+                name: productName,
+                quantity: quantity,
+                price: price,
+                iva: iva
+            });
+        }
+        
+        updateCartTable();
+        updateTotals();
+        
+        // Clear inputs
+        document.getElementById('productInput').value = '';
+        document.getElementById('quantityInput').value = '1';
+        document.getElementById('priceInput').value = '';
+        document.getElementById('ivaInput').value = '21';
+    }
+
+    function updateCartTable() {
+        const tbody = document.querySelector('#cartTable tbody');
+        tbody.innerHTML = '';
+        
+        cartItems.forEach((item, index) => {
+            const subtotal = item.price * item.quantity;
+            const ivaAmount = subtotal * (item.iva / 100);
+            const total = subtotal + ivaAmount;
+            
+            const tr = document.createElement('tr');
+            tr.innerHTML = `
+                <td>${item.name}</td>
+                <td>${item.quantity}</td>
+                <td>${formatCurrency(item.price)}</td>
+                <td>${item.iva}%</td>
+                <td>${formatCurrency(subtotal)}</td>
+                <td>${formatCurrency(total)}</td>
+                <td>
+                    <button class="edit-item-btn" data-index="${index}"><i class="fas fa-edit"></i></button>
+                    <button class="delete-item-btn" data-index="${index}"><i class="fas fa-trash"></i></button>
+                </td>
+            `;
+            
+            tbody.appendChild(tr);
+        });
+        
+        // Add event listeners to edit and delete buttons
+        document.querySelectorAll('.delete-item-btn').forEach(button => {
+            button.addEventListener('click', function() {
+                const index = parseInt(this.getAttribute('data-index'));
+                cartItems.splice(index, 1);
+                updateCartTable();
+                updateTotals();
+            });
+        });
+        
+        document.querySelectorAll('.edit-item-btn').forEach(button => {
+            button.addEventListener('click', function() {
+                const index = parseInt(this.getAttribute('data-index'));
+                const item = cartItems[index];
+                
+                document.getElementById('productInput').value = item.name;
+                document.getElementById('quantityInput').value = item.quantity;
+                document.getElementById('priceInput').value = formatCurrency(item.price);
+                document.getElementById('ivaInput').value = item.iva;
+                
+                // Remove item from cart
+                cartItems.splice(index, 1);
+                updateCartTable();
+                updateTotals();
+            });
+        });
+    }
+
+    function updateTotals() {
+        let subtotal = 0;
+        let ivaTotal = 0;
+        
+        cartItems.forEach(item => {
+            const itemSubtotal = item.price * item.quantity;
+            subtotal += itemSubtotal;
+            ivaTotal += itemSubtotal * (item.iva / 100);
+        });
+        
+        const total = subtotal + ivaTotal;
+        
+        document.getElementById('subtotalAmount').textContent = formatCurrency(subtotal);
+        document.getElementById('ivaAmount').textContent = formatCurrency(ivaTotal);
+        document.getElementById('totalAmount').textContent = formatCurrency(total);
+    }
+
+    function calculateTotal() {
+        let total = 0;
+        
+        cartItems.forEach(item => {
+            const subtotal = item.price * item.quantity;
+            const ivaAmount = subtotal * (item.iva / 100);
+            total += subtotal + ivaAmount;
+        });
+        
+        return total;
+    }
+
+    function formatCurrency(amount) {
+        return '$ ' + amount.toLocaleString('es-AR', {
+            minimumFractionDigits: 2,
+            maximumFractionDigits: 2
+        });
+    }
+
+    function parseCurrency(currencyString) {
+        if (!currencyString) return 0;
+        return parseFloat(currencyString.replace(/[^\d.,]/g, '').replace(',', '.'));
+    }
+
+    function addPaymentMethod(type, amount) {
+        selectedPaymentMethods.push({
+            type: type,
+            amount: amount
+        });
+    }
+
+    function updatePaymentOptions() {
+        const paymentOptionsContainer = document.getElementById('paymentOptions');
+        paymentOptionsContainer.innerHTML = '';
+        
+        let totalPaid = 0;
+        
+        selectedPaymentMethods.forEach((payment, index) => {
+            const paymentItem = document.createElement('div');
+            paymentItem.className = 'payment-option-item';
+            paymentItem.innerHTML = `
+                <span>${payment.type}: ${formatCurrency(payment.amount)}</span>
+                <button class="delete-payment-btn" data-index="${index}"><i class="fas fa-times"></i></button>
+            `;
+            
+            paymentOptionsContainer.appendChild(paymentItem);
+            totalPaid += payment.amount;
+        });
+        
+        // Add total paid
+        const totalContainer = document.createElement('div');
+        totalContainer.className = 'payment-total';
+        totalContainer.innerHTML = `
+            <span>Total Pagado: ${formatCurrency(totalPaid)}</span>
+        `;
+        
+        paymentOptionsContainer.appendChild(totalContainer);
+        
+        // Add event listeners to delete buttons
+        document.querySelectorAll('.delete-payment-btn').forEach(button => {
+            button.addEventListener('click', function() {
+                const index = parseInt(this.getAttribute('data-index'));
+                selectedPaymentMethods.splice(index, 1);
+                updatePaymentOptions();
+            });
+        });
+    }
+
+    function checkPaymentComplete() {
+        let totalPaid = 0;
+        selectedPaymentMethods.forEach(payment => {
+            totalPaid += payment.amount;
+        });
+        
+        const invoiceTotal = calculateTotal();
+        
+        if (totalPaid >= invoiceTotal) {
+            document.getElementById('generateInvoiceModal').style.display = 'block';
+            generateInvoicePreview();
+        }
+    }
+
+    function generateInvoicePreview() {
+        const clientName = document.getElementById('clientInput').value || 'Consumidor Final';
+        const invoiceType = document.getElementById('invoiceType').value;
+        const invoiceNumber = document.getElementById('invoiceNumber').value;
+        const invoiceDate = document.getElementById('invoiceDate').value;
+        
+        let subtotal = 0;
+        let ivaTotal = 0;
+        
+        cartItems.forEach(item => {
+            const itemSubtotal = item.price * item.quantity;
+            subtotal += itemSubtotal;
+            ivaTotal += itemSubtotal * (item.iva / 100);
+        });
+        
+        const total = subtotal + ivaTotal;
+        
+        const previewHTML = `
+            <div class="invoice-preview">
+                <div class="invoice-header">
+                    <div class="company-info">
+                        <h2>ARCA Software</h2>
+                        <p>CUIT: 30-12345678-9</p>
+                        <p>Dirección: Av. Corrientes 1234</p>
+                        <p>Tel: (011) 1234-5678</p>
+                    </div>
+                    <div class="invoice-info">
+                        <h3>FACTURA ${invoiceType}</h3>
+                        <p>N°: ${invoiceNumber}</p>
+                        <p>Fecha: ${invoiceDate}</p>
+                    </div>
+                </div>
+                <div class="client-info">
+                    <p><strong>Cliente:</strong> ${clientName}</p>
+                </div>
+                <table class="invoice-items">
+                    <thead>
+                        <tr>
+                            <th>Descripción</th>
+                            <th>Cantidad</th>
+                            <th>Precio Unit.</th>
+                            <th>IVA</th>
+                            <th>Subtotal</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        ${cartItems.map(item => `
+                            <tr>
+                                <td>${item.name}</td>
+                                <td>${item.quantity}</td>
+                                <td>${formatCurrency(item.price)}</td>
+                                <td>${item.iva}%</td>
+                                <td>${formatCurrency(item.price * item.quantity)}</td>
+                            </tr>
+                        `).join('')}
+                    </tbody>
+                    <tfoot>
+                        <tr>
+                            <th colspan="4">Subtotal</th>
+                            <td>${formatCurrency(subtotal)}</td>
+                        </tr>
+                        <tr>
+                            <th colspan="4">IVA</th>
+                            <td>${formatCurrency(ivaTotal)}</td>
+                        </tr>
+                        <tr>
+                            <th colspan="4">Total</th>
+                            <td>${formatCurrency(total)}</td>
+                        </tr>
+                    </tfoot>
+                </table>
+                <div class="payment-info">
+                    <h4>Forma de Pago</h4>
+                    <ul>
+                        ${selectedPaymentMethods.map(payment => `
+                            <li>${payment.type}: ${formatCurrency(payment.amount)}</li>
+                        `).join('')}
+                    </ul>
+                </div>
+            </div>
+        `;
+        
+        document.getElementById('invoicePreview').innerHTML = previewHTML;
+    }
+
+    function updateInvoiceNumber() {
+        // In a real app, this would get the next invoice number from a database
+        const prefix = '00001';
+        const number = '00000001';
+        document.getElementById('invoiceNumber').value = `${prefix}-${number}`;
+    }
+
+    function showToast(message, type) {
+        const toast = document.getElementById('toastNotification');
+        toast.className = 'toast';
+        toast.classList.add(type);
+        toast.textContent = message;
+        toast.style.display = 'block';
+        
+        setTimeout(() => {
+            toast.style.display = 'none';
+        }, 3000);
+    }
+
+    function showFormError(elementId, message) {
+        const errorElement = document.getElementById(elementId);
+        errorElement.textContent = message;
+        errorElement.style.display = message ? 'block' : 'none';
+    }
+
+    function validateEmail(email) {
+        const re = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+        return re.test(email);
+    }
+
+    function validatePhone(phone) {
+        // Simple validation, can be improved
+        return phone.length >= 8;
+    }
+
+    function initializeAutocomplete(inputElement, dataArray, labelFunction, selectCallback = null) {
+        // Create a div element for autocomplete items
+        const autocompleteContainer = document.createElement('div');
+        autocompleteContainer.className = 'autocomplete-items';
+        inputElement.parentNode.appendChild(autocompleteContainer);
+        
+        // Add event listener for input changes
+        inputElement.addEventListener('input', function() {
+            const value = this.value.toLowerCase();
+            autocompleteContainer.innerHTML = '';
+            
+            if (!value) return false;
+            
+            dataArray.forEach(item => {
+                const label = labelFunction(item);
+                if (label.toLowerCase().includes(value)) {
+                    const div = document.createElement('div');
+                    div.textContent = label;
+                    
+                    div.addEventListener('click', function() {
+                        inputElement.value = label;
+                        autocompleteContainer.innerHTML = '';
+                        
+                        if (selectCallback) {
+                            selectCallback(item);
+                        }
+                    });
+                    
+                    autocompleteContainer.appendChild(div);
+                }
+            });
+        });
+        
+        // Close autocomplete list when clicking outside
+        document.addEventListener('click', function(e) {
+            if (e.target !== inputElement) {
+                autocompleteContainer.innerHTML = '';
+            }
+        });
+    }
+</script>
+<script>
+    document.addEventListener("DOMContentLoaded", function () {
+      const inputs = document.querySelectorAll('input');
     
-    return productos;
-}
+      inputs.forEach((input, index) => {
+        input.addEventListener('keydown', function (e) {
+          if (e.key === 'Enter') {
+            e.preventDefault(); // evita envío del formulario
+            const next = inputs[index + 1];
+            if (next) next.focus();
+          }
+        });
+      });
+    });
+    </script>
+    
+    <script>
+document.addEventListener('DOMContentLoaded', function () {
+    const inputProducto = document.getElementById('productInput');
+    const listaProductos = document.getElementById('listaProductos');
+
+    inputProducto.addEventListener('input', function () {
+        const valor = inputProducto.value.trim();
+        if (valor.length < 2) {
+            listaProductos.innerHTML = '';
+            listaProductos.style.display = 'none';
+            return;
+        }
+
+        fetch(`/api/productos?q=${encodeURIComponent(valor)}`)
+            .then(res => res.json())
+            .then(productos => {
+                cargarListaProductos(productos);
+            })
+            .catch(error => {
+                console.error('Error buscando productos:', error);
+                listaProductos.innerHTML = '';
+                listaProductos.style.display = 'none';
+            });
+    });
+
+    function cargarListaProductos(productos) {
+        listaProductos.innerHTML = '';
+        productos.forEach(producto => {
+            const li = document.createElement('li');
+            li.textContent = `${producto.nombre} (${producto.codigo})`;
+            li.addEventListener('click', () => {
+                inputProducto.value = producto.nombre;
+                listaProductos.style.display = 'none';
+                // Aquí podés llenar otros campos como precio, iva, etc., si tu API lo devuelve
+            });
+            listaProductos.appendChild(li);
+        });
+        listaProductos.style.display = productos.length > 0 ? 'block' : 'none';
+    }
+});
+</script>
+
+          
+
+        <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0-alpha1/dist/js/bootstrap.bundle.min.js"></script>
+        <script src="https://kit.fontawesome.com/a076d05399.js" crossorigin="anonymous"></script>
+        <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+        <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
+        <script src="https://cdn.jsdelivr.net/npm/axios/dist/axios.min.js"></script>
+        <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+        <script src="https://cdn.jsdelivr.net/npm/bs5-toast@1.0.0/dist/bs5-toast.min.js"></script>
+        <script src="https://cdn.jsdelivr.net/npm/bs5-modal@1.0.0/dist/bs5-modal.min.js"></script>
+        <script src="https://cdn.jsdelivr.net/npm/bs5-tooltip@1.0.0/dist/bs5-tooltip.min.js"></script>
+        <script src="https://cdn.jsdelivr.net/npm/bs5-popover@1.0.0/dist/bs5-popover.min.js"></script>
+        <script src="https://cdn.jsdelivr.net/npm/bs5-dropdown@1.0.0/dist/bs5-dropdown.min.js"></script>
+        <script src="https://cdn.jsdelivr.net/npm/bs5-collapse@1.0.0/dist/bs5-collapse.min.js"></script>
+        <script src="https://cdn.jsdelivr.net/npm/bs5-offcanvas@1.0.0/dist/bs5-offcanvas.min.js"></script>
+        <script src="https://cdn.jsdelivr.net/npm/bs5-scrollspy@1.0.0/dist/bs5-scrollspy.min.js"></script>
+</body>
+</html>

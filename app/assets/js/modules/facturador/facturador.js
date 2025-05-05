@@ -17,7 +17,7 @@ const { createBackup } = require('../../../utils/backup.js');
 
 // Importaciones de servicios para integraciones externas
 const { mercadoPagoQR, checkMPPayment } = require('../../../../integrations/mercadoPago/api.js');
-const { generateInvoice as arcaGenerateInvoice } = require('../../../../integrations/arca/facturacion.js');
+const { generateInvoice, as, arcaGenerateInvoice } = require('../../../../integrations/arca/facturacion.js');
 const { sendWhatsApp } = require('../../../../integrations/whatsapp/mensajes.js');
 const { sendEmail } = require('../../../../integrations/email/sender.js');
 const { bankPayment } = require('../../../../integrations/bancos/api.js');
@@ -62,12 +62,11 @@ let facturadorState = {
 /**
  * Inicializa el módulo de facturación
  */
-function initFacturador
-module.exports.initFacturador = initFacturador() {
+function initFacturador() {
     // Comprobar autenticación y permisos
     if (!authCheck('facturador:access')) {
-        showMessage('No tiene permisos para acceder al facturador', 'error');
-        return false;
+      showMessage('No tiene permisos para acceder al facturador', 'error');
+      return false;
     }
 
     // Obtener información de la sesión actual
