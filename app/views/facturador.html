@@ -1,3 +1,5 @@
+
+
 <!DOCTYPE html>
 <html lang="es">
 <head>
@@ -24,26 +26,6 @@
             padding: 0;
             font-family: 'Segoe UI', Arial, sans-serif;
         }
-
-        .lista-desplegable {
-  list-style: none;
-  margin: 0;
-  padding: 0;
-  border: 1px solid #ccc;
-  max-height: 150px;
-  overflow-y: auto;
-  background-color: white;
-  position: absolute;
-  width: 100%;
-  z-index: 1000;
-}
-.lista-desplegable li {
-  padding: 8px;
-  cursor: pointer;
-}
-.lista-desplegable li:hover {
-  background-color: #eee;
-}
 
         body {
             background-color: #f5f5f5;
@@ -663,6 +645,7 @@
 
         <div class="tab-content active" id="products-tab">
             <!-- Product search and input -->
+            <!-- Product search and input -->
 <div class="search-product">
     <button class="action-button" id="searchProductBtn" title="Buscar Producto (F1)">
         <i class="fas fa-box"></i>
@@ -701,6 +684,7 @@
         </tbody>
     </table>
 </div>
+
 
             <!-- Payment methods -->
             <div class="payment-methods">
@@ -1210,6 +1194,22 @@
         </div>
     </div>
 </div>
+document.addEventListener('DOMContentLoaded', function() {
+    const productTab = document.getElementById('products-tab');
+    const inputFields = productTab.querySelectorAll('input[type="text"], input[type="number"]');
+
+    inputFields.forEach(function(input, index) {
+        input.addEventListener('keypress', function(event) {
+            if (event.key === 'Enter') {
+                event.preventDefault(); // Evita el comportamiento predeterminado del Enter (enviar formulario)
+                const nextIndex = index + 1;
+                if (nextIndex < inputFields.length) {
+                    inputFields[nextIndex].focus();
+                }
+            }
+        });
+    });
+});
 
 <!-- Toast Notification -->
 <div class="toast" id="toastNotification"></div>
@@ -2070,6 +2070,47 @@
     }
 </script>
 <script>
+    document.addEventListener('DOMContentLoaded', function () {
+        const inputProducto = document.getElementById('productInput');
+        const listaProductos = document.getElementById('listaProductos');
+    
+        inputProducto.addEventListener('input', function () {
+            const valor = inputProducto.value.trim();
+            if (valor.length < 2) {
+                listaProductos.innerHTML = '';
+                listaProductos.style.display = 'none';
+                return;
+            }
+    
+            fetch(`/api/productos?q=${encodeURIComponent(valor)}`)
+                .then(res => res.json())
+                .then(productos => {
+                    cargarListaProductos(productos);
+                })
+                .catch(error => {
+                    console.error('Error buscando productos:', error);
+                    listaProductos.innerHTML = '';
+                    listaProductos.style.display = 'none';
+                });
+        });
+    
+        function cargarListaProductos(productos) {
+            listaProductos.innerHTML = '';
+            productos.forEach(producto => {
+                const li = document.createElement('li');
+                li.textContent = `${producto.nombre} (${producto.codigo})`;
+                li.addEventListener('click', () => {
+                    inputProducto.value = producto.nombre;
+                    listaProductos.style.display = 'none';
+                    // Aquí podés llenar otros campos como precio, iva, etc., si tu API lo devuelve
+                });
+                listaProductos.appendChild(li);
+            });
+            listaProductos.style.display = productos.length > 0 ? 'block' : 'none';
+        }
+    });
+    </script>
+<script>
     document.addEventListener("DOMContentLoaded", function () {
       const inputs = document.querySelectorAll('input');
     
@@ -2084,50 +2125,7 @@
       });
     });
     </script>
-    
-    <script>
-document.addEventListener('DOMContentLoaded', function () {
-    const inputProducto = document.getElementById('productInput');
-    const listaProductos = document.getElementById('listaProductos');
-
-    inputProducto.addEventListener('input', function () {
-        const valor = inputProducto.value.trim();
-        if (valor.length < 2) {
-            listaProductos.innerHTML = '';
-            listaProductos.style.display = 'none';
-            return;
-        }
-
-        fetch(`/api/productos?q=${encodeURIComponent(valor)}`)
-            .then(res => res.json())
-            .then(productos => {
-                cargarListaProductos(productos);
-            })
-            .catch(error => {
-                console.error('Error buscando productos:', error);
-                listaProductos.innerHTML = '';
-                listaProductos.style.display = 'none';
-            });
-    });
-
-    function cargarListaProductos(productos) {
-        listaProductos.innerHTML = '';
-        productos.forEach(producto => {
-            const li = document.createElement('li');
-            li.textContent = `${producto.nombre} (${producto.codigo})`;
-            li.addEventListener('click', () => {
-                inputProducto.value = producto.nombre;
-                listaProductos.style.display = 'none';
-                // Aquí podés llenar otros campos como precio, iva, etc., si tu API lo devuelve
-            });
-            listaProductos.appendChild(li);
-        });
-        listaProductos.style.display = productos.length > 0 ? 'block' : 'none';
-    }
-});
-</script>
-
-          
+        
 
         <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0-alpha1/dist/js/bootstrap.bundle.min.js"></script>
         <script src="https://kit.fontawesome.com/a076d05399.js" crossorigin="anonymous"></script>
