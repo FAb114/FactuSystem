@@ -1,5 +1,4 @@
 
-
 <!DOCTYPE html>
 <html lang="es">
 <head>
@@ -615,6 +614,9 @@
             </div>
 
             <div class="action-buttons">
+                <button class="action-button" id="previewBtn" title="Previsualizar Factura">
+                    <i class="fas fa-print"></i>                   
+                </button>
                 <button class="action-button" id="userBtn" title="Usuarios">
                     <i class="fas fa-user"></i>
                 </button>
@@ -645,46 +647,42 @@
 
         <div class="tab-content active" id="products-tab">
             <!-- Product search and input -->
-            <!-- Product search and input -->
-<div class="search-product">
-    <button class="action-button" id="searchProductBtn" title="Buscar Producto (F1)">
-        <i class="fas fa-box"></i>
-    </button>
-    <input type="text" class="product-input" id="productInput" placeholder="Escanee o ingrese nombre del producto" autocomplete="off">
-    <!-- Lista de productos sugeridos -->
-    <ul id="listaProductos" class="lista-desplegable"></ul>
-    <div class="price-input-container">
-        <input type="text" class="price-input" id="priceInput" placeholder="Precio">
-    </div>
-    <input type="number" class="quantity-input" id="quantityInput" placeholder="Cant." value="1" min="1">
-    <input type="text" class="discount-input" id="discountInput" placeholder="± %">
-    <input type="text" class="iva-input" id="ivaInput" placeholder="IVA %" value="21">
-    <button class="action-button" id="addProductBtn" title="Agregar">
-        <i class="fas fa-plus"></i>
-    </button>
-</div>
+            <div class="search-product">
+                <button class="action-button" id="searchProductBtn" title="Buscar Producto (F1)">
+                    <i class="fas fa-box"></i>
+                </button>
+                <input type="text" class="product-input" id="productInput" placeholder="Escanee o ingrese nombre del producto" autocomplete="off">
+                <div class="price-input-container">
+                    <input type="text" class="price-input" id="priceInput" placeholder="Precio">
+                </div>
+                <input type="number" class="quantity-input" id="quantityInput" placeholder="Cant." value="" min="">
+                <input type="text" class="discount-input" id="discountInput" placeholder="± %">
+                <input type="text" class="iva-input" id="ivaInput" placeholder="IVA %" value="">
+                <button class="action-button" id="addProductBtn" title="Agregar">
+                    <i class="fas fa-plus"></i>
+                </button>
+            </div>
 
-<!-- Products table -->
-<div class="responsive-table-container">
-    <table class="products-table" id="productsTable">
-        <thead>
-            <tr>
-                <th>Nº</th>
-                <th>Producto</th>
-                <th>Descripción</th>
-                <th>Cantidad</th>
-                <th>Precio</th>
-                <th>IVA</th>
-                <th>Subtotal</th>
-                <th></th>
-            </tr>
-        </thead>
-        <tbody>
-            <!-- Products will be added here dynamically -->
-        </tbody>
-    </table>
-</div>
-
+            <!-- Products table -->
+            <div class="responsive-table-container">
+                <table class="products-table" id="productsTable">
+                    <thead>
+                        <tr>
+                            <th>Nº</th>
+                            <th>Producto</th>
+                            <th>Descripción</th>
+                            <th>Cantidad</th>
+                            <th>Precio</th>
+                            <th>IVA</th>
+                            <th>Subtotal</th>
+                            <th></th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        <!-- Products will be added here dynamically -->
+                    </tbody>
+                </table>
+            </div>
 
             <!-- Payment methods -->
             <div class="payment-methods">
@@ -953,6 +951,11 @@
         <div class="form-group">
             <label for="cardType">Tipo de Tarjeta</label>
             <select id="cardType">
+                <option value="VISA">DEBITO</option>
+                <option value="MASTERCARD">CREDITO</option>               
+            </select>
+            <label for="cardType">Tipo de Tarjeta</label>
+            <select id="cardType">
                 <option value="VISA">VISA</option>
                 <option value="MASTERCARD">MASTERCARD</option>
                 <option value="AMEX">AMERICAN EXPRESS</option>
@@ -1194,22 +1197,29 @@
         </div>
     </div>
 </div>
-document.addEventListener('DOMContentLoaded', function() {
-    const productTab = document.getElementById('products-tab');
-    const inputFields = productTab.querySelectorAll('input[type="text"], input[type="number"]');
 
-    inputFields.forEach(function(input, index) {
-        input.addEventListener('keypress', function(event) {
-            if (event.key === 'Enter') {
-                event.preventDefault(); // Evita el comportamiento predeterminado del Enter (enviar formulario)
-                const nextIndex = index + 1;
-                if (nextIndex < inputFields.length) {
-                    inputFields[nextIndex].focus();
-                }
-            }
-        });
-    });
-});
+    <!-- User Modal -->
+    <div class="modal" id="userModal">
+        <div class="modal-content">
+            <span class="close-modal" data-modal="userModal">&times;</span>
+            <div class="modal-header">
+                <h2>Usuarios</h2>
+            </div>
+            <div class="responsive-table-container">
+                <table class="products-table" id="userTable">
+                    <thead>
+                        <tr>
+                            <th>ID</th>
+                            <th>Nombre</th>
+                            <th>Email</th>
+                            <th>Rol</th>
+                            <th>Acciones</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        <!-- Users will be added here dynamically -->
+                    </tbody>
+                </table>
 
 <!-- Toast Notification -->
 <div class="toast" id="toastNotification"></div>
@@ -2070,47 +2080,6 @@ document.addEventListener('DOMContentLoaded', function() {
     }
 </script>
 <script>
-    document.addEventListener('DOMContentLoaded', function () {
-        const inputProducto = document.getElementById('productInput');
-        const listaProductos = document.getElementById('listaProductos');
-    
-        inputProducto.addEventListener('input', function () {
-            const valor = inputProducto.value.trim();
-            if (valor.length < 2) {
-                listaProductos.innerHTML = '';
-                listaProductos.style.display = 'none';
-                return;
-            }
-    
-            fetch(`/api/productos?q=${encodeURIComponent(valor)}`)
-                .then(res => res.json())
-                .then(productos => {
-                    cargarListaProductos(productos);
-                })
-                .catch(error => {
-                    console.error('Error buscando productos:', error);
-                    listaProductos.innerHTML = '';
-                    listaProductos.style.display = 'none';
-                });
-        });
-    
-        function cargarListaProductos(productos) {
-            listaProductos.innerHTML = '';
-            productos.forEach(producto => {
-                const li = document.createElement('li');
-                li.textContent = `${producto.nombre} (${producto.codigo})`;
-                li.addEventListener('click', () => {
-                    inputProducto.value = producto.nombre;
-                    listaProductos.style.display = 'none';
-                    // Aquí podés llenar otros campos como precio, iva, etc., si tu API lo devuelve
-                });
-                listaProductos.appendChild(li);
-            });
-            listaProductos.style.display = productos.length > 0 ? 'block' : 'none';
-        }
-    });
-    </script>
-<script>
     document.addEventListener("DOMContentLoaded", function () {
       const inputs = document.querySelectorAll('input');
     
@@ -2125,7 +2094,7 @@ document.addEventListener('DOMContentLoaded', function() {
       });
     });
     </script>
-        
+    
 
         <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0-alpha1/dist/js/bootstrap.bundle.min.js"></script>
         <script src="https://kit.fontawesome.com/a076d05399.js" crossorigin="anonymous"></script>
@@ -2143,3 +2112,4 @@ document.addEventListener('DOMContentLoaded', function() {
         <script src="https://cdn.jsdelivr.net/npm/bs5-scrollspy@1.0.0/dist/bs5-scrollspy.min.js"></script>
 </body>
 </html>
+
